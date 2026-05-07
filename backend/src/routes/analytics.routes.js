@@ -1,11 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const orderController = require("../controllers/order.controller");
-const { verifyJWT } = require("../middleware/auth.middleware");
+const analyticsController = require("../controllers/analytics.controller");
+const { authenticate } = require("../middleware/auth.middleware");
 
-router.post("/orders", verifyJWT, orderController.createOrder);
+// Public or Admin-only depending on project needs, using authenticate for security
+router.get("/revenue", authenticate, analyticsController.getMonthlyRevenue);
+router.get("/top-products", authenticate, analyticsController.getTopProducts);
+router.get("/customers", authenticate, analyticsController.getCustomerLifetimeValue);
 
-router.get("/orders", verifyJWT, orderController.getUserOrders);
+// Event ingestion for ML
+router.post("/events", authenticate, analyticsController.recordEvent);
 
 module.exports = router;

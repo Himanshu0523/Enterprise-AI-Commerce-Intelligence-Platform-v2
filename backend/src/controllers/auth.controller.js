@@ -5,33 +5,37 @@ const nodemailer = require("nodemailer");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined");
+}
 
-/* TOKEN GENERATOR */
+
+  //  TOKEN GENERATOR
 
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user._id, role: user.role },
+    {
+      id: user._id,
+      role: user.role || "user"
+    },
     JWT_SECRET,
     { expiresIn: "4d" }
   );
 };
 
+exports.generateToken = generateToken;
 
-
-/*
-REGISTER
-POST /api/auth/register
-*/
-
+  //  REGISTER
+  //  POST /api/auth/register
 exports.registerUser = async (req, res) => {
   try {
-
     const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
+        success: false,
         message: "User already exists"
       });
     }
@@ -45,38 +49,34 @@ exports.registerUser = async (req, res) => {
     });
 
     const token = generateToken(user);
-    
-    const userObj = user.toObject();
-    delete userObj.password;
+
+    const { password: _, ...safeUser } = user.toObject();
 
     res.status(201).json({
       success: true,
       token,
-      user: userObj
+      user: safeUser
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-
-
-/*
-LOGIN
-POST /api/auth/login
-*/
-
+  //  LOGIN
+  //  POST /api/auth/login
 exports.loginUser = async (req, res) => {
-
   try {
-
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found"
       });
     }
@@ -85,35 +85,55 @@ exports.loginUser = async (req, res) => {
 
     if (!match) {
       return res.status(400).json({
+        success: false,
         message: "Invalid credentials"
       });
     }
 
     const token = generateToken(user);
 
-    const userObj = user.toObject();
-    delete userObj.password;
+    const { password: _, ...safeUser } = user.toObject();
 
     res.json({
       success: true,
       token,
-      user: userObj
+      user: safeUser
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
-
 };
 
+  //  LOGOUT
+  //  POST /api/auth/logout
+exports.logoutUser = (req, res) => {
+  res.json({
+    success: true,
+    message: "Logged out successfully"
+  });
+};
 
+  //  OAUTH SUCCESS HANDLER
+  //  (Google, GitHub, LinkedIn)
+exports.oauthSuccess = (req, res) => {
+  try {
+    const token = generateToken(req.user);
 
-/*
-SEND VERIFICATION EMAIL
-*/
+    const userData = encodeURIComponent(JSON.stringify(req.user));
+    res.redirect(`http://localhost:5173/auth-success?token=${token}&user=${userData}`);
 
+  } catch (error) {
+    console.error("OAuth Error:", error);
+    res.redirect(`http://localhost:5173/login?error=oauth_failed`);
+  }
+};
+
+  //  SEND VERIFICATION EMAIL
 exports.sendVerificationEmail = async (email, token) => {
-
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -130,26 +150,19 @@ exports.sendVerificationEmail = async (email, token) => {
     subject: "Verify your email",
     html: `<a href="${url}">Verify Email</a>`
   });
-
 };
 
-
-
-/*
-FORGOT PASSWORD
-POST /api/auth/forgot-password
-*/
-
-exports.forgetPassword = async (req, res) => {
-
+  //  FORGOT PASSWORD
+  //  POST /api/auth/forgot-password
+exports.forgotPassword = async (req, res) => {
   try {
-
     const { email } = req.body;
 
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found"
       });
     }
@@ -178,11 +191,14 @@ exports.forgetPassword = async (req, res) => {
     });
 
     res.json({
+      success: true,
       message: "Password reset email sent"
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
-
 };

@@ -19,35 +19,46 @@ passport.deserializeUser(async (id , done) => {
 /*
 GOOGLE STRATEGY
 */
+if (process.env.GOOGLE_CLIENT_ID) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/api/auth/google/callback"
+      },
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback"
-    },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
 
-    async (accessToken, refreshToken, profile, done) => {
+          const email = profile.emails?.[0]?.value;
 
-      const email = profile.emails[0].value;
+          if (!email) {
+            return done(new Error("No email found") , null);
+          }
+          // Find existing user
+          let user = await User.findOne({ email });
 
-      let user = await User.findOne({ email });
+          // Create new user if not exists
+          if (!user) {
+            user = await User.create({
+              name: profile.displayName,
+              email,
+              googleId: profile.id,
+              avatar: profile.photos?.[0]?.value || "",
+              provider: "google"
+            });
+          }
 
-      if (!user) {
-        user = await User.create({
-          name: profile.displayName,
-          email,
-          password: "oauth"
-        });
+          return done(null, user);
 
+        } catch (error) {
+          return done(error, null);
+        }
       }
-
-      done(null, user);
-
-    }
-  )
-);
+    )
+  );
+}
 
 
 
@@ -55,35 +66,37 @@ passport.use(
 GITHUB STRATEGY
 */
 
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "/api/auth/github/callback"
-    },
+if (process.env.GITHUB_CLIENT_ID) {
+  passport.use(
+    new GitHubStrategy(
+      {
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: "/api/auth/github/callback"
+      },
 
-    async (accessToken, refreshToken, profile, done) => {
+      async (accessToken, refreshToken, profile, done) => {
 
-      const email = profile.emails?.[0]?.value || `${profile.username}@github.com`;
+        const email = profile.emails?.[0]?.value || `${profile.username}@github.com`;
 
-      let user = await User.findOne({ email });
+        let user = await User.findOne({ email });
 
-      if (!user) {
+        if (!user) {
 
-        user = await User.create({
-          name: profile.username,
-          email,
-          password: "oauth"
-        });
+          user = await User.create({
+            name: profile.username,
+            email,
+            provider: "github"
+          });
+
+        }
+
+        done(null, user);
 
       }
-
-      done(null, user);
-
-    }
-  )
-);
+    )
+  );
+}
 
 
 
@@ -91,36 +104,38 @@ passport.use(
 LINKEDIN STRATEGY
 */
 
-passport.use(
-  new LinkedInStrategy(
-    {
-      clientID: process.env.LINKEDIN_CLIENT_ID,
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-      callbackURL: "/api/auth/linkedin/callback",
-      scope: ["r_emailaddress", "r_liteprofile"]
-    },
+if (process.env.LINKEDIN_CLIENT_ID) {
+  passport.use(
+    new LinkedInStrategy(
+      {
+        clientID: process.env.LINKEDIN_CLIENT_ID,
+        clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+        callbackURL: process.env.LINKEDIN_CALLBACK_URL,
+        scope: ["r_emailaddress", "r_liteprofile"]
+      },
 
-    async (accessToken, refreshToken, profile, done) => {
+      async (accessToken, refreshToken, profile, done) => {
 
-      const email = profile.emails[0].value;
+        const email = profile.emails[0].value;
 
-      let user = await User.findOne({ email });
+        let user = await User.findOne({ email });
 
-      if (!user) {
+        if (!user) {
 
-        user = await User.create({
-          name: profile.displayName,
-          email,
-          password: "oauth"
-        });
+          user = await User.create({
+            name: profile.displayName,
+            email,
+            provider: "linkedin"
+          });
+
+        }
+
+        done(null, user);
 
       }
-
-      done(null, user);
-
-    }
-  )
-);
+    )
+  );
+}
 
 
 

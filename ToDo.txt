@@ -1,2 +1,11 @@
 ideas - make search ability like make to or more things search that type products 
  in e-commerces 
+
+Bugs to Fix:
+1. src/hooks/useAnalytics.js: 'error' is not defined
+2. src/pages/Contact.jsx: Unused variables
+3. src/pages/Home.jsx: Missing dependencies in useEffect
+4. src/pages/Login.jsx: Unused variables
+5. src/pages/ProductPage.jsx: Unused variables & set-state-in-effect issue
+6. src/pages/Products.jsx: Missing dependencies in useEffect
+7. src/pages/Register.jsx: Unused variables
