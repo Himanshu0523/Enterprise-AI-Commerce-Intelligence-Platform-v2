@@ -1,7 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProduct } from "../services/productService";
-import { useDispatch } from "react-redux";
 import { useToast } from "../context/ToastContext";
 import ProductSkeleton from "../component/ProductSkeleton";
 
@@ -13,13 +12,14 @@ export default function ProductPage() {
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
-  const dispatch = useDispatch();
   const { addToast } = useToast();
 
   useEffect(() => {
     // Scroll to top cleanly on route change
     window.scrollTo(0, 0);
-    setLoading(true);
+    setTimeout(() => {
+      setLoading(true);
+    }, 0);
     
     getProduct(id)
       .then(res => {

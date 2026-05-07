@@ -1,7 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const getInitialCart = () => {
+  try {
+    const item = localStorage.getItem("cart");
+    return item ? JSON.parse(item) : [];
+  } catch (error) {
+    console.error("Failed to parse cart from localStorage", error);
+    return [];
+  }
+};
+
 const initialState = {
-  items: JSON.parse(localStorage.getItem("cart")) || [],
+  items: getInitialCart(),
 };
 
 const cartSlice = createSlice({

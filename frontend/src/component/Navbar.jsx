@@ -41,6 +41,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-8">
               <Link to="/" className="text-gray-900 font-medium hover:text-gray-600 transition">Home</Link>
               <Link to="/products" className="text-gray-600 hover:text-gray-900 transition">Products</Link>
+              {user?.role === "admin" && (<Link to='/admin-dashboard' className="text-gray-600 hover:text-gray-900 transition">Admin</Link>)}
               {user && <Link to="/dashboard" className="text-gray-600 hover:text-gray-900 transition">Dashboard</Link>}
               <Link to="/about" className="text-gray-600 hover:text-gray-900 transition">About</Link>
               <Link to="/contact" className="text-gray-600 hover:text-gray-900 transition">Contact</Link>

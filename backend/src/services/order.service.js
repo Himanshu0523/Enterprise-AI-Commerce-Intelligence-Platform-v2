@@ -9,6 +9,14 @@ exports.calculateOrderTotal = async (items) => {
 
     const product = await Product.findById(item.product_id);
 
+    if (!product) {
+      throw new Error(`Product with ID ${item.product_id} not found`);
+    }
+
+    if (product.stock < item.quantity) {
+      throw new Error(`Insufficient stock for product: ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`);
+    }
+
     total += product.price * item.quantity;
 
   }

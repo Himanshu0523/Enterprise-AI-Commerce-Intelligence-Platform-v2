@@ -1,8 +1,9 @@
 require('dotenv').config();
-
+require('./src/config/passport');
 const express = require("express");
 const cors = require("cors");
 const connectDB = require('./src/config/db');
+const passport = require('passport');
 
 // Middlewares
 const { handleErrors } = require('./src/middleware/error.middleware');
@@ -20,15 +21,16 @@ const app = express();
 connectDB();
 
 app.use(cors());
+app.use(passport.initialize());
 app.use(express.json());
 app.use(logRequest);
 
 // Mount Routes
 app.use("/api/auth", authRoutes);
-app.use("/api", productRoutes);
-app.use("/api", orderRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/cart", cartRoutes);
+app.use("/api/carts", cartRoutes);
 
 // Error Middleware (must be last)
 app.use(handleErrors);

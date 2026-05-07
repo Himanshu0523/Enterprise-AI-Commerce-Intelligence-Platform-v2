@@ -1,4 +1,5 @@
 const analyticsService = require("../services/analytics.service");
+const Event = require("../models/event.model");
 
 /*
 Top Products
@@ -81,4 +82,38 @@ exports.getCustomerLifetimeValue = async (req, res) => {
 
   }
 
+};
+
+/*
+Record User Event
+POST /api/analytics/events
+*/
+
+exports.recordEvent = async (req, res) => {
+  try {
+    const { event_type, product_id, metadata } = req.body;
+    const userId = req.user.id;
+
+    if (!event_type) {
+      return res.status(400).json({ success: false, message: "Event type is required" });
+    }
+
+    const newEvent = await Event.create({
+      user_id: userId,
+      event_type,
+      product_id: product_id || null,
+      metadata: metadata || {}
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newEvent
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 };

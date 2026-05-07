@@ -12,7 +12,7 @@ exports.getUserRecommendations = async (userId) => {
 
   return await Product.find({
     _id: { $in: productIds }
-  }).limit(5);
+  }).limit(10);
 
 };
 
@@ -25,6 +25,6 @@ exports.getSimilarProducts = async (productId) => {
   return await Product.find({
     category: product.category,
     _id: { $ne: productId }
-  }).limit(5);
+  }).limit(10);
 
 };

@@ -6,9 +6,10 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  const products = useProducts() || [];   
+  const productsData = useProducts();
+  const products = useMemo(() => productsData || [], [productsData]);
   const user = useSelector((state) => state.auth?.user);
-  const userId = user?._id;
+  const userId = user?.['_id'];
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -21,7 +22,7 @@ export default function Home() {
 
   const categories = [
     { id: "all", name: "All Products", count: products.length },
-    { id: "new", name: "New Arrivals", count: products.filter(p => p.isNew).length },
+    { id: "new", name: "New Arrivals", count: products.filter(p => p.isNewProduct).length },
     { id: "featured", name: "Featured", count: products.filter(p => p.isFeatured).length },
     { id: "sale", name: "Sale", count: products.filter(p => p.isOnSale).length }
   ];
@@ -100,7 +101,7 @@ export default function Home() {
             <div>
               <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-6">
                 <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                Summer Collection 2024
+                Summer Collection 2026
               </div>
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
                 Discover Your

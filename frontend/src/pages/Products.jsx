@@ -91,6 +91,7 @@ export default function Products() {
       applyFiltersAndSort(dummyProducts);
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products, filters, sortBy, searchParams]);
 
   const applyFiltersAndSort = (baseProducts) => {

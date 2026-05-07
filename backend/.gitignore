@@ -54,3 +54,9 @@ config/secrets.js
 .env.development.local
 .env.test.local
 .env.production.local
+
+
+ml-service/venv/
+venv/
+__pycache__/
+*.pyc

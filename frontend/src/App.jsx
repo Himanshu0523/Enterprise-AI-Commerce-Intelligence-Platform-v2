@@ -14,10 +14,13 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Register from "./pages/Register";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import AuthSuccess from "./pages/AuthSuccess";
+import AdminDashboard from "./pages/AdminDashboard";
 
 // Components
 import ProtectedRoute from "./component/ProtectedRoute";
 import Layout from "./component/Layout";
+import AdminRouter from "./component/AdminRouter";
 
 // Redux
 import { getCart as getCartApi, saveCart } from "./services/cartService";
@@ -60,11 +63,13 @@ function App() {
         <Route path="/cart" element={<Layout><ProtectedRoute><Cart /></ProtectedRoute></Layout>} />
         <Route path="/checkout" element={<Layout><ProtectedRoute><Checkout /></ProtectedRoute></Layout>} />
         <Route path="/order-success" element={<Layout><ProtectedRoute><OrderSuccess /></ProtectedRoute></Layout>} />
-        <Route path="/dashboard" element={<Layout><ProtectedRoute><Dashboard /></ProtectedRoute></Layout>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin-dashboard" element={<Layout><AdminRouter><AdminDashboard /></AdminRouter></Layout>} />
 
         {/* Auth pages – full-screen split, no Navbar/Footer */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth-success" element={<AuthSuccess />} />
       </Routes>
     </BrowserRouter>
   );

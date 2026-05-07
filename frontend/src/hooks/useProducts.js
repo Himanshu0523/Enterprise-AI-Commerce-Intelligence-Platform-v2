@@ -6,7 +6,7 @@ export const useProducts = () => {
 
   useEffect(() => {
     getProducts()
-      .then(res => setProducts(res.data))
+      .then(res => setProducts(res.data.data || res.data || []))
       .catch(err => console.log(err));
   }, []);
 

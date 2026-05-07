@@ -1,5 +1,5 @@
 import { createSlice , createAsyncThunk } from "@reduxjs/toolkit";
-import { login , logout as logoutAPI } from "./authService";
+import { login , register, logout as logoutAPI } from "./authService";
 
 
 // Async login
@@ -11,6 +11,19 @@ export const loginUser = createAsyncThunk(
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Login failed");
+        }
+    }
+);
+
+// Async register
+export const registerUser = createAsyncThunk(
+    "auth/registerUser" ,
+    async (userData , {rejectWithValue}) => {
+        try {
+            const response = await register(userData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Registration failed");
         }
     }
 );
@@ -28,11 +41,21 @@ export const logoutUser = createAsyncThunk(
     } 
 );
 
+const getInitialUser = () => {
+    try {
+        const item = localStorage.getItem("user");
+        return item ? JSON.parse(item) : null;
+    } catch (error) {
+        console.error("Failed to parse user from localStorage", error);
+        return null;
+    }
+};
+
 const initialState = {
-    user: null ,
-    token : localStorage.getItem("token") || null ,
-    loading : false ,
-    error : null ,
+    user: getInitialUser(),
+    token: localStorage.getItem("token") || null,
+    loading: false,
+    error: null,
 };
 
 
@@ -65,9 +88,39 @@ const authSlice = createSlice({
                 state.error = action.payload;
             })
 
+            // register
+            .addCase(registerUser.pending , (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(registerUser.fulfilled , (state , action) => {
+                state.loading = false;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                
+                localStorage.setItem("token" , action.payload.token);
+                localStorage.setItem("user" , JSON.stringify(action.payload.user));
+            })
+
+            .addCase(registerUser.rejected , (state , action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
             .addCase(logoutUser.fulfilled , (state) => {
                 state.user = null;
                 state.error = null;
+                state.token = null;
+
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+            })
+            
+            .addCase(logoutUser.rejected , (state, action) => {
+                // Clear state anyway to force logout on frontend
+                state.user = null;
+                state.error = action.payload || "Logout failed";
                 state.token = null;
 
                 localStorage.removeItem("token");

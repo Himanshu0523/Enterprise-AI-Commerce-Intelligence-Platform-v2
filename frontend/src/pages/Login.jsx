@@ -19,12 +19,15 @@ export default function Login() {
         setIsLoading(true);
         try {
             // Using existing logic structure from original file
-            const response = await loginUser({ email, password });
-            // dispatch(loginSuccess(response.data)); 
-            console.log("Login successful");
-            navigate("/dashboard");
-        } catch (error) {
-            console.error("Login failed");
+            const result = await dispatch(loginUser({ email, password }));
+            if (result.type === 'auth/loginUser/fulfilled') {
+                console.log('Login successful');
+                navigate('/dashboard');
+            } else {
+                console.error('Login failed', result.payload);
+            }
+        } catch (err) {
+            console.error("Login failed", err);
         } finally {
             setIsLoading(false);
         }
@@ -150,7 +153,11 @@ export default function Login() {
 
                             <div className="mt-6 grid grid-cols-2 gap-3">
                                 <div>
-                                    <button className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition">
+                                    <button 
+                                        onClick={() => {
+                                            window.location.href = "http://localhost:5000/api/auth/google"
+                                        }}
+                                        className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition">
                                         <svg className="w-5 h-5" aria-hidden="true" viewBox="0 0 24 24">
                                             <path d="M12.0003 11.9998V15.5398H17.8173C17.5683 17.2288 16.5163 18.6798 15.0623 19.6418L15.0453 19.6548V21.6038H18.5303L18.7713 21.5798C20.9413 19.5788 22.2143 16.5148 22.2143 12.9998C22.2143 12.2858 22.1463 11.6028 22.0233 10.9548H12.0003V11.9998Z" fill="#4285F4"/>
                                             <path d="M11.9999 22.4998C14.8699 22.4998 17.2799 21.5498 18.9959 19.9498L15.4859 17.9898C14.5599 18.6098 13.3799 18.9998 11.9999 18.9998C9.3339 18.9998 7.0719 17.1898 6.2239 14.7498H2.7639V16.7498C4.5439 20.3798 8.0449 22.4998 11.9999 22.4998Z" fill="#34A853"/>

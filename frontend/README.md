@@ -1,16 +1,56 @@
-# React + Vite
+# AI-Powered E-Commerce Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the React.js Single Page Application (SPA) for the AI-Powered E-Commerce platform. It serves as the primary user interface for customers to browse products, manage their cart, and checkout, while also providing a personalized experience driven by the backend Machine Learning service.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Framework**: React 18 with Vite
+- **Styling**: Tailwind CSS
+- **State Management**: Redux Toolkit (Auth & Cart state)
+- **Routing**: React Router DOM
+- **API Communication**: Axios
 
-## React Compiler
+## Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Seamless Authentication**: Full JWT-based auth flow including OAuth (Google, GitHub, LinkedIn) support.
+- **Personalized Dashboard**: User-specific orders, wishlist, and profile management.
+- **AI Recommendations**: Real-time product suggestions based on user behavior (powered by the backend ML service).
+- **Responsive Design**: Fully mobile-responsive, modern layouts built with Tailwind CSS.
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+Make sure you have Node.js installed on your machine.
+
+### Installation & Setup
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install the necessary dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The frontend application will be available at `http://localhost:5173`.
+
+## Folder Structure
+
+- `src/assets/`: Static files like images and icons.
+- `src/component/`: Reusable UI components (Navbar, Footer, ProductCard, ProtectedRoute, etc.).
+- `src/hooks/`: Custom React hooks (e.g., `useProducts`, `useAnalytics`).
+- `src/pages/`: Main route view components (Home, Dashboard, Login, Register, etc.).
+- `src/services/`: API configuration and Redux slices (`authSlice`, `cartSlice`).
+- `src/store/`: Global Redux store configuration.
+
+## System Architecture
+
+This frontend is designed to run alongside the Node.js backend and the Python FastAPI Machine Learning service. 
+
+For full system architecture details and backend setup instructions, please refer to the [Root README](../README.md).

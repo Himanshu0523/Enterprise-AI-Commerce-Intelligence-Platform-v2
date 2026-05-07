@@ -65,7 +65,8 @@ export default function Contact() {
       addToast("Your message has been sent successfully!", "success");
       setFormData({ name: "", email: "", subject: "", message: "" });
       setErrors({});
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       addToast("Failed to send message. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
@@ -125,20 +126,6 @@ export default function Contact() {
       opacity: 1, 
       x: 0,
       transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }
-    }
-  };
-
-  const scaleHover = {
-    scale: 1.05,
-    transition: { duration: 0.3, ease: "easeOut" }
-  };
-
-  const glowPulse = {
-    scale: [1, 1.02, 1],
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      repeatType: "reverse"
     }
   };
 
