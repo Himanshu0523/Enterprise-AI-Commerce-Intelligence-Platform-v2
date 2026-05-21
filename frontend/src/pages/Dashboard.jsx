@@ -86,6 +86,10 @@ export default function Dashboard() {
     { id: "settings", name: "Settings", icon: "⚙️" },
   ];
 
+  if (user?.role === 'seller') {
+      tabs.push({ id: "seller", name: "Seller Hub", icon: "🏪" });
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -374,6 +378,16 @@ export default function Dashboard() {
                     Save Changes
                   </button>
                 </form>
+
+                {user.role !== 'seller' && (
+                  <div className="mt-8 pt-8 border-t border-gray-200">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Want to sell with us?</h4>
+                    <p className="text-gray-600 mb-4">Upgrade your account to a Seller and start reaching millions of customers.</p>
+                    <Link to="/become-seller" className="inline-block px-6 py-2 border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-50 transition font-medium">
+                        Become a Seller
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 
@@ -411,6 +425,25 @@ export default function Dashboard() {
                       Delete Account
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Seller Hub Tab */}
+            {activeTab === "seller" && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Seller Dashboard</h3>
+                <div className="text-center py-12">
+                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                     🏪
+                   </div>
+                   <h4 className="text-xl font-medium text-gray-900 mb-2">Welcome to your Seller Hub</h4>
+                   <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                     {user.sellerDetails?.businessName ? `Manage ${user.sellerDetails.businessName}'s products and track incoming orders.` : "Manage your products and track incoming orders."}
+                   </p>
+                   <button className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition shadow-sm font-medium">
+                      Add New Product
+                   </button>
                 </div>
               </div>
             )}

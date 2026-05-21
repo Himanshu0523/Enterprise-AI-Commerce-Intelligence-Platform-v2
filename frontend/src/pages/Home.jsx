@@ -30,7 +30,7 @@ export default function Home() {
   const features = useMemo(() => [
     {
       icon: "🚚",
-      title: "Free Shipping",
+      title: "Free Shipping for first payment",
       description: "On orders over $50",
       color: "bg-blue-50"
     },
@@ -143,17 +143,6 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-lg shadow-lg p-4 hidden lg:block">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">⭐</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold">4.9/5 Rating</div>
-                    <div className="text-sm text-gray-500">Based on 2,345 reviews</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -175,30 +164,116 @@ export default function Home() {
       </div>
 
       {/* Category Sections */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">Shop by Category</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories_list.map((category) => (
-            <Link 
-              key={category.name}
-              to={category.link}
-              className="group relative overflow-hidden rounded-2xl aspect-square"
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img 
-                src={category.image} 
-                alt={category.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                <h3 className="text-white text-2xl font-bold mb-2">{category.name}</h3>
-                <p className="text-white/90 text-sm mb-2">{category.description}</p>
-                <p className="text-white text-sm font-medium">Discover More →</p>
-              </div>
-            </Link>
-          ))}
+<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+  {/* Header with better mobile typography */}
+  <div className="mb-8 sm:mb-10 lg:mb-12">
+    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+      Shop by Category
+    </h2>
+    <p className="mt-2 text-sm sm:text-base text-gray-600">
+      Find your perfect style in our curated collections
+    </p>
+  </div>
+
+  {/* Responsive Grid - 1 col mobile, 2 col tablet, 4 col desktop */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+    {categories_list.map((category, index) => (
+      <Link 
+        key={category.name}
+        to={category.link}
+        className="group relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500"
+        style={{
+          // Dynamic aspect ratio based on screen size
+          aspectRatio: window.innerWidth < 640 ? '16/9' : window.innerWidth < 1024 ? '4/3' : '1/1'
+        }}
+      >
+        {/* Main gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
+        
+        {/* Colored hover overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+        
+        {/* Shine effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-20 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 -inset-full h-full w-1/2 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shine" />
         </div>
-      </div>
+
+        <img 
+          src={category.image} 
+          alt={category.name}
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-out"
+        />
+
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 lg:p-6 z-20">
+          {/* Category badge */}
+          <span className="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-medium mb-2 sm:mb-3">
+            {index === 0 ? '👔 New' : index === 1 ? '👗 Trending' : index === 2 ? '👶 Fresh' : '👜 Hot'}
+          </span>
+
+          <h3 className="text-white text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2 leading-tight">
+            {category.name}
+          </h3>
+
+          {/* Description - hidden on smallest screens */}
+          <p className="text-white/80 text-xs sm:text-sm mb-2 sm:mb-3 hidden xs:block">
+            {category.description}
+          </p>
+
+          {/* CTA with hover effect */}
+          <div className="flex items-center justify-between">
+            <p className="text-white text-xs sm:text-sm font-medium group-hover:translate-x-1 transition-transform duration-300 inline-flex items-center">
+              <span className="hidden sm:inline">Discover More</span>
+              <span className="sm:hidden">Shop Now</span>
+              <svg className="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </p>
+            
+            {/* Item count visible on desktop */}
+            <span className="hidden lg:flex items-center justify-center w-7 h-7 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-medium group-hover:scale-110 group-hover:rotate-180 transition-all duration-500">
+              {index + 1}
+            </span>
+          </div>
+        </div>
+
+        {/* Border reveal effect */}
+        <div className="absolute inset-2 sm:inset-3 border-2 border-white/0 group-hover:border-white/30 rounded-xl sm:rounded-2xl transition-all duration-500 z-30 pointer-events-none" />
+        
+        {/* Active state for touch devices */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 active:opacity-100 transition-opacity duration-150 z-30 pointer-events-none lg:hidden" />
+      </Link>
+    ))}
+  </div>
+
+  {/* Mobile quick scroll categories */}
+  <div className="flex lg:hidden gap-2 mt-6 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+    {categories_list.map((category, index) => (
+      <Link
+        key={index}
+        to={category.link}
+        className="flex-shrink-0 px-4 py-2.5 bg-gray-100 hover:bg-gray-900 hover:text-white rounded-full text-sm font-medium text-gray-700 transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md"
+      >
+        {category.name.split("'")[0]}
+      </Link>
+    ))}
+  </div>
+
+  {/* Bottom CTA */}
+  <div className="text-center mt-8 sm:mt-10">
+    <Link
+      to="/categories"
+      className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-2xl font-medium hover:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 group text-sm sm:text-base"
+    >
+      View All Categories
+      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </Link>
+  </div>
+</div>
+
 
       {/* Category Filters */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -35,7 +35,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "/login"
+    failureRedirect: "http://localhost:5173/login?error=oauth_failed"
   }),
   authController.oauthSuccess
 );
@@ -53,7 +53,7 @@ router.get(
   "/github/callback",
   passport.authenticate("github", {
     session: false,
-    failureRedirect: "/login"
+    failureRedirect: "http://localhost:5173/login?error=oauth_failed"
   }),
   authController.oauthSuccess
 );
@@ -69,7 +69,7 @@ router.get(
   "/linkedin/callback",
   passport.authenticate("linkedin", {
     session: false,
-    failureRedirect: "/login"
+    failureRedirect: "http://localhost:5173/login?error=oauth_failed"
   }),
   authController.oauthSuccess
 );

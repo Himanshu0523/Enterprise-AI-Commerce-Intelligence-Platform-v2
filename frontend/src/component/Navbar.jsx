@@ -22,7 +22,7 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-      </div>
+      </div> 
 
       {/* Main Navigation */}
       <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">

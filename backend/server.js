@@ -15,6 +15,8 @@ const productRoutes = require('./src/routes/product.routes');
 const orderRoutes = require('./src/routes/order.routes');
 const userRoutes = require('./src/routes/user.routes');
 const cartRoutes = require('./src/routes/cart.routes');
+const paymentRoutes = require('./src/routes/payment.routes');
+const sellerRoutes = require('./src/routes/seller.routes');
 
 const app = express();
 
@@ -31,6 +33,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/carts", cartRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/sellers", sellerRoutes);
 
 // Error Middleware (must be last)
 app.use(handleErrors);

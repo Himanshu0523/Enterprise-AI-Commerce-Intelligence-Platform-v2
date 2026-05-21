@@ -4,6 +4,21 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 // If you have a clearCart action, it should be imported here:
 import { setCart } from "../store/cartSlice";
+import API from "../services/api";
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+};
 
 export default function Checkout() {
   const { items } = useSelector((state) => state.cart || { items: [] });
@@ -34,27 +49,77 @@ export default function Checkout() {
     setShippingDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckoutSubmit = (e) => {
+  const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simulate payment processing and backend order creation
-    setTimeout(() => {
-      // Create order object to send to backend or pass via state
-      const newOrder = {
-        orderId: "ORD-" + Math.floor(100000 + Math.random() * 900000),
-        items: [...items],
-        shippingAddress: shippingDetails,
-        totalAmount: total,
-        date: new Date().toISOString()
-      };
-      
+    const res = await loadRazorpayScript();
+
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
       setIsProcessing(false);
-      // Clear cart (Simulated by empty array to setCart)
-      dispatch(setCart([]));
-      // Navigate to success page
-      navigate("/order-success", { state: { order: newOrder } });
-    }, 2000);
+      return;
+    }
+
+    try {
+      // 1. Create order on backend
+      const { data } = await API.post("/payment/create-order", {
+        items: items.map(item => ({
+            product_id: item.product_id || item._id, // Adapt to your item structure
+            quantity: item.quantity,
+            price: item.price
+        })),
+        total_price: total,
+        shippingAddress: shippingDetails
+      });
+
+      const { order, razorpayOrder } = data.data;
+
+      // 2. Setup Razorpay options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_placeholder",
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: "E-Commerce App",
+        description: "Test Transaction",
+        order_id: razorpayOrder.id,
+        handler: async function (response) {
+          try {
+            // 3. Verify payment on backend
+            const verifyRes = await API.post("/payment/verify-payment", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              order_id: order._id
+            });
+
+            if (verifyRes.data.success) {
+              dispatch(setCart([]));
+              navigate("/order-success", { state: { order: verifyRes.data.data } });
+            }
+          } catch (err) {
+            console.error("Payment verification failed", err);
+            alert("Payment verification failed!");
+          }
+        },
+        prefill: {
+          name: `${shippingDetails.firstName} ${shippingDetails.lastName}`,
+          email: user?.email || "",
+          contact: shippingDetails.phone
+        },
+        theme: {
+          color: "#111827"
+        }
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while processing the payment.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (!items || items.length === 0) {
@@ -133,42 +198,16 @@ export default function Checkout() {
                   <label className={`flex items-center p-5 border rounded-xl cursor-pointer transition ${paymentMethod === 'credit_card' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}`}>
                     <input type="radio" name="paymentMethod" value="credit_card" checked={paymentMethod === 'credit_card'} onChange={() => setPaymentMethod('credit_card')} className="w-4 h-4 text-gray-900 focus:ring-gray-900 border-gray-300" />
                     <span className="ml-4 flex-1">
-                      <span className="block text-sm font-medium text-gray-900">Credit / Debit Card</span>
-                      <span className="block text-sm text-gray-500">Secure card processing via Stripe</span>
+                      <span className="block text-sm font-medium text-gray-900">Razorpay (Cards, UPI, NetBanking)</span>
+                      <span className="block text-sm text-gray-500">Secure payment processing via Razorpay</span>
                     </span>
                     <div className="flex space-x-2">
                        <span className="text-xl">💳</span>
                     </div>
                   </label>
-
-                  {/* PayPal Option */}
-                  <label className={`flex items-center p-5 border rounded-xl cursor-pointer transition ${paymentMethod === 'paypal' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}`}>
-                    <input type="radio" name="paymentMethod" value="paypal" checked={paymentMethod === 'paypal'} onChange={() => setPaymentMethod('paypal')} className="w-4 h-4 text-gray-900 focus:ring-gray-900 border-gray-300" />
-                    <span className="ml-4 flex-1">
-                      <span className="block text-sm font-medium text-gray-900">PayPal</span>
-                      <span className="block text-sm text-gray-500">You will be redirected to PayPal</span>
-                    </span>
-                    <span className="text-blue-600 font-bold italic">PayPal</span>
-                  </label>
                 </div>
 
-                {/* Simulated Card Inputs if Credit Card Selected */}
-                {paymentMethod === 'credit_card' && (
-                  <div className="mt-6 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                      <input required type="text" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-gray-900 focus:border-gray-900 sm:text-sm" placeholder="0000 0000 0000 0000" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                      <input required type="text" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-gray-900 focus:border-gray-900 sm:text-sm" placeholder="MM/YY" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CVC</label>
-                      <input required type="text" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-gray-900 focus:border-gray-900 sm:text-sm" placeholder="123" />
-                    </div>
-                  </div>
-                )}
+                {/* Simulated Card Inputs Removed (handled by Razorpay modal) */}
               </div>
 
               <div className="flex justify-end pt-4">

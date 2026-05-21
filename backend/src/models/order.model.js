@@ -7,22 +7,35 @@ const orderItemSchema = new mongoose.Schema(
             ref : "Product",
             required: true
         },
+        
+        seller_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true
+        },
 
         quantity: {
             type: Number,
             required: true,
             min : 1
         },
+        
+        delivery_status: {
+            type: String,
+            enum: ["pending", "shipped", "delivered"],
+            default: "pending"
+        },
+        
+        payout_status: {
+            type: String,
+            enum: ["pending", "completed"],
+            default: "pending"
+        },
 
         price: {
             type: Number,
             required: true,
             min: 1
-        },
-
-        price: {
-            type: Number,
-            required: true
         }
     },{
         _id: false
@@ -45,8 +58,21 @@ const orderSchema = new mongoose.Schema(
 
         status: {
             type: String ,
-            enum: ["Pending" , "paid" , "shipped" , "delivered" , "cancelled"],
+            enum: ["pending" , "paid" , "shipped" , "delivered" , "cancelled", "failed", "created"],
             default: "pending"
+        },
+        
+        razorpay_order_id: {
+            type: String,
+            default: null
+        },
+        razorpay_payment_id: {
+            type: String,
+            default: null
+        },
+        razorpay_signature: {
+            type: String,
+            default: null
         },
 
         created_at: {

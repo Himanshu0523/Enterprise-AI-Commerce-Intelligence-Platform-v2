@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+const sendEmail = require("../config/mail");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -49,6 +49,14 @@ exports.registerUser = async (req, res) => {
     });
 
     const token = generateToken(user);
+
+    // Send verification email
+    try {
+      await exports.sendVerificationEmail(email, token);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+      // We still want to register the user even if the email fails
+    }
 
     const { password: _, ...safeUser } = user.toObject();
 
@@ -134,22 +142,13 @@ exports.oauthSuccess = (req, res) => {
 
   //  SEND VERIFICATION EMAIL
 exports.sendVerificationEmail = async (email, token) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
   const url = `http://localhost:5000/api/auth/verify/${token}`;
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Verify your email",
-    html: `<a href="${url}">Verify Email</a>`
-  });
+  await sendEmail(
+    email,
+    "Verify your email",
+    `<a href="${url}">Verify Email</a>`
+  );
 };
 
   //  FORGOT PASSWORD
@@ -173,22 +172,13 @@ exports.forgotPassword = async (req, res) => {
       { expiresIn: "15m" }
     );
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
     const url = `http://localhost:3000/reset-password/${token}`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Reset Password",
-      html: `<a href="${url}">Reset Password</a>`
-    });
+    await sendEmail(
+      email,
+      "Reset Password",
+      `<a href="${url}">Reset Password</a>`
+    );
 
     res.json({
       success: true,

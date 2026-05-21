@@ -16,6 +16,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import AuthSuccess from "./pages/AuthSuccess";
 import AdminDashboard from "./pages/AdminDashboard";
+import BecomeSeller from "./pages/BecomeSeller";
 
 // Components
 import ProtectedRoute from "./component/ProtectedRoute";
@@ -65,6 +66,7 @@ function App() {
         <Route path="/order-success" element={<Layout><ProtectedRoute><OrderSuccess /></ProtectedRoute></Layout>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/admin-dashboard" element={<Layout><AdminRouter><AdminDashboard /></AdminRouter></Layout>} />
+        <Route path="/become-seller" element={<Layout><ProtectedRoute><BecomeSeller /></ProtectedRoute></Layout>} />
 
         {/* Auth pages – full-screen split, no Navbar/Footer */}
         <Route path="/login" element={<Login />} />

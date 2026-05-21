@@ -35,8 +35,15 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["user", "admin"],
+            enum: ["user", "seller", "admin"],
             default: "user"
+        },
+        
+        sellerDetails: {
+            businessName: { type: String, trim: true },
+            bankAccountNumber: { type: String, trim: true },
+            ifscCode: { type: String, trim: true },
+            razorpayAccountId: { type: String, trim: true }
         },
 
         created_at: {
