@@ -2,8 +2,7 @@ import { useProducts } from "../hooks/useProducts";
 import RecommendationPanel from "../component/RecommendationPanel";
 import ProductList from "../component/ProductList";
 import { useSelector } from "react-redux";
-import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
 export default function Home() {
   const productsData = useProducts();
@@ -12,6 +11,40 @@ export default function Home() {
   const userId = user?.['_id'];
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
+  
+  // Slideshow state
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const autoPlayIntervalRef = useRef(null);
+  const slidesContainerRef = useRef(null);
+
+  // Slideshow data
+  const slidesData = useMemo(() => [
+    {
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "Timeless Elegance",
+      desc: "Discover our premium collection"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "Urban Collection",
+      desc: "Street style redefined"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "Minimalist Luxury",
+      desc: "Less is more"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "Seasonal Trends",
+      desc: "Fresh looks for every season"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "Artisan Craft",
+      desc: "Handcrafted with care"
+    }
+  ], []);
 
   useEffect(() => {
     if (products.length > 0) {
@@ -20,187 +53,181 @@ export default function Home() {
     }
   }, [products]);
 
-  const categories = [
+  const goToSlide = useCallback((index) => {
+    if (index < 0) index = slidesData.length - 1;
+    if (index >= slidesData.length) index = 0;
+    setCurrentSlide(index);
+    if (slidesContainerRef.current) {
+      const offset = -index * 100;
+      slidesContainerRef.current.style.transform = `translateX(${offset}%)`;
+    }
+  }, [slidesData.length]);
+
+  const nextSlide = useCallback(() => {
+    const nextIndex = currentSlide + 1;
+    goToSlide(nextIndex);
+  }, [currentSlide, goToSlide]);
+  
+  const prevSlide = useCallback(() => {
+    const prevIndex = currentSlide - 1;
+    goToSlide(prevIndex);
+  }, [currentSlide, goToSlide]);
+
+  const startAutoPlay = useCallback(() => {
+    if (autoPlayIntervalRef.current) {
+      clearInterval(autoPlayIntervalRef.current);
+      autoPlayIntervalRef.current = null;
+    }
+    
+    autoPlayIntervalRef.current = setInterval(() => {
+      setCurrentSlide((prevSlide) => {
+        const nextSlideIndex = (prevSlide + 1) % slidesData.length;
+        if (slidesContainerRef.current) {
+          const offset = -nextSlideIndex * 100;
+          slidesContainerRef.current.style.transform = `translateX(${offset}%)`;
+        }
+        return nextSlideIndex;
+      });
+    }, 5000);
+  }, [slidesData.length]);
+
+  const stopAutoPlay = useCallback(() => {
+    if (autoPlayIntervalRef.current) {
+      clearInterval(autoPlayIntervalRef.current);
+      autoPlayIntervalRef.current = null;
+    }
+  }, []);
+
+  // Sync slidesContainerRef transform when currentSlide changes
+  useEffect(() => {
+    if (slidesContainerRef.current) {
+      const offset = -currentSlide * 100;
+      slidesContainerRef.current.style.transform = `translateX(${offset}%)`;
+    }
+  }, [currentSlide]);
+
+  // Initialize slideshow
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startAutoPlay();
+    }, 0);
+    
+    return () => {
+      clearTimeout(timer);
+      stopAutoPlay();
+    };
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        stopAutoPlay();
+        prevSlide();
+        startAutoPlay();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        stopAutoPlay();
+        nextSlide();
+        startAutoPlay();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [stopAutoPlay, prevSlide, nextSlide, startAutoPlay]);
+
+  // Touch swipe support
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.changedTouches[0].screenX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    touchEndX.current = e.changedTouches[0].screenX;
+    const threshold = 50;
+    if (touchStartX.current - touchEndX.current > threshold) {
+      stopAutoPlay();
+      nextSlide();
+      startAutoPlay();
+    } else if (touchEndX.current - touchStartX.current > threshold) {
+      stopAutoPlay();
+      prevSlide();
+      startAutoPlay();
+    }
+  }, [stopAutoPlay, nextSlide, prevSlide, startAutoPlay]);
+
+  const categories = useMemo(() => [
     { id: "all", name: "All Products", count: products.length },
     { id: "new", name: "New Arrivals", count: products.filter(p => p.isNewProduct).length },
     { id: "featured", name: "Featured", count: products.filter(p => p.isFeatured).length },
     { id: "sale", name: "Sale", count: products.filter(p => p.isOnSale).length }
-  ];
-
-  const features = useMemo(() => [
-    {
-      icon: "🚚",
-      title: "Free Shipping",
-      description: "On orders over $50",
-      color: "bg-blue-50"
-    },
-    {
-      icon: "🔄",
-      title: "30-Day Returns",
-      description: "Hassle-free returns",
-      color: "bg-green-50"
-    },
-    {
-      icon: "💳",
-      title: "Secure Payment",
-      description: "100% secure transactions",
-      color: "bg-purple-50"
-    },
-    {
-      icon: "🎧",
-      title: "24/7 Support",
-      description: "Dedicated customer service",
-      color: "bg-orange-50"
-    }
-  ], []);
-
-  const testimonials = useMemo(() => [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      role: "Fashion Blogger",
-      content: "Exceptional quality and service. The attention to detail is remarkable.",
-      rating: 5,
-      avatar: "SJ"
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      role: "Business Executive",
-      content: "Fast delivery and premium products. Will definitely shop again.",
-      rating: 5,
-      avatar: "MC"
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      role: "Style Consultant",
-      content: "The collection is curated perfectly. Found exactly what I needed.",
-      rating: 5,
-      avatar: "ER"
-    }
-  ], []);
-
-  const categories_list = [
-    { name: "Men's Latest", image: "https://images.unsplash.com/photo-1617137968427-85924c800ebe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", link: "/products?category=men", description: "Lorem ipsum is simply dummy" },
-    { name: "Women's Latest", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", link: "/products?category=women", description: "Lorem ipsum is simply dummy" },
-    { name: "Kid's Latest", image: "https://images.unsplash.com/photo-1519457431-44ccd64a579b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", link: "/products?category=kids", description: "Lorem ipsum is simply dummy" },
-    { name: "Accessories", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", link: "/products?category=accessories", description: "Lorem ipsum is simply dummy" }
-  ];
-
+  ], [products]);
 
   return (
     <div className="bg-white">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-gray-50 to-gray-100 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-grid-gray-900/[0.02] bg-[size:50px_50px]"></div>
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-6">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                Summer Collection 2026
-              </div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Discover Your
-                <span className="block text-gray-600">Perfect Style</span>
-              </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Explore our curated collection of premium fashion pieces. 
-                Designed for those who appreciate quality, comfort, and timeless elegance.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link to="/products" className="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition transform hover:scale-105">
-                  Shop Now
-                </Link>
-                <Link to="/collections" className="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-                  View Collections
-                </Link>
-              </div>
-              <div className="flex items-center space-x-8 mt-8 pt-8 border-t border-gray-200">
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">15K+</div>
-                  <div className="text-sm text-gray-500">Happy Customers</div>
+      {/* Hero Section with Slideshow - Infinite Auto-Update */}
+      <div className="relative bg-gradient-to-r from-gray-900 to-gray-800 overflow-hidden">
+        <div className="relative h-[600px] lg:h-[700px] overflow-hidden">
+          <div 
+            ref={slidesContainerRef}
+            className="flex transition-transform duration-700 ease-out h-full"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            onMouseEnter={stopAutoPlay}
+            onMouseLeave={startAutoPlay}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {slidesData.map((slide, idx) => (
+              <div key={idx} className="flex-shrink-0 w-full h-full relative">
+                <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white z-10">
+                  <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 drop-shadow-lg">
+                    {slide.title}
+                  </h2>
+                  <p className="text-base md:text-xl text-gray-200 max-w-2xl drop-shadow">
+                    {slide.desc}
+                  </p>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">500+</div>
-                  <div className="text-sm text-gray-500">Products</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">50+</div>
-                  <div className="text-sm text-gray-500">Brands</div>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Hero"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-lg shadow-lg p-4 hidden lg:block">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">⭐</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold">4.9/5 Rating</div>
-                    <div className="text-sm text-gray-500">Based on 2,345 reviews</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="py-16 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <div key={index} className={`${feature.color} rounded-xl p-6 text-center hover:shadow-lg transition`}>
-                <div className="text-3xl mb-3">{feature.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
               </div>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Category Sections */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">Shop by Category</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories_list.map((category) => (
-            <Link 
-              key={category.name}
-              to={category.link}
-              className="group relative overflow-hidden rounded-2xl aspect-square"
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img 
-                src={category.image} 
-                alt={category.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+          
+          {/* Dots Indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+            {slidesData.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => { stopAutoPlay(); goToSlide(idx); startAutoPlay(); }}
+                className={`transition-all duration-300 rounded-full ${
+                  currentSlide === idx
+                    ? "w-8 h-2 bg-white"
+                    : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
               />
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                <h3 className="text-white text-2xl font-bold mb-2">{category.name}</h3>
-                <p className="text-white/90 text-sm mb-2">{category.description}</p>
-                <p className="text-white text-sm font-medium">Discover More →</p>
-              </div>
-            </Link>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Overlay Text */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+          <div className="text-center text-white px-4">
+            <h1 className="text-5xl md:text-7xl font-bold mb-4 drop-shadow-2xl">
+              Discover Your
+              <span className="block text-amber-400">Perfect Style</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto drop-shadow">
+              Explore our curated collection of premium fashion pieces.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Category Filters */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div>
@@ -226,7 +253,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Products Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {userId && (
           <div className="mb-12">
@@ -250,7 +276,7 @@ export default function Home() {
         ) : products.length > 0 ? (
           <ProductList products={products.filter(p => {
             if (activeCategory === "all") return true;
-            if (activeCategory === "new") return p.isNew;
+            if (activeCategory === "new") return p.isNewProduct;
             if (activeCategory === "featured") return p.isFeatured;
             if (activeCategory === "sale") return p.isOnSale;
             return true;
@@ -265,40 +291,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      {/* Testimonials Section */}
-      <div className="bg-gray-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">What Our Customers Say</h2>
-            <p className="text-gray-600 mt-2">Trusted by thousands of happy shoppers</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div className="flex items-center space-x-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4 leading-relaxed">"{testimonial.content}"</p>
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-medium">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">{testimonial.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 }

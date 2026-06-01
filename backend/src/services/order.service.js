@@ -65,3 +65,9 @@ exports.getUserOrders = async (userId) => {
     .populate("items.product_id");
 
 };
+
+exports.getAllOrders = async () => {
+  return await Order.find()
+    .populate("user_id", "name email")
+    .populate("items.product_id");
+};

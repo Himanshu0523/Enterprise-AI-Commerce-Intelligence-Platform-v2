@@ -24,15 +24,18 @@ export default function Dashboard() {
     const fetchUserData = async () => {
       try {
         // Fetch real orders from backend
-        const ordersRes = await getUserOrders(user._id);
+        const ordersRes = await getUserOrders();
         
         // Ensure standard UI parsing and fallback if backend data shape differs
-        const formattedOrders = (ordersRes.data || []).map(order => ({
+        // Axios wraps in .data, and our backend returns { data: [...] }
+        const ordersArray = ordersRes.data?.data || ordersRes.data || [];
+        
+        const formattedOrders = (Array.isArray(ordersArray) ? ordersArray : []).map(order => ({
             id: order._id || order.id,
             date: new Date(order.createdAt || Date.now()).toLocaleDateString(),
-            total: order.totalAmount || order.total || 0,
+            total: order.total_price || order.totalAmount || order.total || 0,
             status: order.status || "Processing",
-            items: order.orderItems?.length || 1
+            items: order.items?.length || order.orderItems?.length || 1
         }));
         setOrders(formattedOrders);
 

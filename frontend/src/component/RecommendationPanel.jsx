@@ -23,8 +23,8 @@ export default function RecommendationPanel({ userId }) {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {data.slice(0, 4).map((item) => (
-          <ProductCard key={item._id || Math.random()} product={item} />
+        {data.slice(0, 4).map((item, index) => (
+          <ProductCard key={item._id ?? item.id ?? index} product={item} />
         ))}
       </div>
     </div>

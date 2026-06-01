@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useToast } from "../context/ToastContext";
-import { motion, useAnimation, useInView, AnimatePresence } from "framer-motion";
+import { useToast } from "../context/useToast";
+import { motion, useAnimation, useInView, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
 
 export default function Contact() {
   const { addToast } = useToast();

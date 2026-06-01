@@ -74,7 +74,7 @@ export default function TopProducts({ products }) {
                 <div className="flex items-center justify-between mt-4 pb-1 border-b border-white/20">
                   <p className="text-gray-300 text-xs uppercase tracking-wider">Units Sold</p>
                   <p className="text-lg font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                    {p.sales || Math.floor(Math.random() * 300) + 50}
+                    {p.sales ?? 0}
                   </p>
                 </div>
               </div>

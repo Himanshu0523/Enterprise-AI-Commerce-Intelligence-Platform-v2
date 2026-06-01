@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProduct } from "../services/productService";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "../context/useToast";
 import ProductSkeleton from "../component/ProductSkeleton";
 
 export default function ProductPage() {

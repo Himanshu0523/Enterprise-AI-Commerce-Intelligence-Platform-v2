@@ -63,7 +63,7 @@ function App() {
         <Route path="/cart" element={<Layout><ProtectedRoute><Cart /></ProtectedRoute></Layout>} />
         <Route path="/checkout" element={<Layout><ProtectedRoute><Checkout /></ProtectedRoute></Layout>} />
         <Route path="/order-success" element={<Layout><ProtectedRoute><OrderSuccess /></ProtectedRoute></Layout>} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<Layout><ProtectedRoute><Dashboard /></ProtectedRoute></Layout>} />
         <Route path="/admin-dashboard" element={<Layout><AdminRouter><AdminDashboard /></AdminRouter></Layout>} />
 
         {/* Auth pages – full-screen split, no Navbar/Footer */}
