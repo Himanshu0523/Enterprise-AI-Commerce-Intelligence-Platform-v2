@@ -43,3 +43,42 @@ The glue between the operational and analytical layers. It uses ETL (Extract, Tr
 
 1.  **Horizontal Scaling:** Each microservice (Backend, ML, Pipeline) can be independently containerized (Docker) and scaled across multiple instances.
 2.  **State Management:** By using Redux on the Frontend and JWT sessions, the application remains stateless and ready for load balancing.
+
+
+┌─────────────────────────────────────────────────────────┐
+│                     Client Layer                        │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │  Buyer View  │  │ Seller A View│  │ Seller B View│   │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
+└─────────┼──────────────────┼────────────────┼──────────
+          │                  │                │
+┌─────────┼──────────────────┼────────────────┼──────────┐
+│         │         API Gateway Layer            │          │
+│  ┌──────┴────────────────────────────────────┴──────┐    │ 
+│  │         Authentication & Authorization           │    │  
+│  │  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │    │ 
+│  │  │ JWT Verify  │  │ Role Check  │  │ Ownership  │ │    │  
+│  │  └─────────────┘  └─────────────┘  └────────────┘ │    │  
+│  └───────────────────────────────────────────────────┘    │  
+└───────────────────────┬──────────────────────────────────┘
+                        │
+┌───────────────────────┼────────────────────────────────┐
+│              Business Logic Layer                      │
+│  ┌────────────────────┴───────────────────────────┐    │
+│  │           Product Controller                   │    │
+│  │  • Create (auto-assign seller)                 │    │
+│  │  • Update (verify ownership)                   │    │
+│  │  • Delete (verify ownership)                   │    │
+│  │  • Get My Products (seller filter)             │    │
+│  └────────────────────────────────────────────────┘    │
+└───────────────────────┬────────────────────────────────┘
+                        │
+┌───────────────────────┼─────────────────────────────────┐
+│                   Data Layer                            │
+│  ┌────────────────────┴────────────────────────────┐    │
+│  │              MongoDB (Products Collection)      │    │
+│  │  • seller: ObjectId (indexed)                   │    │
+│  │  • createdBy: ObjectId                          │    │
+│  │  • sellerName: String (denormalized)            │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘

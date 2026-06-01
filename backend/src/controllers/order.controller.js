@@ -58,3 +58,26 @@ exports.getUserOrders = async (req, res) => {
   }
 
 };
+
+/*
+Get All Orders (Admin)
+GET /api/admin/orders
+*/
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await orderService.getAllOrders();
+
+    res.json({
+      success: true,
+      count: orders.length,
+      data: orders
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

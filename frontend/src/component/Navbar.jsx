@@ -1,9 +1,20 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from 'react-router-dom';
 
 export default function Navbar() {
   const user = useSelector((state) => state.auth?.user);
   const cartItemCount = useSelector((state) => state.cart?.items?.length || 0);
+  const [activeLink, setActiveLink] = useState('/');
+
+  const navItems = [
+    { path: '/', label: 'Home' },
+    { path: '/products', label: 'Products' },
+    ...(user?.role === 'admin' || user?.role === 'superadmin' ? [{ path: '/admin-dashboard', label: 'Admin' }] : []),
+    ...(user ? [{ path: '/dashboard', label: 'Dashboard' }] : []),
+    { path: '/about', label: 'About' },
+    { path: '/contact', label: 'Contact' },
+  ];
 
   return (
     <>
@@ -32,20 +43,30 @@ export default function Navbar() {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-gradient-to-r from-gray-900 to-gray-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">H</span>
+                <span className="text-white font-bold text-xl">S</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">HexaShop</span>
+              <span className="text-2xl font-bold text-gray-900">SmartBazaar</span>
             </Link>
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link to="/" className="text-gray-900 font-medium hover:text-gray-600 transition">Home</Link>
-              <Link to="/products" className="text-gray-600 hover:text-gray-900 transition">Products</Link>
-              {user?.role === "admin" && (<Link to='/admin-dashboard' className="text-gray-600 hover:text-gray-900 transition">Admin</Link>)}
-              {user && <Link to="/dashboard" className="text-gray-600 hover:text-gray-900 transition">Dashboard</Link>}
-              <Link to="/about" className="text-gray-600 hover:text-gray-900 transition">About</Link>
-              <Link to="/contact" className="text-gray-600 hover:text-gray-900 transition">Contact</Link>
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setActiveLink(item.path)}
+                  className={`relative text-gray-600 hover:text-gray-900 transition group ${activeLink === item.path ? 'text-gray-900 font-medium' : ''
+                    }`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-gray-900 transition-all duration-300 
+              ${activeLink === item.path ? 'w-full' : 'w-0 group-hover:w-full'}`}
+                  ></span>
+                </Link>
+              ))}
             </div>
+
 
             {/* User Actions */}
             <div className="flex items-center space-x-4">

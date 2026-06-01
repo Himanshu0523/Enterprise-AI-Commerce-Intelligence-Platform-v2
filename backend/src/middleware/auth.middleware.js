@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user.model");
 
 /*
 AUTHENTICATION MIDDLEWARE
 Protect routes using JWT
 */
 
-exports.authenticate = (req, res, next) => {
+exports.authenticate = async (req, res, next) => {
 
   const authHeader = req.headers.authorization;
 
@@ -21,7 +22,14 @@ exports.authenticate = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        message: "Unauthorized. User no longer exists"
+      });
+    }
+
+    req.user = user;
 
     next();
 

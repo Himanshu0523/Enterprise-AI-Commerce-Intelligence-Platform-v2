@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useProducts } from "../hooks/useProducts";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "../context/useToast";
 
 export default function Products() {
   const products = useProducts();
@@ -36,7 +36,7 @@ export default function Products() {
 
   // Search via backend when query changes (debounced)
   useEffect(() => {
-    if (!searchQuery.trim()) return; // fall through to normal filter
+    if (!searchQuery.trim()) return;
     clearTimeout(searchTimer.current);
     setIsSearching(true);
     searchTimer.current = setTimeout(async () => {
@@ -46,10 +46,15 @@ export default function Products() {
         if (json.success) {
           setFilteredProducts(json.data);
         }
-      } catch {
+      } catch (error) {
+        console.error("Search failed:", error);
         // Fallback to client-side filter if backend unreachable
         const regex = new RegExp(searchQuery, "i");
-        setFilteredProducts(products.filter(p => regex.test(p.name) || regex.test(p.category) || regex.test(p.description)));
+        setFilteredProducts(products.filter(p => 
+          regex.test(p.name) || 
+          regex.test(p.category?.name || p.category) || 
+          regex.test(p.description)
+        ));
       } finally {
         setIsSearching(false);
         setLoading(false);
@@ -58,38 +63,23 @@ export default function Products() {
     return () => clearTimeout(searchTimer.current);
   }, [searchQuery, products]);
 
-  // Simulated fetch and URL syncing
+  // URL category sync and filtering
   useEffect(() => {
     const queryCat = searchParams.get("category");
     if (queryCat) {
       const properCat = queryCat.charAt(0).toUpperCase() + queryCat.slice(1);
-      setFilters(prev => prev.categories.includes(properCat) ? prev : { ...prev, categories: [properCat] });
+      setFilters(prev => 
+        prev.categories.includes(properCat) 
+          ? prev 
+          : { ...prev, categories: [properCat] }
+      );
     }
 
     if (products.length > 0) {
       applyFiltersAndSort(products);
       setLoading(false);
     } else {
-      // Fallback dummy products if the backend array is empty during testing
-      const fbkImages = [
-        "https://images.unsplash.com/photo-1591047139829-e9aab0a5352b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-        "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-        "https://images.unsplash.com/photo-1591047139396-8575a6c3f66a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-      ];
-      
-      const dummyProducts = Array(12).fill().map((_, i) => ({
-        _id: `prod_${i}`,
-        name: `Premium Item ${i + 1}`,
-        price: Math.floor(Math.random() * (300 - 20) + 20),
-        category: categoriesList[i % 5],
-        image: fbkImages[i % fbkImages.length],
-        isNew: i % 3 === 0,
-        isOnSale: i % 4 === 0,
-        isFeatured: i % 5 === 0
-      }));
-      applyFiltersAndSort(dummyProducts);
-      setLoading(false);
+      setLoading(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products, filters, sortBy, searchParams]);
@@ -112,12 +102,21 @@ export default function Products() {
     }
 
     // Filter by Price
-    result = result.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
+    result = result.filter(p => 
+      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+    );
+
+    // Filter by Colors (if implemented in backend)
+    if (filters.colors.length > 0) {
+      result = result.filter(p => 
+        p.colors && p.colors.some(c => filters.colors.includes(c))
+      );
+    }
 
     // Sort
     if (sortBy === "price_asc") result.sort((a, b) => a.price - b.price);
     if (sortBy === "price_desc") result.sort((a, b) => b.price - a.price);
-    if (sortBy === "newest") result.sort((a, b) => b._id > a._id ? -1 : 1); // Mock sorting
+    if (sortBy === "newest") result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     setFilteredProducts(result);
   };
@@ -144,7 +143,6 @@ export default function Products() {
   };
 
   const handleAddToCartRapid = (product) => {
-    // Dispatch Redux action goes here
     addToast(`${product.name} added to cart`, "success");
   };
 
@@ -338,7 +336,7 @@ export default function Products() {
                    </svg>
                 </div>
                 <h3 className="text-2xl font-black text-gray-900 mb-2">No Matches Found</h3>
-                <p className="text-gray-500 max-w-sm mx-auto mb-8 leading-relaxed">We scavenged the vault but couldn't locate pieces matching your precise parameters.</p>
+                <p className="text-gray-500 max-w-sm mx-auto mb-8 leading-relaxed">We couldn't locate pieces matching your parameters.</p>
                 <button 
                   onClick={() => setFilters({ categories: [], priceRange: [0, 1000], colors: [] })}
                   className="inline-flex items-center px-8 py-4 border border-transparent text-sm font-bold uppercase tracking-widest rounded-xl text-white bg-gray-900 hover:bg-black transition-all transform hover:-translate-y-1 shadow-lg"

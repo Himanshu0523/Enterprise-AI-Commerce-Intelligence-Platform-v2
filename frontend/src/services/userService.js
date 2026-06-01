@@ -12,6 +12,20 @@ export const getUser = (id) =>
 export const updateUser = (id, data) =>
   API.put(`/users/${id}`, data);
 
+// Update user role (admin)
+export const updateUserRole = (id, role) =>
+  API.put(`/users/${id}/role`, { role });
+
 // Delete user
 export const deleteUser = (id) =>
   API.delete(`/users/${id}`);
+
+export const getAllUser = (id) => {
+  try {
+    const res = API.get(`/users/`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching users", error);
+    throw error;
+  }
+};

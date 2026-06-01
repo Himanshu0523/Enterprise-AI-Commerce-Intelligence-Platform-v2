@@ -52,7 +52,7 @@ export default function Login() {
                     <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
                         <span className="text-gray-900 font-bold text-xl">H</span>
                     </div>
-                    <span className="text-2xl font-bold text-white tracking-wide">HexaShop</span>
+                    <span className="text-2xl font-bold text-white tracking-wide">SmartBazer</span>
                 </Link>
             </div>
 
