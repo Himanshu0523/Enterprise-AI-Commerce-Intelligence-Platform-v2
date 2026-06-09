@@ -1,0 +1,428 @@
+# AGENT SERVICE (AGENTIC AI LAYER)
+
+## PURPOSE
+
+The Agent Service is the intelligence layer of the platform.
+
+Instead of sending user queries directly to a recommendation engine, the system uses multiple AI agents that collaborate to understand the request, gather information, make decisions, and generate personalized responses.
+
+Architecture:
+
+User Query
+    ↓
+Planner Agent
+    ↓
+Specialized Agents
+    ↓
+Final Response
+
+Example Query:
+
+"Find a gaming laptop under ₹80,000 with RTX graphics and good battery life."
+
+====================================================
+
+1. CUSTOMER AGENT
+   ====================================================
+
+File:
+customer_agent.py
+
+## Purpose:
+Acts as the first AI agent in the workflow.
+Responsible for understanding user intent and converting natural language into structured data.
+
+## Input:
+{
+"query": "gaming laptop under 80000"
+}
+
+## Responsibilities:
+1. Intent Detection
+   * Understand what the customer wants.
+
+2. Entity Extraction
+
+   * Product category
+   * Brand names
+   * Specifications
+
+3. Constraint Extraction
+
+   * Budget
+   * Color
+   * Screen size
+   * GPU requirements
+
+4. Preference Identification
+
+   * Battery life
+   * Performance
+   * Gaming
+   * Portability
+
+5. Query Structuring
+
+   * Convert human language into machine-readable format.
+
+## Output:
+
+{
+"budget": 80000,
+"category": "laptop",
+"gpu": "rtx",
+"battery": true
+}
+
+## Technology:
+
+LLM:
+
+* Llama 3
+
+Framework:
+
+* LangGraph
+
+State Management:
+
+* LangGraph State
+
+## Why Needed:
+
+Without this agent every downstream service receives raw text.
+
+This agent creates clean structured context for all other agents.
+
+====================================================
+2. RECOMMENDATION AGENT
+=======================
+
+File:
+recommendation_agent.py
+
+## Purpose:
+
+Find the best products for the user.
+
+## Input:
+
+{
+"user_id": "123",
+"budget": 80000,
+"gpu": "rtx"
+}
+
+## Responsibilities:
+
+1. Product Retrieval
+
+   Search:
+
+   * Product Catalog
+   * Vector Database
+   * Recommendation Engine
+
+2. Personalization
+
+   Analyze:
+
+   * User history
+   * Purchase behavior
+   * Click patterns
+
+3. Product Ranking
+
+   Score products based on:
+
+   * Relevance
+   * Quality
+   * User preferences
+
+4. Similar Product Discovery
+
+5. RAG Retrieval
+
+   Fetch:
+
+   * Product descriptions
+   * Features
+   * Specifications
+
+## Output:
+
+[
+{
+"product": "ASUS TUF",
+"score": 0.94
+}
+]
+
+## Technologies:
+
+Machine Learning:
+
+* Matrix Factorization
+
+Embeddings:
+
+* User Embeddings
+* Product Embeddings
+
+Vector Search:
+
+* FAISS
+* Pinecone
+* Weaviate
+
+RAG:
+
+* Retrieval Augmented Generation
+
+## Why Needed:
+
+Provides personalized recommendations instead of generic search results.
+
+====================================================
+3. PRICING AGENT
+================
+
+File:
+pricing_agent.py
+
+## Purpose:
+
+Provides real-time pricing intelligence.
+
+## Responsibilities:
+
+1. Fetch Current Price
+
+2. Calculate Discounts
+
+3. Predict Future Price
+
+4. Dynamic Pricing Analysis
+
+5. Competitor Price Comparison
+
+## Output:
+
+{
+"original": 85000,
+"discount": 7000,
+"final": 78000
+}
+
+## Technology:
+
+Machine Learning:
+
+* XGBoost
+
+Services:
+
+* Pricing Service
+* Promotion Service
+
+Data Sources:
+
+* Historical Sales
+* Market Trends
+
+## Why Needed:
+
+Ensures users see accurate and competitive pricing.
+
+====================================================
+4. INVENTORY AGENT
+==================
+
+File:
+inventory_agent.py
+
+## Purpose:
+
+Handles stock availability intelligence.
+
+## Responsibilities:
+
+1. Check Current Stock
+
+2. Warehouse Availability
+
+3. Predict Stockout
+
+4. Restock Forecasting
+
+5. Inventory Risk Detection
+
+## Output:
+
+{
+"available": true,
+"days_until_stockout": 6
+}
+
+## Technology:
+
+Forecasting Models:
+
+* Prophet
+* ARIMA
+* LSTM
+
+Services:
+
+* Inventory Service
+* Warehouse Service
+
+## Why Needed:
+
+Prevents recommending unavailable products.
+
+====================================================
+5. MARKETING AGENT
+==================
+
+File:
+marketing_agent.py
+
+## Purpose:
+
+Creates personalized marketing content.
+
+## Responsibilities:
+
+1. Generate Offers
+
+2. Generate Coupons
+
+3. Generate Email Campaigns
+
+4. Upselling
+
+5. Cross-Selling
+
+6. Personalized Promotions
+
+## Example:
+
+Special Offer:
+Extra 10% Off
+
+## Technology:
+
+LLM:
+
+* Llama 3
+* GPT Models
+
+Services:
+
+* Campaign Service
+* Coupon Service
+
+## Why Needed:
+
+Increases conversion rate and customer engagement.
+
+====================================================
+6. SHOPPING WORKFLOW
+====================
+
+File:
+shopping_workflow.py
+
+## Purpose:
+
+Coordinates all agents using LangGraph.
+
+## Workflow:
+
+Customer Agent
+↓
+Recommendation Agent
+↓
+Pricing Agent
+↓
+Inventory Agent
+↓
+Marketing Agent
+↓
+Final Response
+
+## Example Flow:
+
+Step 1:
+User asks for gaming laptop.
+
+Step 2:
+Customer Agent extracts requirements.
+
+Step 3:
+Recommendation Agent finds matching products.
+
+Step 4:
+Pricing Agent calculates discounts.
+
+Step 5:
+Inventory Agent verifies stock.
+
+Step 6:
+Marketing Agent generates offers.
+
+Step 7:
+System produces final recommendation.
+
+====================================================
+FINAL RESPONSE EXAMPLE
+======================
+
+Recommended Product:
+ASUS TUF Gaming F15
+
+Recommendation Score:
+94%
+
+Price:
+₹78,000
+
+Discount:
+₹7,000
+
+Stock:
+Available
+
+Stockout Prediction:
+6 Days
+
+Special Offer:
+Extra 10% Off
+
+Reason:
+Best RTX gaming laptop under ₹80,000 with strong battery life and high performance.
+
+====================================================
+BUSINESS BENEFITS
+=================
+
+1. Personalized Shopping Experience
+
+2. Better Product Discovery
+
+3. Increased Conversion Rate
+
+4. Reduced Stock Issues
+
+5. Smarter Pricing
+
+6. Automated Marketing
+
+7. Higher Customer Satisfaction
+
+8. Scalable Agent-Based Architecture
+
+9. Real-Time Decision Making
+
+10. Enterprise-Grade AI Shopping Assistant

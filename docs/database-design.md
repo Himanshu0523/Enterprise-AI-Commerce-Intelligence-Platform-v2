@@ -1,446 +1,619 @@
-# System Design Document
 
-## 1. High Level Architecture
+# Database Design
 
-System architecture consists of four main layers.
-
-Client Layer
-API Layer
-Data Layer
-AI Layer
+# AI-Powered E-Commerce Intelligence Platform
 
 ---
 
-Application Layer
-      │
-      ▼
-MongoDB (Operational DB)
-      │
-      ▼
-ETL Pipeline
-      │
-      ▼
-MySQL (Analytics DB)
-      │
-      ▼
-Python ML Service
+# 1. Database Architecture Overview
+
+The platform follows a Polyglot Persistence Architecture where different databases are used for different workloads.
+
+```text
+                    ┌─────────────────┐
+                    │   Frontend UI   │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Backend API     │
+                    │ Node.js         │
+                    └────────┬────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+        ▼                    ▼                    ▼
+
+ ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+ │ MongoDB     │     │ Qdrant      │     │ Kafka       │
+ │ Operational │     │ Vector DB   │     │ Events      │
+ └──────┬──────┘     └──────┬──────┘     └──────┬──────┘
+        │                   │                   │
+        │                   │                   │
+        ▼                   ▼                   ▼
+
+ ┌─────────────────────────────────────────────┐
+ │            Data Pipeline (ETL)              │
+ └───────────────────┬─────────────────────────┘
+                     │
+                     ▼
+
+           ┌──────────────────────┐
+           │ MySQL Warehouse      │
+           │ Analytics Database   │
+           └──────────┬───────────┘
+                      │
+                      ▼
+
+          ┌───────────────────────────┐
+          │ AI & ML Services          │
+          │ Recommendation            │
+          │ Forecasting               │
+          │ Pricing                   │
+          │ Fraud Detection           │
+          └───────────────────────────┘
+```
 
 ---
 
-## 2. Architecture Components
+# 2. Database Responsibilities
 
-### 2.1 Frontend
-
-Technology:
-
-React
-
-Responsibilities:
-
-* user interface
-* dashboards
-* product catalog
-* analytics charts
-
+| Database | Purpose                  |
+| -------- | ------------------------ |
+| MongoDB  | Operational transactions |
+| MySQL    | Analytics and reporting  |
+| Qdrant   | Semantic search and RAG  |
+| Kafka    | Event streaming          |
 
 ---
 
-### 2.2 Backend API
+# 3. MongoDB Database Design
 
-Technology:
+MongoDB stores real-time operational data.
 
-Node.js + Express
+Database:
 
-Responsibilities:
+```text
+ecommerce_db
+```
 
-* authentication
-* product APIs
-* order APIs
-* analytics queries
-* integration with ML service
+Collections:
 
----
-
-### 2.3 Operational Database
-
-Technology:
-
-MongoDB
-
-Stores:
-
-* users
-* products
-* orders
-* cart
-* sessions
-
-Optimized for:
-
-* fast writes
-* flexible schema
+```text
+users
+products
+orders
+carts
+events
+reviews
+inventory
+payments
+```
 
 ---
 
-### 2.4 Analytics Database
+# 3.1 Users Collection
 
-Technology:
+Purpose:
 
-MySQL
+Stores customer and admin accounts.
 
-Stores:
-
-* order metrics
-* customer analytics
-* product statistics
-
-Used for:
-
-* reporting
-* advanced SQL queries
-* ML feature engineering
-
----
-
-### 2.5 ML Service
-
-Technology:
-
-Python + FastAPI
-
-Provides:
-
-* recommendation engine
-* customer clustering
-* demand forecasting
-
----
-
-## 3. Data Flow
-
-### Order Processing Flow
-
-1. Customer places order
-2. API stores order in MongoDB
-3. ETL job moves data to MySQL
-4. Analytics queries update dashboards
-
----
-
-### Recommendation Flow
-
-1. User opens product page
-2. Backend calls ML service
-3. ML model fetches data from MySQL
-4. Model returns recommended products
-
----
-
-## 4. Scalability Design
-
-Strategies:
-
-* caching with Redis
-* MySQL read replicas
-* MongoDB sharding
-* asynchronous jobs
-
----
-
-## 5. Fault Tolerance
-
-System reliability methods:
-
-* retry mechanisms
-* background job queue
-* database backups
-* circuit breaker patterns
-
-
-
-MongoDB  Database Design -
-    user activity and Transactions:-
-        Collections:
-            users
-            products
-            orders
-            carts
-            events
-            reviews
-
-
-
-
-2.1 Users Collection
-
-Purpose
-Stores user account information.
-
-Example document:
-
+```json
 {
-  _id: ObjectId,
-  name: "John Doe",
-  email: "john@example.com",
-  password_hash: "hashed_password",
-  role: "customer",
-  created_at: Date,
-  last_login: Date
+  "_id": "ObjectId",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password_hash": "...",
+  "role": "customer",
+  "created_at": "Date",
+  "last_login": "Date"
 }
+```
 
 Indexes:
 
-email (unique)
+```text
+email (Unique)
 created_at
+role
+```
 
+---
 
-2.2 Products Collection
+# 3.2 Products Collection
 
-Purpose
-Stores product catalog.
+Purpose:
 
-Example:
+Stores product catalog information.
 
+```json
 {
-  _id: ObjectId,
-  name: "Wireless Mouse",
-  category: "Electronics",
-  price: 799,
-  stock: 120,
-  description: "...",
-  created_at: Date,
-  updated_at: Date
+  "_id": "ObjectId",
+  "name": "Wireless Mouse",
+  "category": "Electronics",
+  "price": 799,
+  "stock": 120,
+  "description": "...",
+  "image_url": "...",
+  "created_at": "Date",
+  "updated_at": "Date"
 }
+```
 
 Indexes:
 
+```text
 category
 price
 created_at
+stock
+```
 
+---
 
-2.3 Orders Collection
+# 3.3 Orders Collection
 
-Purpose
-Stores customer orders.
+Purpose:
 
-Example:
+Stores customer purchases.
 
+```json
 {
-  _id: ObjectId,
-  user_id: ObjectId,
-  items: [
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "items": [
     {
-      product_id: ObjectId,
-      quantity: 2,
-      price: 799
+      "product_id": "ObjectId",
+      "quantity": 2,
+      "price": 799
     }
   ],
-  total_price: 1598,
-  status: "completed",
-  created_at: Date
+  "total_price": 1598,
+  "status": "completed",
+  "created_at": "Date"
 }
+```
 
 Indexes:
 
+```text
 user_id
-created_at
 status
+created_at
+```
 
+---
 
-2.4 Cart Collection
+# 3.4 Cart Collection
 
-Stores temporary cart items.
+Purpose:
 
-Example:
+Stores temporary shopping cart data.
 
+```json
 {
-  _id: ObjectId,
-  user_id: ObjectId,
-  items: [
-     { product_id, quantity }
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "items": [
+    {
+      "product_id": "ObjectId",
+      "quantity": 1
+    }
   ],
-  updated_at: Date
+  "updated_at": "Date"
 }
+```
 
+Indexes:
 
+```text
+user_id
+updated_at
+```
 
-2.5 Events Collection
+---
 
-Tracks user behavior for analytics.
+# 3.5 Reviews Collection
 
-Example:
+Purpose:
 
+Stores product reviews.
+
+```json
 {
-  _id: ObjectId,
-  user_id: ObjectId,
-  product_id: ObjectId,
-  event_type: "view",
-  timestamp: Date
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "product_id": "ObjectId",
+  "rating": 5,
+  "review": "Excellent product",
+  "created_at": "Date"
 }
+```
 
-Event types:
+Indexes:
 
+```text
+product_id
+user_id
+rating
+```
+
+---
+
+# 3.6 Events Collection
+
+Purpose:
+
+Tracks customer behavior.
+
+```json
+{
+  "_id": "ObjectId",
+  "user_id": "ObjectId",
+  "product_id": "ObjectId",
+  "event_type": "view",
+  "timestamp": "Date"
+}
+```
+
+Event Types:
+
+```text
 view
+click
+search
 add_to_cart
 purchase
-click
+wishlist
+```
 
 Indexes:
 
+```text
 user_id
 product_id
 timestamp
+event_type
+```
 
-These events feed the analytics database.
+---
 
+# 3.7 Inventory Collection
 
-3. MySQL Database Design (Analytics)
+Purpose:
 
-MySQL stores structured tables optimized for SQL analysis.
+Tracks stock movement.
 
-Tables:
+```json
+{
+  "_id": "ObjectId",
+  "product_id": "ObjectId",
+  "available_stock": 120,
+  "reserved_stock": 10,
+  "updated_at": "Date"
+}
+```
 
-dim_users
-dim_products
-fact_orders
-fact_order_items
+Indexes:
+
+```text
+product_id
+updated_at
+```
+
+---
+
+# 4. MySQL Warehouse Design
+
+Purpose:
+
+Business Intelligence and Machine Learning.
+
+Architecture:
+
+```text
+                 dim_users
+                      │
+                      │
+                      ▼
+
+dim_products ─── fact_orders ─── fact_order_items
+      │                │
+      │                │
+      ▼                ▼
+
+product_metrics   customer_metrics
+
+      │
+      ▼
+
 fact_events
-customer_metrics
-product_metrics
+```
 
-This follows a data warehouse star schema.
+---
 
+# 4.1 Dimension Tables
 
-3.1 Users Dimension Table
-dim_users
+## dim_users
+
+Stores customer dimensions.
 
 Columns:
 
+```text
 user_id (PK)
 name
 email
-created_at
 country
+created_at
+```
 
-Purpose
-Used for customer analytics.
+---
 
+## dim_products
 
-3.2 Products Dimension Table
-dim_products
+Stores product dimensions.
 
 Columns:
 
+```text
 product_id (PK)
 name
 category
 price
 created_at
+```
 
 Indexes:
 
+```text
 category
 price
+```
 
+---
 
-3.3 Orders Fact Table
-fact_orders
+# 4.2 Fact Tables
+
+## fact_orders
 
 Columns:
 
+```text
 order_id (PK)
 user_id (FK)
 total_price
 status
 created_at
+```
 
 Indexes:
 
+```text
 user_id
 created_at
+```
 
+---
 
-3.4 Order Items Fact Table
-fact_order_items
+## fact_order_items
 
 Columns:
 
+```text
 id (PK)
 order_id (FK)
 product_id (FK)
 quantity
 price
+```
 
 Indexes:
 
-product_id
+```text
 order_id
+product_id
+```
 
+---
 
-3.5 Events Fact Table
-fact_events
+## fact_events
 
 Columns:
 
-event_id
+```text
+event_id (PK)
 user_id
 product_id
 event_type
 timestamp
+```
 
 Indexes:
 
+```text
 user_id
 product_id
 timestamp
+```
 
+---
 
+# 5. Analytics Tables
 
-3.5 Events Fact Table
-fact_events
+## customer_metrics
+
+Purpose:
+
+Customer segmentation and recommendation.
 
 Columns:
 
-event_id
-user_id
-product_id
-event_type
-timestamp
-
-Indexes:
-
-user_id
-product_id
-timestamp
-
-
-3.6 Customer Metrics Table
-
-Stores aggregated analytics.
-
-customer_metrics
-
-Columns:
-
+```text
 user_id
 total_orders
 total_spent
-avg_order_value
+average_order_value
 last_purchase_date
+customer_lifetime_value
+```
 
-Used for customer segmentation ML.
+Used By:
 
+* Recommendation Engine
+* Marketing Agent
+* Segmentation Models
 
-3.7 Product Metrics Table
-product_metrics
+---
+
+## product_metrics
+
+Purpose:
+
+Product analytics.
 
 Columns:
 
+```text
 product_id
 total_sales
 total_revenue
 total_views
 conversion_rate
+average_rating
+```
 
-Used for recommendation system.
+Used By:
+
+* Recommendation Engine
+* Pricing Service
+* Analytics Dashboard
+
+---
+
+# 6. Vector Database Design
+
+Database:
+
+```text
+Qdrant
+```
+
+Collections:
+
+```text
+product_embeddings
+review_embeddings
+faq_embeddings
+policy_embeddings
+```
+
+Purpose:
+
+* Semantic search
+* RAG retrieval
+* AI assistant
+* Product recommendations
+* Visual search
+
+---
+
+# 7. Data Flow
+
+## Order Flow
+
+```text
+Customer
+    │
+    ▼
+Backend API
+    │
+    ▼
+MongoDB (Orders)
+    │
+    ▼
+Kafka Event
+    │
+    ▼
+ETL Pipeline
+    │
+    ▼
+MySQL Warehouse
+```
+
+---
+
+## Recommendation Flow
+
+```text
+Customer
+    │
+    ▼
+Product Page
+    │
+    ▼
+Backend API
+    │
+    ▼
+Recommendation Service
+    │
+    ▼
+MySQL Metrics + MongoDB Data
+    │
+    ▼
+Recommended Products
+```
+
+---
+
+## RAG Flow
+
+```text
+Products
+Reviews
+FAQs
+Policies
+      │
+      ▼
+Chunking
+      │
+      ▼
+Embeddings
+      │
+      ▼
+Qdrant
+      │
+      ▼
+Retriever
+      │
+      ▼
+LLM Response
+```
+
+---
+
+# 8. Scalability Strategy
+
+MongoDB:
+
+* Sharding
+* Replica Sets
+
+MySQL:
+
+* Read Replicas
+* Partitioning
+
+Qdrant:
+
+* Distributed Collections
+
+Kafka:
+
+* Topic Partitioning
+
+Caching:
+
+* Redis
+
+This architecture supports high transaction throughput while enabling advanced analytics, machine learning, and AI-powered search capabilities.

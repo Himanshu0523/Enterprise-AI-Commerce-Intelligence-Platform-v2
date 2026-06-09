@@ -60,6 +60,82 @@ ai-ecommerce-platform/
 │   ├── database-design.md    # MongoDB & MySQL hybrid design
 │   └── api-spec.md           # API endpoint definitions
 │
+├── agent-service/                 # NEW
+│   ├── agents/
+│   │   ├── customer_agent.py
+│   │   ├── recommendation_agent.py
+│   │   ├── pricing_agent.py
+│   │   ├── inventory_agent.py
+│   │   └── marketing_agent.py
+│   │
+│   ├── workflows/
+│   │   └── shopping_workflow.py
+│   │
+│   ├── tools/
+│   │   ├── product_search_tool.py
+│   │   ├── inventory_tool.py
+│   │   └── pricing_tool.py
+│   │
+│   └── main.py
+│
+├── rag-service/                   # NEW
+│   ├── embeddings/
+│   ├── vectorstore/
+│   ├── ingestion/
+│   ├── retrieval/
+│   └── main.py
+│
+├── visual-search-service/         # NEW
+│   ├── clip/
+│   ├── embeddings/
+│   ├── faiss_index/
+│   └── main.py
+│
+├── fraud-service/                 # NEW
+│   ├── models/
+│   ├── training/
+│   ├── inference/
+│   └── main.py
+│
+├── pricing-service/               # NEW
+│   ├── models/
+│   ├── training/
+│   ├── inference/
+│   └── main.py
+│
+├── forecast-service/              # NEW
+│   ├── lstm/
+│   ├── prophet/
+│   ├── tft/
+│   └── main.py
+│
+├── kafka/
+│   ├── producers/
+│   ├── consumers/
+│   └── topics.md
+│
+├── mlops/                         # NEW
+│   ├── mlflow/
+│   ├── dvc/
+│   ├── airflow/
+│   ├── model_registry/
+│   └── pipelines/
+│
+├── vector-db/                     # NEW
+│   ├── qdrant/
+│   └── collections/
+│
+├── monitoring/                    # NEW
+│   ├── prometheus/
+│   ├── grafana/
+│   └── dashboards/
+│
+├── docker/
+│   ├── backend/
+│   ├── frontend/
+│   ├── agent-service/
+│   └── docker-compose.yml
+│
 ├── README.md                 # Main project overview & setup guide
 ├── ToDo.txt                  # Improvement ideas
 └── .gitignore                # Global ignore rules
