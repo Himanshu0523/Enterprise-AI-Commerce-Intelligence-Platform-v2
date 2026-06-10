@@ -2,43 +2,98 @@
 
 # 🛒 AI-Powered E-Commerce Intelligence Platform
 
-### Next-Generation E-Commerce powered by AI, Agents, RAG, Forecasting & Analytics
+### Next-Generation AI-Native Commerce Platform
+
+### Recommendations • RAG • Agents • Forecasting • Analytics • Visual Search
 
 ![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge\&logo=react)
-![Node](https://img.shields.io/badge/Node.js-Express-green?style=for-the-badge\&logo=node.js)
+![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=for-the-badge\&logo=node.js)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?style=for-the-badge\&logo=mongodb)
 ![FastAPI](https://img.shields.io/badge/FastAPI-AI_Service-009688?style=for-the-badge\&logo=fastapi)
-![Kafka](https://img.shields.io/badge/Kafka-Event_Driven-black?style=for-the-badge\&logo=apachekafka)
-![Qdrant](https://img.shields.io/badge/Qdrant-Vector_DB-red?style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL-Warehouse-orange?style=for-the-badge\&logo=mysql)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?style=for-the-badge\&logo=docker)
 
-### 🚀 Full Stack AI Commerce Platform
+![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-AI Recommendations • RAG Search • Agentic AI • Visual Search • Dynamic Pricing • Fraud Detection • Demand Forecasting
+### 🚀 Building an End-to-End AI Commerce Ecosystem
+
+Recommendation Engine • Forecasting • RAG • Agentic AI • Analytics • Visual Search
 
 </div>
 
 ---
 
-# 🎯 Platform Overview
+# 📌 Project Overview
 
-A modern AI-native E-Commerce platform that combines traditional commerce with advanced Artificial Intelligence services.
+AI-Powered E-Commerce Intelligence Platform is a full-stack commerce ecosystem that combines traditional e-commerce operations with Artificial Intelligence, Machine Learning, Data Engineering, Retrieval-Augmented Generation (RAG), Agentic AI, Forecasting, and Business Analytics.
 
-### Core Commerce
+The platform is designed to demonstrate production-scale architecture patterns while providing intelligent shopping experiences and business insights.
 
-✅ Authentication
+---
+
+# 🚧 Development Status
+
+| Component                    | Status         |
+| ---------------------------- | -------------- |
+| Frontend Commerce Platform   | ✅ Completed    |
+| Backend API                  | ✅ Completed    |
+| MongoDB Operational Database | ✅ Completed    |
+| Analytics Warehouse          | ✅ Completed    |
+| Recommendation Service       | ✅ Implemented  |
+| Forecast Service             | ✅ Implemented  |
+| RAG Service                  | ✅ Implemented  |
+| Visual Search Service        | ✅ Implemented  |
+| Agent Service                | ✅ Implemented  |
+| AI Service Integration       | 🚧 In Progress |
+| Event Streaming (Kafka)      | 📌 Planned     |
+| Monitoring Stack             | 📌 Planned     |
+| Kubernetes Deployment        | 📌 Planned     |
+
+---
+
+# 🎯 Problem Statement
+
+Traditional e-commerce systems struggle to provide:
+
+* Personalized experiences
+* Intelligent recommendations
+* Product knowledge retrieval
+* Demand forecasting
+* Dynamic business insights
+* Visual product discovery
+
+This platform solves these challenges through:
+
+* Machine Learning
+* Retrieval-Augmented Generation
+* Agentic AI
+* Business Intelligence
+* Forecasting Models
+* Computer Vision
+
+---
+
+# ✨ Core Features
+
+## 🛍️ Commerce Features
+
+✅ User Authentication
 
 ✅ Product Catalog
 
 ✅ Shopping Cart
 
-✅ Orders
+✅ Order Management
 
 ✅ Inventory Management
 
-✅ Reviews
+✅ Reviews & Ratings
 
-### AI Capabilities
+✅ Customer Profiles
+
+---
+
+## 🤖 AI Features
 
 ✅ Personalized Recommendations
 
@@ -46,47 +101,69 @@ A modern AI-native E-Commerce platform that combines traditional commerce with a
 
 ✅ Demand Forecasting
 
-✅ Dynamic Pricing
+✅ Dynamic Pricing Engine
 
 ✅ Fraud Detection
 
-✅ Visual Search
-
 ✅ RAG Product Assistant
 
-✅ Multi-Agent System
+✅ Multi-Agent Workflows
+
+✅ Visual Product Search
 
 ---
 
-# 🏗️ High Level Architecture
+## 📊 Analytics Features
+
+✅ Revenue Analytics
+
+✅ Customer Analytics
+
+✅ Product Analytics
+
+✅ Inventory Analytics
+
+✅ Forecasting Dashboard
+
+---
+
+# 🏗️ High-Level Architecture
 
 ```text
-                    ┌─────────────────┐
-                    │    Frontend     │
-                    │ React + Vite    │
-                    └────────┬────────┘
-                             │
-                             ▼
-                  ┌────────────────────┐
-                  │ Backend API Layer  │
-                  │ Node.js + Express  │
-                  └────────┬───────────┘
-                           │
-       ┌───────────────────┼───────────────────┐
-       │                   │                   │
-       ▼                   ▼                   ▼
+                        Users
+                          │
+                          ▼
 
-┌────────────┐    ┌──────────────┐   ┌──────────────┐
-│ MongoDB    │    │ Kafka Events │   │ Qdrant       │
-│ Live Data  │    │ Streaming    │   │ Vector DB    │
-└─────┬──────┘    └──────┬───────┘   └──────┬───────┘
+              ┌─────────────────────┐
+              │ Frontend (React)    │
+              └──────────┬──────────┘
+                         │
+                         ▼
+
+              ┌─────────────────────┐
+              │ Backend API Layer   │
+              │ Node.js + Express   │
+              └──────────┬──────────┘
+                         │
+
+      ┌──────────────────┼──────────────────┐
       │                  │                  │
+
       ▼                  ▼                  ▼
 
- Recommendation   Analytics Pipeline     RAG Service
- Pricing Engine   Warehouse ETL          Agent Service
- Forecast Engine  MySQL BI Layer         Visual Search
- Fraud Detection
+ MongoDB           AI Services       Analytics Layer
+
+      │                  │                  │
+
+      ▼                  ▼                  ▼
+
+ Products       Recommendation      MySQL Warehouse
+ Orders         Forecasting
+ Inventory      RAG
+ Users          Visual Search
+                Agent Service
+                Fraud Detection
+                Pricing Engine
 ```
 
 ---
@@ -108,9 +185,72 @@ Recommendation Model
 Personalized Products
 ```
 
+### Capabilities
+
+* Collaborative Filtering
+* Content-Based Filtering
+* Similar Products
+* Frequently Bought Together
+
 ---
 
-## RAG Architecture
+## Forecast Service
+
+```text
+Historical Sales
+        │
+        ▼
+Feature Generation
+        │
+        ▼
+Forecast Models
+        │
+        ▼
+Demand Prediction
+```
+
+Models:
+
+* Prophet
+* LSTM
+* Temporal Fusion Transformer (TFT)
+
+---
+
+## Fraud Detection
+
+```text
+Transactions
+      │
+      ▼
+Fraud Model
+      │
+      ▼
+Risk Score
+      │
+      ▼
+Alert System
+```
+
+---
+
+## Dynamic Pricing
+
+```text
+Market Data
+Inventory
+Demand
+      │
+      ▼
+Pricing Engine
+      │
+      ▼
+Suggested Price
+```
+
+---
+
+# 🧠 RAG Architecture
 
 ```text
 Products
@@ -122,10 +262,10 @@ Policies
 Chunking
       │
       ▼
-Embeddings
+Embedding Generation
       │
       ▼
-Qdrant Vector DB
+Qdrant Vector Database
       │
       ▼
 Retriever
@@ -134,24 +274,40 @@ Retriever
 LLM Response
 ```
 
+Features:
+
+* Semantic Product Search
+* Product Question Answering
+* Review Summarization
+* Knowledge Retrieval
+
 ---
 
-## Multi-Agent Architecture
+# 🤖 Agent Architecture
 
 ```text
-                  Agent Service
-                         │
- ┌─────────────┬─────────┼─────────┬─────────────┐
- │             │         │         │             │
- ▼             ▼         ▼         ▼             ▼
+                   Agent Service
+                          │
 
-Customer   Inventory  Pricing  Marketing  Recommendation
- Agent       Agent      Agent      Agent        Agent
+ ┌─────────────┬──────────┼──────────┬─────────────┐
+
+ ▼             ▼          ▼          ▼             ▼
+
+Customer   Inventory   Pricing   Marketing   Recommendation
+ Agent      Agent       Agent      Agent         Agent
 ```
+
+Responsibilities:
+
+* Product Discovery
+* Shopping Assistance
+* Inventory Decisions
+* Marketing Optimization
+* Pricing Suggestions
 
 ---
 
-# 🔍 Visual Search Flow
+# 🔍 Visual Search Architecture
 
 ```text
 Product Image
@@ -160,38 +316,46 @@ Product Image
 CLIP Encoder
       │
       ▼
-Embedding
+Embedding Vector
       │
       ▼
-FAISS Search
+FAISS Similarity Search
       │
       ▼
 Similar Products
 ```
+
+Capabilities:
+
+* Search by Image
+* Similar Product Discovery
+* Visual Recommendations
 
 ---
 
 # 📊 Data Architecture
 
 ```text
-                 MongoDB
-                     │
-                     ▼
+MongoDB
+   │
+   ▼
 
-               ETL Pipeline
-                     │
-                     ▼
+ETL Pipeline
+   │
+   ▼
 
-             MySQL Warehouse
-                     │
-                     ▼
+MySQL Warehouse
+   │
+   ▼
 
-         Analytics + AI Models
+Analytics
+Business Intelligence
+Machine Learning
 ```
 
 ---
 
-# ⚡ Event Driven Architecture
+# ⚡ Event-Driven Architecture (Future)
 
 ```text
 Order Created
@@ -207,13 +371,20 @@ Consumers
 ├── Analytics
 ├── Inventory
 ├── Recommendation
-├── Fraud Detection
-└── Forecast Service
+├── Forecasting
+└── Fraud Detection
 ```
+
+Benefits:
+
+* Loose Coupling
+* Scalability
+* Event Replay
+* Real-Time Processing
 
 ---
 
-# 📂 Project Structure
+# 🗂️ Project Structure
 
 ```text
 ai-ecommerce-platform/
@@ -230,16 +401,20 @@ ai-ecommerce-platform/
 ├── fraud-service/
 ├── forecast-service/
 
-├── kafka/
-├── vector-db/
 ├── warehouse/
 ├── data-pipeline/
+
+├── kafka/
+├── vector-db/
 
 ├── mlops/
 ├── monitoring/
 
 ├── docs/
-└── docker/
+├── docker/
+
+├── README.md
+└── .gitignore
 ```
 
 ---
@@ -258,7 +433,7 @@ ai-ecommerce-platform/
 
 * Node.js
 * Express.js
-* JWT
+* JWT Authentication
 * MongoDB
 
 ## Artificial Intelligence
@@ -272,46 +447,82 @@ ai-ecommerce-platform/
 
 ## Data Engineering
 
-* Kafka
-* Airflow
 * MySQL
 * MongoDB
+* ETL Pipelines
 
 ## Vector Search
 
 * Qdrant
-* Sentence Transformers
-* CLIP
 * FAISS
+* CLIP
+* Sentence Transformers
 
 ## MLOps
 
 * MLflow
 * DVC
-* Docker
+* Airflow
 
 ## Monitoring
 
 * Prometheus
 * Grafana
 
+## Containerization
+
+* Docker
+* Docker Compose
+
 ---
 
-# 📈 Scalability Highlights
+# 💼 Skills Demonstrated
+
+### Software Engineering
+
+* Full Stack Development
+* REST API Design
+* Authentication & Authorization
+* Database Design
+
+### Artificial Intelligence
+
+* Recommendation Systems
+* RAG Pipelines
+* Agentic AI
+* Time Series Forecasting
+* Computer Vision
+
+### Data Engineering
+
+* ETL Pipelines
+* Data Warehousing
+* Feature Engineering
+
+### System Design
+
+* Modular Monolith Architecture
+* Service-Oriented Design
+* Scalability Planning
+* Distributed System Fundamentals
+
+---
+
+# 📈 Scalability Goals
 
 ### Operational Scale
 
 * 100,000+ Products
 * 500,000+ Orders / Month
-* 10,000+ Daily Users
+* 10,000+ Daily Active Users
 
-### Infrastructure
+### Architecture Goals
 
 * Horizontal Scaling
-* Event Driven Architecture
 * Stateless APIs
-* Independent AI Services
-* Containerized Deployment
+* Service Isolation
+* Event-Driven Processing
+* Cloud-Native Deployment
 
 ---
 
@@ -320,13 +531,13 @@ ai-ecommerce-platform/
 | Document                | Description                         |
 | ----------------------- | ----------------------------------- |
 | docs/srs.md             | Software Requirements Specification |
-| docs/system-design.md   | System Architecture                 |
+| docs/system-design.md   | Architecture Design                 |
 | docs/database-design.md | Database Design                     |
 | docs/api-spec.md        | API Documentation                   |
-| docs/ml-pipeline.md     | ML Lifecycle                        |
+| docs/ml-pipeline.md     | ML Pipeline                         |
 | docs/rag-design.md      | RAG Architecture                    |
 | docs/agent-design.md    | Agent Architecture                  |
-| docs/security.md        | Security Model                      |
+| docs/security.md        | Security Design                     |
 
 ---
 
@@ -342,54 +553,67 @@ docker-compose up --build
 
 ---
 
-# 🗺️ Roadmap
+# 🛣️ Roadmap
 
 ### Phase 1
 
-* Core Commerce
+* Core Commerce Platform
+* Authentication
+* Product Catalog
+* Orders
 
 ### Phase 2
 
-* Recommendation System
+* Recommendation Engine
 * Analytics Dashboard
 
 ### Phase 3
 
-* RAG Product Assistant
-* Visual Search
+* Forecast Service
+* Fraud Detection
 
 ### Phase 4
 
-* Agentic AI System
-* Dynamic Pricing
+* RAG Product Assistant
+* Visual Search
 
 ### Phase 5
 
-* Full Microservice Migration
+* Multi-Agent System
+
+### Phase 6
+
+* Kafka Integration
+* Monitoring Stack
+
+### Phase 7
+
+* Microservices Migration
+* Kubernetes Deployment
 
 ---
 
-# ⭐ Key Highlights
+# ⭐ Highlights
 
 ✅ Full Stack AI Platform
 
-✅ Retrieval-Augmented Generation (RAG)
+✅ Recommendation Engine
 
-✅ Agentic AI Workflows
+✅ Forecasting System
 
 ✅ Visual Search
 
-✅ Dynamic Pricing
+✅ Agentic AI
 
-✅ Fraud Detection
+✅ Retrieval-Augmented Generation
 
-✅ Demand Forecasting
+✅ Business Intelligence
 
-✅ Event Driven Architecture
+✅ Data Warehouse
 
-✅ Vector Search
+✅ MLOps Ready
 
-✅ MLOps Pipeline
+✅ Scalable Architecture
 
 ---
 
@@ -398,5 +622,13 @@ docker-compose up --build
 MIT License
 
 Copyright (c) 2026 Himanshu Satpute
+
+---
+
+<div align="center">
+
+### ⭐ If you like this project, consider giving it a star!
+
+Built with ❤️ by Himanshu Satpute
 
 </div>
