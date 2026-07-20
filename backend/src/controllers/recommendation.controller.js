@@ -36,7 +36,6 @@ GET /api/analytics/monthly-revenue
 exports.getMonthlyRevenue = async (req, res) => {
 
   try {
-
     const revenue = await analyticsService.getMonthlyRevenue();
 
     res.json({
@@ -64,7 +63,6 @@ GET /api/analytics/customer-ltv
 exports.getCustomerLifetimeValue = async (req, res) => {
 
   try {
-
     const clv = await analyticsService.getCustomerLifetimeValue();
 
     res.json({

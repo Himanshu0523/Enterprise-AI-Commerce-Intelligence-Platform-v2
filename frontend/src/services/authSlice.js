@@ -1,6 +1,12 @@
 import { createSlice , createAsyncThunk } from "@reduxjs/toolkit";
-import { login , register, logout as logoutAPI } from "./authService";
-
+import {
+  login,
+  register,
+  logout as logoutAPI,
+  sendResetOTP,    
+  verifyOTP,
+  resetPassword,
+} from "./authService";
 
 // Async login
 export const loginUser = createAsyncThunk(
@@ -51,13 +57,49 @@ const getInitialUser = () => {
     }
 };
 
+export const sendPasswordResetOTP = createAsyncThunk(
+    "auth/sendPasswordResetOTP",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await sendResetOTP(data);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to send OTP");
+    }
+}
+);
+
+export const verifyPasswordResetOTP = createAsyncThunk(
+  "auth/verifyPasswordResetOTP",
+  async (data, { rejectWithValue }) => {
+      try {
+          const response = await verifyOTP(data);
+          return response.data; // { success: true, token: "..." }
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "OTP verification failed");
+        }
+  }
+);
+
+
+export const resetUserPassword = createAsyncThunk(
+    "auth/resetUserPassword",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await resetPassword(data);
+            return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Password reset failed");
+    }
+}
+);
+
 const initialState = {
     user: getInitialUser(),
     token: localStorage.getItem("token") || null,
     loading: false,
     error: null,
 };
-
 
 
 const authSlice = createSlice({
@@ -125,6 +167,35 @@ const authSlice = createSlice({
 
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
+            })
+
+            .addCase(verifyPasswordResetOTP.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(verifyPasswordResetOTP.fulfilled, (state) => {
+                state.loading = false;
+            })
+
+            .addCase(verifyPasswordResetOTP.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // --- Reset Password ---
+            .addCase(resetUserPassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+
+            .addCase(resetUserPassword.fulfilled, (state) => {
+                state.loading = false;
+            })
+            
+            .addCase(resetUserPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     } ,
 });
