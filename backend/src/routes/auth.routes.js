@@ -21,6 +21,9 @@ router.post("/logout", authController.logoutUser);
 // POST /api/auth/forgot-password
 router.post("/forgot-password", authController.forgotPassword);
 
+router.post("/verify-otp", authController.verifyOTP);
+router.post("/reset-password", authController.resetPassword);
+
 
 // GOOGLE LOGIN
 // GET /api/auth/google
@@ -42,36 +45,36 @@ router.get(
 
 
 // GITHUB LOGIN
-router.get(
-  "/github",
-  passport.authenticate("github", { scope: ["user:email"] })
-);
+// router.get(
+//   "/github",
+//   passport.authenticate("github", { scope: ["user:email"] })
+// );
 
 
-// GITHUB CALLBACK
-router.get(
-  "/github/callback",
-  passport.authenticate("github", {
-    session: false,
-    failureRedirect: "/login"
-  }),
-  authController.oauthSuccess
-);
+// // GITHUB CALLBACK
+// router.get(
+//   "/github/callback",
+//   passport.authenticate("github", {
+//     session: false,
+//     failureRedirect: "/login"
+//   }),
+//   authController.oauthSuccess
+// );
 
 // LINKEDIN LOGIN
-router.get(
-  "/linkedin",
-  passport.authenticate("linkedin")
-);
+// router.get(
+//   "/linkedin",
+//   passport.authenticate("linkedin")
+// );
 
-// LINKEDIN CALLBACK
-router.get(
-  "/linkedin/callback",
-  passport.authenticate("linkedin", {
-    session: false,
-    failureRedirect: "/login"
-  }),
-  authController.oauthSuccess
-);
+// // LINKEDIN CALLBACK
+// router.get(
+//   "/linkedin/callback",
+//   passport.authenticate("linkedin", {
+//     session: false,
+//     failureRedirect: "/login"
+//   }),
+//   authController.oauthSuccess
+// );
 
 module.exports = router;

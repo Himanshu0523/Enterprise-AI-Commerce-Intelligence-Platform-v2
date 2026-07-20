@@ -1,5 +1,6 @@
 <div align="center">
 
+<<<<<<< HEAD
 # 🛒 AI-Powered E-Commerce Intelligence Platform
 
 ### Next-Generation AI-Native Commerce Platform
@@ -21,6 +22,8 @@ Recommendation Engine • Forecasting • RAG • Agentic AI • Analytics • V
 
 </div>
 
+=======
+>>>>>>> 5d2fe63 (update)
 ---
 
 # 📌 Project Overview
