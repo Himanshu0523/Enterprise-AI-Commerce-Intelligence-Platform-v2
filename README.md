@@ -25,7 +25,9 @@
 
 ---
 
-"I engineered a polyglot microservices cluster that handles high-concurrency traffic spikes using a lock-free Redis data allocator, protects cloud budgets via token-based rate limiting, and guarantees eventual consistency during network partitions via an automated Saga Orchestrator verified by Jepsen-style chaos testing."
+> **Engineering Highlights:** Polyglot microservices architecture handling high-concurrency inventory operations via a lock-free Redis Lua allocator, cloud budget protection via a token-aware API Gateway rate limiter, and eventual consistency during network partitions via an automated Saga Orchestrator with compensating transaction retry workers.
+
+> **Project Context:** Solo-built over ~3 months as an architectural deep-dive into distributed systems, AI/ML integration, and modern cloud-native patterns. Portions of scaffolding were AI-assisted; all core architecture, service logic, and resilience patterns were independently designed and implemented.
 
 ---
 
@@ -159,8 +161,8 @@ flowchart TD
 
 ### 2. Distributed Saga Orchestrator & Eventual Consistency
 - Tracks multi-step checkout transactions (`order-service` ➔ `inventory-service` ➔ `payment-service`).
-- Employs compensating transactions (reversing reservations) during downstream failures (e.g. card declines).
-- Uses a background **Eventual Consistency Worker** to periodically retry failed compensations (like restocking) if network partitions disrupt the immediate rollback phase.
+- Employs compensating transactions (reversing stock reservations) during downstream failures (e.g. card declines, gateway timeouts).
+- Uses a background **Eventual Consistency Worker** to periodically retry failed compensations if network partitions disrupt the immediate rollback phase — validated via custom concurrency test scripts in `scripts/`.
 
 ### 3. OpenTelemetry-Compatible Distributed Tracing
 - Integrates standard W3C `traceparent` context passing across Node.js services and Python FastAPI servers.
@@ -234,8 +236,8 @@ For detailed architectural specifications, database schemas, security models, an
 
 ```bash
 # Clone repository
-git clone https://github.com/Himanshu0523/Enterprise-AI-Commerce-Intelligence-Platform.git
-cd Enterprise-AI-Commerce-Intelligence-Platform
+git clone https://github.com/Himanshu0523/Enterprise-AI-Commerce-Intelligence-Platform-v2.git
+cd Enterprise-AI-Commerce-Intelligence-Platform-v2
 
 # Spin up all 17 microservices + DBs in Docker
 docker compose up -d
