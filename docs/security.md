@@ -75,9 +75,9 @@ All payload ingest points enforce schema validation to protect against SQL Injec
 
 ---
 
-## 6. PCI-DSS Compliance & Card Data Handling
+## 6. Payment Security & PCI-DSS Scope Minimization Strategy
 
-The platform maintains **PCI-DSS Level 1 Scope Minimization**:
+The platform follows **PCI-DSS Scope Minimization best practices** to ensure sensitive cardholder data never touches internal infrastructure:
 
 - **Zero PAN/CVV Storage**: Primary Account Numbers (PAN), CVV codes, and expiration dates **never touch or pass through** any internal backend server or database.
 - **Client-Side Tokenization**: Credit card data is collected directly by Stripe/PayPal Elements hosted fields on the storefront.

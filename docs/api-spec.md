@@ -9,10 +9,16 @@
 /api/v1
 ```
 
-### AI Services
+### AI Services (via Gateway Proxy)
 
 ```http
-http://localhost:8000
+/api/v1  (proxied through API Gateway at port 8000)
+```
+
+Direct service ports (internal, non-public):
+
+```text
+RAG:8001 | Forecast:8002 | Pricing:8003 | Fraud:8004 | VisualSearch:8005 | ML:8006 | Agent:8007
 ```
 
 ---
@@ -699,6 +705,16 @@ Input Validation
 Password Hashing
 CORS Protection
 ```
+
+## Rate Limiting
+
+Rate limiting is enforced at the API Gateway with tiered thresholds. See [`security.md`](security.md) for full details.
+
+| Tier | Endpoints | Limit | Window |
+| :--- | :--- | :---: | :---: |
+| **Strict** | `/auth/login`, `/auth/verify-otp`, `/payments/charge` | 5 req | 15 min |
+| **Standard** | `/cart/*`, `/orders/*`, `/reviews/*` | 100 req | 15 min |
+| **Read-Only** | `/products/*`, `/visual-search/*` | 300 req | 15 min |
 
 ---
 

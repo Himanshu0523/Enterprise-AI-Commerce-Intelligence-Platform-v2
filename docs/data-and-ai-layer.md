@@ -34,6 +34,9 @@ flowchart LR
 ```
 
 ### Model Metric Specifications:
+
+> **📌 Note:** The evaluation metric thresholds listed below represent **target deployment gates** — models failing these thresholds are blocked from production promotion via the MLflow evaluation gate. Actual measured values will vary based on training data volume and hyperparameter tuning.
+
 | Microservice | Primary Model Architecture | Retraining Frequency | Evaluation Metric Threshold |
 | :--- | :--- | :---: | :--- |
 | `forecast-service` | Prophet + LSTM Ensemble | Weekly (Sunday 02:00 UTC) | **MAPE < 8.5%**, RMSE |

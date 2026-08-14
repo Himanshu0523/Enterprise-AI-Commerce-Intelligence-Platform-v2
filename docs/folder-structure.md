@@ -20,7 +20,9 @@ ecommerce-platform/
 │   │   ├── payment-service/         # Payment integrations, refunds, ledger
 │   │   ├── shipping-service/        # Carrier selection, tracking, shipment status
 │   │   ├── coupon-service/          # Discounts, promotions, loyalty
-│   │   └── review-service/          # Ratings, reviews, moderation
+│   │   ├── review-service/          # Ratings, reviews, moderation
+│   │   ├── notification-service/    # Transactional email & SMS dispatch
+│   │   └── audit-log-service/       # Immutable security & compliance audit trail
 │   │
 │   ├── intelligence/                # AI/ML and data‑driven features
 │   │   ├── ml-service/              # Generic model serving (recommendations, classification)
@@ -31,8 +33,7 @@ ecommerce-platform/
 │   │   └── visual-search-service/   # Image‑based product search (vector embedding)
 │   │
 │   ├── operations/                  # Back‑office and logistics
-│   │   ├── agent-service/           # Internal support agent workflows & ticketing
-│   │   └── warehouse-service/       # Picking, packing, returns management
+│   │   └── agent-service/           # Internal support agent workflows & ticketing
 │   │
 │   └── data-pipeline/               # Data ingestion & transformation
 │       ├── extractors/              # Database CDC, API scrapers, third‑party connectors
@@ -55,7 +56,7 @@ ecommerce-platform/
 │   ├── helm/                       # Helm charts for staging/production
 │   ├── terraform/                  # Cloud provisioning (VPC, RDS, EKS, etc.)
 │   ├── kafka/                      # Topic definitions, consumer group config
-│   ├── vector-db/                  # Schema & init scripts for Pinecone/Weaviate
+│   ├── vector-db/                  # Qdrant collection schema & initialization scripts
 │   ├── monitoring/                 # Grafana dashboards, Prometheus rules, ELK pipelines
 │   └── mlops/                      # MLflow, Kubeflow, model registry config
 │

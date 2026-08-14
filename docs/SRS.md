@@ -61,8 +61,8 @@ The platform provides:
 
 ### Frontend
 
-* React.js
-* Vite
+* Next.js 14 (App Router)
+* React 18
 * Tailwind CSS
 
 ### Backend

@@ -10,7 +10,7 @@ This document details the reliability, fault tolerance, idempotency, circuit bre
 To prevent duplicate charges, duplicate order creations, or double inventory reservations during network blips and client retry attempts:
 
 - **`Idempotency-Key` Header**: Clients generate a unique UUID v4 header (`Idempotency-Key: e87c64b2-38d5...`) for all mutating requests (`POST /api/orders`, `POST /api/payments/charge`).
-- **Distributed Cache Locking (Redis)**: Microservices check Redis for the key before processing:
+- **Distributed Cache Locking (Redis)**: Microservices check Redis for the key before processing (same Redis instance used by the [Lock-Free Inventory Lua Allocator](../README.md#1-algorithmic-lock-free-in-memory-inventory-allocator-redis-lua-scripts)):
   - **In-Progress Lock**: If a request with the same key is currently processing, concurrent requests receive `409 Conflict`.
   - **Cached Result Return**: If the request previously completed successfully, the stored response (`HTTP 201`) is returned immediately without re-executing logic.
 
