@@ -1,0 +1,358 @@
+version: '3.8'
+
+networks:
+  ecommerce_net:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  mysql_data:
+  qdrant_data:
+
+services:
+  # ─── INFRASTRUCTURE SERVICES 
+  mongodb:
+    image: mongo:latest
+    container_name: ecommerce-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ecommerce_net
+
+  mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommerce_warehouse
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ecommerce_net
+
+  redis:
+    image: redis:alpine
+    container_name: ecommerce-redis
+    command: redis-server --appendonly yes
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - ecommerce_net
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: ecommerce-qdrant
+    restart: always
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - ecommerce_net
+
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: ecommerce-kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    networks:
+      - ecommerce_net
+
+  # ─── API GATEWAY 
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      NODE_ENV: production
+      AUTH_SERVICE_URL: http://auth-service:3001
+      USER_SERVICE_URL: http://user-service:3002
+      PRODUCT_SERVICE_URL: http://product-service:3003
+      INVENTORY_SERVICE_URL: http://inventory-service:3004
+      CART_SERVICE_URL: http://cart-service:3005
+      ORDER_SERVICE_URL: http://order-service:3006
+      PAYMENT_SERVICE_URL: http://payment-service:3007
+      SHIPPING_SERVICE_URL: http://shipping-service:3008
+      COUPON_SERVICE_URL: http://coupon-service:3009
+      REVIEW_SERVICE_URL: http://review-service:3010
+      NOTIFICATION_SERVICE_URL: http://notification-service:3011
+      AUDIT_LOG_SERVICE_URL: http://audit-log-service:3012
+    depends_on:
+      - auth-service
+      - product-service
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    networks:
+      - ecommerce_net
+
+  # ─── NODE CORE MICROSERVICES (PROFILE: core) 
+  auth-service:
+    build:
+      context: ./services/cors/auth-service
+    container_name: auth-service
+    profiles: ["core"]
+    environment:
+      PORT: 3001
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-auth
+      KAFKA_BROKER: kafka:29092
+      JWT_SECRET: your-super-secret-key
+    depends_on:
+      - mongodb
+      - kafka
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+    networks:
+      - ecommerce_net
+
+  user-service:
+    build:
+      context: ./services/cors/user-service
+    container_name: user-service
+    profiles: ["core"]
+    environment:
+      PORT: 3002
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-user
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  product-service:
+    build:
+      context: ./services/cors/product-service
+    container_name: product-service
+    profiles: ["core"]
+    environment:
+      PORT: 3003
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-products
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  inventory-service:
+    build:
+      context: ./services/cors/inventory-service
+    container_name: inventory-service
+    profiles: ["core"]
+    environment:
+      PORT: 3004
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-inventory
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  cart-service:
+    build:
+      context: ./services/cors/cart-service
+    container_name: cart-service
+    profiles: ["core"]
+    environment:
+      PORT: 3005
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-cart
+      REDIS_URI: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - ecommerce_net
+
+  order-service:
+    build:
+      context: ./services/cors/order-service
+    container_name: order-service
+    profiles: ["core"]
+    environment:
+      PORT: 3006
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-orders
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  payment-service:
+    build:
+      context: ./services/cors/payment-service
+    container_name: payment-service
+    profiles: ["core"]
+    environment:
+      PORT: 3007
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-payments
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  shipping-service:
+    build:
+      context: ./services/cors/shipping-service
+    container_name: shipping-service
+    profiles: ["core"]
+    environment:
+      PORT: 3008
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-shipping
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  coupon-service:
+    build:
+      context: ./services/cors/coupon-service
+    container_name: coupon-service
+    profiles: ["core"]
+    environment:
+      PORT: 3009
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-coupons
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  review-service:
+    build:
+      context: ./services/cors/review-service
+    container_name: review-service
+    profiles: ["core"]
+    environment:
+      PORT: 3010
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-reviews
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  notification-service:
+    build:
+      context: ./services/cors/notification-service
+    container_name: notification-service
+    profiles: ["core"]
+    environment:
+      PORT: 3011
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-notifications
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  audit-log-service:
+    build:
+      context: ./services/cors/audit-log-service
+    container_name: audit-log-service
+    profiles: ["core"]
+    environment:
+      PORT: 3012
+      MONGO_URI: mongodb://mongodb:27017/ecommerce-audit-logs
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce_net
+
+  # ─── PYTHON AI & INTELLIGENCE MICROSERVICES (PROFILE: ai) 
+  rag-service:
+    build:
+      context: ./services/operations/rag-service
+    container_name: rag-service
+    profiles: ["ai"]
+    environment:
+      QDRANT_HOST: qdrant
+      QDRANT_PORT: 6333
+    depends_on:
+      - qdrant
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - ecommerce_net
+
+  forecast-service:
+    build:
+      context: ./services/intelligence/forecast-service
+    container_name: forecast-service
+    profiles: ["ai"]
+    networks:
+      - ecommerce_net
+
+  pricing-service:
+    build:
+      context: ./services/intelligence/pricing-service
+    container_name: pricing-service
+    profiles: ["ai"]
+    networks:
+      - ecommerce_net
+
+  fraud-service:
+    build:
+      context: ./services/intelligence/fraud-service
+    container_name: fraud-service
+    profiles: ["ai"]
+    networks:
+      - ecommerce_net
+
+  visual-search-service:
+    build:
+      context: ./services/intelligence/visual-search-service
+    container_name: visual-search-service
+    profiles: ["ai"]
+    environment:
+      QDRANT_HOST: qdrant
+      QDRANT_PORT: 6333
+    depends_on:
+      - qdrant
+    networks:
+      - ecommerce_net
+
+  ml-service:
+    build:
+      context: ./services/intelligence/ml-service
+    container_name: ml-service
+    profiles: ["ai"]
+    networks:
+      - ecommerce_net
+
+  agent-service:
+    build:
+      context: ./services/operations/agent-service
+    container_name: agent-service
+    profiles: ["ai"]
+    networks:
+      - ecommerce_net

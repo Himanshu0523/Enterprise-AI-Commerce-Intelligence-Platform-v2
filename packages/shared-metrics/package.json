@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-metrics",
+  "version": "1.0.0",
+  "description": "Metrics and Prometheus helper for microservice health tracking",
+  "main": "index.js",
+  "license": "MIT"
+}

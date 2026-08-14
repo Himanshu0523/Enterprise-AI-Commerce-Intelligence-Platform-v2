@@ -1,0 +1,26 @@
+groups:
+  - name: ecommerce_alert_rules
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Microservice {{ $labels.job }} is down!"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_errors_total[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Service {{ $labels.job }} error rate exceeded 5%!"
+
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 2.0
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Service P95 latency is above 2.0 seconds!"

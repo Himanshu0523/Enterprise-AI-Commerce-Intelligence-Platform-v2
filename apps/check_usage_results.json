@@ -1,0 +1,426 @@
+{
+  "pages": [
+    {
+      "name": "forgot-password",
+      "path": "app/(auth)/forget-password",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "reset-password",
+      "path": "app/(auth)/reset-password",
+      "exists": true,
+      "details": []
+    },
+    {
+      "name": "categories/[slug]",
+      "path": "app/(shop)/categories/[slug]",
+      "exists": true,
+      "details": [
+        "page.jsx"
+      ]
+    },
+    {
+      "name": "category/[id]",
+      "path": "app/category/[id]",
+      "exists": true,
+      "details": [
+        "page.jsx"
+      ]
+    },
+    {
+      "name": "brands/[slug]",
+      "path": "app/(shop)/brands/[slug]",
+      "exists": false,
+      "details": null
+    },
+    {
+      "name": "collections/[slug]",
+      "path": "app/(shop)/collections/[slug]",
+      "exists": false,
+      "details": null
+    },
+    {
+      "name": "sale",
+      "path": "app/(shop)/sale",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "new-arrivals",
+      "path": "app/(shop)/new-arrivals",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "compare",
+      "path": "app/(shop)/compare",
+      "exists": true,
+      "details": [
+        "page.jsx"
+      ]
+    },
+    {
+      "name": "search",
+      "path": "app/(shop)/search",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "about",
+      "path": "app/(content)/about",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "contact",
+      "path": "app/(content)/contact",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "faq",
+      "path": "app/(content)/faq",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "privacy",
+      "path": "app/(content)/privacy",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "shipping-returns",
+      "path": "app/(content)/shipping-returns",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "size-guide",
+      "path": "app/(content)/size-guide",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "terms",
+      "path": "app/(content)/terms",
+      "exists": true,
+      "details": []
+    },
+    {
+      "name": "orders/[id]",
+      "path": "app/(shop)/account/orders/[id]",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "addresses/add",
+      "path": "app/(shop)/account/addresses/add",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "payment-methods",
+      "path": "app/(shop)/account/payment-methods",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "settings",
+      "path": "app/(shop)/account/settings",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "reviews",
+      "path": "app/(shop)/account/reviews",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "checkout/shipping",
+      "path": "app/(shop)/checkout/shipping",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "checkout/payment",
+      "path": "app/(shop)/checkout/payment",
+      "exists": true,
+      "details": [
+        "page.js"
+      ]
+    },
+    {
+      "name": "checkout/confirmation",
+      "path": "app/(shop)/checkout/confirmation",
+      "exists": true,
+      "details": [
+        "[orderId]"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "MegaMenu",
+      "file": "components/layout/Header/MegaMenu",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "Breadcrumbs",
+      "file": "components/common/Breadcrumbs",
+      "exists": true,
+      "actualPath": "components\\common\\Breadcrumbs.jsx",
+      "refCount": 2,
+      "references": [
+        "app\\(shop)\\products\\[id]\\page.jsx",
+        "components\\product\\ProductFilters\\ProductListingWithFilters.js"
+      ]
+    },
+    {
+      "name": "PriceRangeSlider",
+      "file": "components/product/ProductFilters/PriceRangeSlider",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "FilterDrawer",
+      "file": "components/product/ProductFilters/FilterDrawer",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "ProductSkeleton",
+      "file": "components/ui/ProductSkeleton",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "WishlistToggle",
+      "file": "components/product/WishlistToggle",
+      "exists": true,
+      "actualPath": "components\\product\\WishlistToggle.jsx",
+      "refCount": 2,
+      "references": [
+        "app\\(shop)\\products\\[id]\\ProductDetailClient.jsx",
+        "components\\product\\ProductCard\\index.js"
+      ]
+    },
+    {
+      "name": "StockBadge",
+      "file": "components/product/ProductDetail/StockBadge",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "DeliveryEstimate",
+      "file": "components/product/ProductDetail/DeliveryEstimate",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "CheckoutStepper",
+      "file": "components/checkout/CheckoutStepper",
+      "exists": true,
+      "actualPath": "components\\checkout\\CheckoutStepper.jsx",
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "AddressForm",
+      "file": "components/account/AddressForm",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "OrderCard",
+      "file": "components/account/OrderCard",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "Toast",
+      "file": "components/shared/Toast",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "ImageWithFallback",
+      "file": "components/shared/ImageWithFallback",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "SocialShare",
+      "file": "components/shared/SocialShare",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "HeroBanner",
+      "file": "components/shared/HeroBanner",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "CompareButton",
+      "file": "components/product/CompareButton",
+      "exists": true,
+      "actualPath": "components\\product\\CompareButton.jsx",
+      "refCount": 2,
+      "references": [
+        "app\\(shop)\\products\\[id]\\ProductDetailClient.jsx",
+        "components\\product\\ProductCard\\index.js"
+      ]
+    }
+  ],
+  "contexts": [
+    {
+      "name": "CartContext",
+      "file": "lib/contexts/CartContext",
+      "exists": true,
+      "actualPath": "lib\\contexts\\CartContext.jsx",
+      "refCount": 8,
+      "references": [
+        "app\\(shop)\\cart\\page.js",
+        "app\\(shop)\\checkout\\layout.jsx",
+        "app\\(shop)\\layout.jsx",
+        "app\\layout.jsx",
+        "components\\cart\\CartItem.jsx",
+        "components\\layout\\Header\\index.jsx",
+        "components\\product\\ProductDetail\\AddToCartButton.js",
+        "lib\\contexts\\CheckoutContext.jsx"
+      ]
+    },
+    {
+      "name": "FilterContext",
+      "file": "lib/contexts/FilterContext",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "ToastContext",
+      "file": "lib/contexts/ToastContext",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "ThemeContext",
+      "file": "lib/contexts/ThemeContext",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    }
+  ],
+  "hooks": [
+    {
+      "name": "useFilters",
+      "file": "lib/hooks/useFilters",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "useRecentlyViewed",
+      "file": "lib/hooks/useRecentlyViewed",
+      "exists": true,
+      "actualPath": "lib\\hooks\\useRecentlyViewed.js",
+      "refCount": 2,
+      "references": [
+        "app\\(shop)\\products\\[id]\\ProductDetailClient.jsx",
+        "components\\product\\RecentlyViewed.jsx"
+      ]
+    },
+    {
+      "name": "useCompare",
+      "file": "lib/hooks/useCompare",
+      "exists": true,
+      "actualPath": "lib\\hooks\\useCompare.js",
+      "refCount": 2,
+      "references": [
+        "app\\(shop)\\compare\\page.jsx",
+        "components\\product\\CompareButton.jsx"
+      ]
+    },
+    {
+      "name": "useMediaQuery",
+      "file": "lib/hooks/useMediaQuery",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    },
+    {
+      "name": "usePagination",
+      "file": "lib/hooks/usePagination",
+      "exists": false,
+      "actualPath": null,
+      "refCount": 0,
+      "references": []
+    }
+  ]
+}

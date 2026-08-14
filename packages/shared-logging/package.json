@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-logging",
+  "version": "1.0.0",
+  "description": "Structured logging helper across microservices",
+  "main": "index.js",
+  "license": "MIT"
+}

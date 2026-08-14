@@ -1,0 +1,40 @@
+{
+  "topics": [
+    {
+      "name": "order-events",
+      "partitions": 6,
+      "replicationFactor": 3,
+      "config": {
+        "cleanup.policy": "delete",
+        "retention.ms": "604800000"
+      }
+    },
+    {
+      "name": "inventory-events",
+      "partitions": 6,
+      "replicationFactor": 3,
+      "config": {
+        "cleanup.policy": "compact",
+        "min.cleanable.dirty.ratio": "0.5"
+      }
+    },
+    {
+      "name": "payment-events",
+      "partitions": 3,
+      "replicationFactor": 3,
+      "config": {
+        "cleanup.policy": "delete",
+        "retention.ms": "2592000000"
+      }
+    },
+    {
+      "name": "audit-logs",
+      "partitions": 12,
+      "replicationFactor": 3,
+      "config": {
+        "cleanup.policy": "delete",
+        "retention.ms": "31536000000"
+      }
+    }
+  ]
+}

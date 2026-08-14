@@ -1,501 +1,74 @@
+# System Design Specification
 
-# System Design Strategy
-
-# AI-Powered E-Commerce Intelligence Platform
-
----
-
-# 1. Architecture Overview
-
-The platform follows a Modular Monolith + AI Microservices Architecture.
-
-The architecture separates:
-
-1. Customer-facing transactional operations
-2. AI and machine learning workloads
-3. Analytical processing
-4. Event-driven communication
-5. Retrieval-Augmented Generation (RAG)
-6. Monitoring and MLOps
-
-This separation ensures scalability, maintainability, and independent service evolution.
+# Enterprise AI Commerce Intelligence Platform
 
 ---
 
-# 2. High-Level Architecture
+## 1. Microservices Breakdown & Port Allocation
 
-```text
-Users
-  │
-  ▼
-Frontend (React + Vite)
-  │
-  ▼
-Backend API (Node.js + Express)
-  │
-  ├──────────────► MongoDB
-  │
-  ├──────────────► Agent Service
-  │
-  ├──────────────► RAG Service
-  │
-  ├──────────────► Visual Search Service
-  │
-  ├──────────────► Recommendation Engine
-  │
-  ├──────────────► Pricing Service
-  │
-  ├──────────────► Fraud Service
-  │
-  └──────────────► Forecast Service
+Here is the exact mapping for all deployed microservices in the platform:
 
-MongoDB
-  │
-  ▼
-Data Pipeline (ETL)
-  │
-  ▼
-MySQL Warehouse
+| Service Category | Service Name | Protocol | Port | Primary Responsibility |
+| :--- | :--- | :---: | :---: | :--- |
+| **Gateway** | `api-gateway` | HTTP/REST | `8000` | Single entry point for clients. Routes requests & validates tokens. |
+| **Core Domain (10)** | `auth-service` | HTTP/REST | `3001` | JWT, Google OAuth2, Speakeasy TOTP MFA, Kafka events. |
+| | `user-service` | HTTP/REST | `3002` | User profiles, addresses, role management. |
+| | `product-service` | HTTP/REST | `3003` | Product catalog CRUD, multi-attribute search. |
+| | `inventory-service` | HTTP/REST | `3004` | Stock levels, checkout reservations, release logic. |
+| | `cart-service` | HTTP/REST | `3005` | User cart persistence & guest cart merging. |
+| | `order-service` | HTTP/REST | `3006` | Order processing pipeline & status workflow. |
+| | `payment-service` | HTTP/REST | `3007` | Payment transactions, mock gateway, refunds. |
+| | `shipping-service` | HTTP/REST | `3008` | Carrier selection, rate calculation, tracking. |
+| | `coupon-service` | HTTP/REST | `3009` | Promotional discounts, coupon validation. |
+| | `review-service` | HTTP/REST | `3010` | Product ratings, customer reviews, helpfulness votes. |
+| **Intelligence (7)** | `rag-service` | HTTP/REST | `8001` | Vector search QA, FAQ assistance, review summary. |
+| | `forecast-service` | HTTP/REST | `8002` | Time-series demand forecasting (Prophet/LSTM). |
+| | `pricing-service` | HTTP/REST | `8003` | Dynamic price optimization based on demand/stock. |
+| | `fraud-service` | HTTP/REST | `8004` | Transaction risk scoring & anomaly detection. |
+| | `visual-search-service` | HTTP/REST | `8005` | Image similarity search using CLIP embeddings. |
+| | `ml-service` | HTTP/REST | `8006` | Collaborative & content recommendation models. |
+| | `agent-service` | HTTP/REST | `8007` | LangChain / LangGraph multi-agent orchestration. |
 
-Kafka
-  │
-  ├────────► Analytics Events
-  ├────────► Inventory Events
-  ├────────► Order Events
-  └────────► Recommendation Events
+---
 
-RAG Service
-  │
-  ▼
-Qdrant Vector Database
+## 2. High-Level Communication Flow
 
-Monitoring
-  │
-  ├────────► Prometheus
-  └────────► Grafana
+```mermaid
+graph TD
+    %% Clients
+    Client[Web/Mobile Storefront Client] --> Gateway[API Gateway - Port 8000]
+
+    %% Gateway Routes to Core Services
+    Gateway --> Auth[Auth Service - Port 3001]
+    Gateway --> User[User Service - Port 3002]
+    Gateway --> Product[Product Service - Port 3003]
+    Gateway --> Cart[Cart Service - Port 3005]
+    Gateway --> Order[Order Service - Port 3006]
+    Gateway --> Payment[Payment Service - Port 3007]
+    Gateway --> Shipping[Shipping Service - Port 3008]
+    Gateway --> Coupon[Coupon Service - Port 3009]
+    Gateway --> Review[Review Service - Port 3010]
+
+    %% Gateway Routes to AI Intelligence Services
+    Gateway --> Pricing[Pricing Service - Port 8003]
+    Gateway --> Visual[Visual Search Service - Port 8005]
+    Gateway --> RAG[RAG Service - Port 8001]
+    Gateway --> ML[ML Service - Port 8006]
+    Gateway --> Agent[Agent Service - Port 8007]
+
+    %% Database per Service
+    Auth --> AuthDB[(Auth MongoDB)]
+    User --> UserDB[(User MongoDB)]
+    Product --> ProductDB[(Product MongoDB)]
+    Order --> OrderDB[(Order MongoDB)]
+    Payment --> PaymentDB[(Payment MongoDB)]
+
+    %% Event Bus for Async Communication
+    Auth -- "Emits: USER_REGISTERED" --> Kafka[Kafka Broker]
+    Order -- "Emits: ORDER_CREATED" --> Kafka
+
+    %% Data Warehouse ETL
+    Kafka --> DataPipeline[Python Data Pipeline]
+    AuthDB & OrderDB & ProductDB --> DataPipeline
+    DataPipeline --> Warehouse[(MySQL Data Warehouse)]
 ```
-
----
-
-# 3. Architectural Layers
-
-## 3.1 Presentation Layer
-
-Technology:
-
-* React.js
-* Vite
-* Tailwind CSS
-
-Responsibilities:
-
-* Product browsing
-* Shopping cart
-* Checkout
-* AI assistant interface
-* Visual search interface
-* Analytics dashboards
-
----
-
-## 3.2 Application Layer
-
-### Backend API (Node.js)
-
-Acts as the central orchestration layer.
-
-Responsibilities:
-
-* Authentication
-* Authorization
-* Product management
-* Order management
-* Inventory management
-* API aggregation
-* Service communication
-
-Structure:
-
-```text
-backend/
-
-src/
-├── modules/
-│   ├── auth/
-│   ├── users/
-│   ├── products/
-│   ├── cart/
-│   ├── orders/
-│   ├── inventory/
-│   └── payments/
-```
-
-This modular structure allows future migration to microservices.
-
----
-
-## 3.3 AI Service Layer
-
-### Recommendation Service
-
-Provides:
-
-* Personalized recommendations
-* Similar products
-* Frequently bought together
-
----
-
-### Pricing Service
-
-Provides:
-
-* Dynamic pricing suggestions
-* Revenue optimization
-* Market-aware pricing
-
----
-
-### Forecast Service
-
-Provides:
-
-* Sales forecasting
-* Demand forecasting
-* Inventory planning
-
-Models:
-
-* LSTM
-* Prophet
-* TFT
-
----
-
-### Fraud Detection Service
-
-Provides:
-
-* Risk scoring
-* Fraud alerts
-* Suspicious transaction detection
-
----
-
-### Visual Search Service
-
-Provides:
-
-* Image embedding generation
-* Similar product retrieval
-
-Technologies:
-
-* CLIP
-* FAISS
-
----
-
-## 3.4 Agent Layer
-
-Agent Service provides autonomous decision support.
-
-Agents:
-
-* Customer Agent
-* Recommendation Agent
-* Inventory Agent
-* Pricing Agent
-* Marketing Agent
-
-Responsibilities:
-
-* Product discovery
-* Customer assistance
-* Business optimization
-* Inventory recommendations
-
----
-
-## 3.5 Knowledge Layer
-
-### RAG Service
-
-Provides AI-powered product intelligence.
-
-Knowledge Sources:
-
-* Product descriptions
-* Reviews
-* FAQs
-* Policies
-
-Pipeline:
-
-```text
-Documents
-   │
-   ▼
-Chunking
-   │
-   ▼
-Embedding Generation
-   │
-   ▼
-Qdrant Vector DB
-   │
-   ▼
-Retriever
-   │
-   ▼
-LLM Response
-```
-
----
-
-# 4. Data Architecture
-
-## 4.1 Operational Database
-
-### MongoDB
-
-Purpose:
-
-Real-time transactional storage.
-
-Stores:
-
-* Users
-* Products
-* Orders
-* Cart
-* Inventory
-* Events
-
-Advantages:
-
-* Flexible schema
-* High write throughput
-* Fast operational queries
-
----
-
-## 4.2 Analytical Database
-
-### MySQL Warehouse
-
-Purpose:
-
-Business Intelligence and Analytics.
-
-Stores:
-
-* Sales facts
-* Product metrics
-* Customer metrics
-* Revenue aggregates
-
-Advantages:
-
-* SQL analytics
-* Aggregations
-* Reporting
-
----
-
-## 4.3 Vector Database
-
-### Qdrant
-
-Purpose:
-
-Semantic retrieval.
-
-Stores:
-
-* Product embeddings
-* Review embeddings
-* FAQ embeddings
-
-Used by:
-
-* RAG Service
-* Agent Service
-* Visual Search
-
----
-
-# 5. Event-Driven Architecture
-
-Kafka enables asynchronous communication.
-
-Topics:
-
-```text
-product-events
-order-events
-inventory-events
-payment-events
-recommendation-events
-analytics-events
-```
-
-Benefits:
-
-* Loose coupling
-* Scalability
-* Event replay
-* Real-time processing
-
----
-
-# 6. Data Pipeline Architecture
-
-ETL Pipeline Flow
-
-```text
-MongoDB
-   │
-   ▼
-Extract
-   │
-   ▼
-Transform
-   │
-   ▼
-Load
-   │
-   ▼
-MySQL Warehouse
-```
-
-Responsibilities:
-
-* Data cleaning
-* Feature generation
-* Historical storage
-* BI preparation
-
----
-
-# 7. MLOps Architecture
-
-Components:
-
-* MLflow
-* DVC
-* Airflow
-* Model Registry
-
-Responsibilities:
-
-* Experiment tracking
-* Dataset versioning
-* Model versioning
-* Automated retraining
-
----
-
-# 8. Monitoring Architecture
-
-Monitoring Stack:
-
-```text
-Services
-   │
-   ▼
-Prometheus
-   │
-   ▼
-Grafana
-```
-
-Metrics:
-
-* API latency
-* CPU usage
-* Memory usage
-* Model inference latency
-* Kafka throughput
-
----
-
-# 9. Communication Patterns
-
-## Synchronous Communication
-
-REST APIs
-
-Used For:
-
-* Login
-* Product retrieval
-* Order placement
-* Recommendation requests
-
----
-
-## Asynchronous Communication
-
-Kafka Events
-
-Used For:
-
-* Analytics updates
-* Inventory updates
-* Model retraining triggers
-* Fraud analysis
-
----
-
-# 10. Scalability Strategy
-
-## Horizontal Scaling
-
-Independently scalable:
-
-* Backend
-* Agent Service
-* RAG Service
-* Forecast Service
-* Fraud Service
-* Pricing Service
-
----
-
-## Stateless Design
-
-System uses:
-
-* JWT Authentication
-* External databases
-* Distributed services
-
-Enabling:
-
-* Load balancing
-* Container orchestration
-* Kubernetes deployment
-
----
-
-# 11. Future Evolution
-
-Future migration path:
-
-```text
-Current:
-Backend (Modular Monolith)
-
-Future:
-
-Auth Service
-User Service
-Product Service
-Order Service
-Cart Service
-Inventory Service
-Payment Service
-```
-
-The current design allows gradual migration to a complete microservices architecture without major refactoring.

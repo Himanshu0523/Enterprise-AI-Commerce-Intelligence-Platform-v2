@@ -1,0 +1,26 @@
+# MLOps Configuration: MLflow tracking and model registry policies
+
+mlflow:
+  tracking_uri: "http://mlflow-tracking.internal.net:5000"
+  artifact_location: "s3://production-ml-models-artifacts/"
+  
+experiments:
+  - name: "demand-forecasting-lstm"
+    metric_thresholds:
+      rmse: 15.0
+      mae: 10.0
+    registry_transitions:
+      promote_to_production: true
+      
+  - name: "dynamic-pricing-reinforcement"
+    metric_thresholds:
+      mean_reward: 120.0
+    registry_transitions:
+      promote_to_production: false # Requires manual approval
+
+model_registry:
+  tags:
+    - name: "framework"
+      allowed_values: ["tensorflow", "pytorch", "prophet", "scikit-learn"]
+    - name: "stage"
+      allowed_values: ["staging", "production", "archived"]

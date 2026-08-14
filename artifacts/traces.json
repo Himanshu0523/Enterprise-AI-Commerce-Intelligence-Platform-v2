@@ -1,0 +1,130 @@
+[
+  {
+    "name": "lexical_matching",
+    "traceId": "cf367f94ba7845299dbd95f4307c08be",
+    "spanId": "05b54348401c48b7",
+    "parentSpanId": "c1bd9cc8ab024c3f",
+    "durationMs": 0.07,
+    "startTimeStr": "2026-08-12T04:46:03Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "semantic_tag_matching",
+    "traceId": "cf367f94ba7845299dbd95f4307c08be",
+    "spanId": "477471cb694b4314",
+    "parentSpanId": "c1bd9cc8ab024c3f",
+    "durationMs": 0.04,
+    "startTimeStr": "2026-08-12T04:46:03Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "rrf_fusion",
+    "traceId": "cf367f94ba7845299dbd95f4307c08be",
+    "spanId": "d45ea87914cd4a1c",
+    "parentSpanId": "c1bd9cc8ab024c3f",
+    "durationMs": 0.03,
+    "startTimeStr": "2026-08-12T04:46:03Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "POST /api/search/multimodal",
+    "traceId": "cf367f94ba7845299dbd95f4307c08be",
+    "spanId": "c1bd9cc8ab024c3f",
+    "parentSpanId": null,
+    "durationMs": 5.34,
+    "startTimeStr": "2026-08-12T04:46:03Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "lexical_matching",
+    "traceId": "38b4472275d748e7864d926024024192",
+    "spanId": "0c19ae0d4f494853",
+    "parentSpanId": "baf3183bec4c4e11",
+    "durationMs": 0.06,
+    "startTimeStr": "2026-08-12T04:46:09Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "semantic_tag_matching",
+    "traceId": "38b4472275d748e7864d926024024192",
+    "spanId": "a3c237cefe0e48c1",
+    "parentSpanId": "baf3183bec4c4e11",
+    "durationMs": 0.05,
+    "startTimeStr": "2026-08-12T04:46:09Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "rrf_fusion",
+    "traceId": "38b4472275d748e7864d926024024192",
+    "spanId": "32c54945b2774460",
+    "parentSpanId": "baf3183bec4c4e11",
+    "durationMs": 0.04,
+    "startTimeStr": "2026-08-12T04:46:09Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  },
+  {
+    "name": "POST /api/search/multimodal",
+    "traceId": "38b4472275d748e7864d926024024192",
+    "spanId": "baf3183bec4c4e11",
+    "parentSpanId": null,
+    "durationMs": 8.3,
+    "startTimeStr": "2026-08-12T04:46:09Z",
+    "attributes": {
+      "service.name": "rag-service"
+    },
+    "events": [],
+    "status": {
+      "code": "OK",
+      "message": ""
+    }
+  }
+]

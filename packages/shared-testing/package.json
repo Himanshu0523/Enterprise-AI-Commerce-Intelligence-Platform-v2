@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-testing",
+  "version": "1.0.0",
+  "description": "Mock data fixtures and testing utilities for unit & integration tests",
+  "main": "index.js",
+  "license": "MIT"
+}

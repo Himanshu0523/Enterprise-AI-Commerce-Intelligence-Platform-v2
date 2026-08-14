@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-config",
+  "version": "1.0.0",
+  "description": "Environment variable defaults and feature flags",
+  "main": "index.js",
+  "license": "MIT"
+}
