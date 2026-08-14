@@ -160,3 +160,5 @@ __pycache__/
 .coverage
 htmlcov/
 
+what_to_do.md
+ToDo.md
