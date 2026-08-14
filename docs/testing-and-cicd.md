@@ -53,8 +53,8 @@ The `.github/workflows/ci.yml` pipeline optimizes build speeds by using **path c
 flowchart TD
     Push[Git Push / PR] --> Filter[Path Filter Check]
     
-    Filter -->|Changes in services/cors/*| NodeMatrix[Node Matrix Jobs (10 Services Parallel)]
-    Filter -->|Changes in services/intelligence/*| PyMatrix[Python Matrix Jobs (7 Services Parallel)]
+    Filter -->|Changes in services/cors/*| NodeMatrix["Node Matrix Jobs (10 Services Parallel)"]
+    Filter -->|Changes in services/intelligence/*| PyMatrix["Python Matrix Jobs (7 Services Parallel)"]
     
     NodeMatrix --> TestNode[Run Jest & Supertest]
     PyMatrix --> TestPy[Run PyTest & FastAPI Specs]
