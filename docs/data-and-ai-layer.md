@@ -25,7 +25,7 @@ All machine learning services (`forecast-service`, `pricing-service`, `fraud-ser
 ```mermaid
 flowchart LR
     Ingest[MongoDB / Data Warehouse Ingestion] --> FeatureStore[Feast Feature Store]
-    FeatureStore --> Train[Automated Retraining (Airflow DAG)]
+    FeatureStore --> Train["Automated Retraining (Airflow DAG)"]
     Train --> Track[MLflow Metric Logging]
     Track --> Gate{Evaluation Gate Passed?}
     Gate -->|Yes| Registry[MLflow Model Registry]
