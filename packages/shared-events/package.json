@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-events",
+  "version": "1.0.0",
+  "description": "Event constants & schemas for Kafka and Event Bus",
+  "main": "index.js",
+  "license": "MIT"
+}

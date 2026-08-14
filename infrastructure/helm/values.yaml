@@ -1,0 +1,77 @@
+# Default values for enterprise-commerce-platform.
+# This is a YAML-formatted file.
+
+global:
+  environment: production
+  domain: enterprise-commerce.com
+
+replicaCount: 3
+
+image:
+  repository: Himanshu0523/Enterprise-AI-Commerce-Intelligence-Platform
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: api.enterprise-commerce.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+# Core Services Config
+services:
+  gateway:
+    replicaCount: 2
+    port: 8000
+  auth:
+    replicaCount: 2
+    port: 3001
+  inventory:
+    replicaCount: 3
+    port: 3004
+  order:
+    replicaCount: 3
+    port: 3006
+  payment:
+    replicaCount: 2
+    port: 3007
+
+# AI & Operational Services Config
+aiServices:
+  rag:
+    replicaCount: 2
+    port: 8001
+  forecast:
+    replicaCount: 1
+    port: 8002
+  pricing:
+    replicaCount: 2
+    port: 8003
+  agent:
+    replicaCount: 2
+    port: 8007
+
+# Infrastructure Flags
+mongodb:
+  enabled: true
+  auth:
+    rootPassword: "prod-secure-root-password"
+    database: "ecommerce"
+
+kafka:
+  enabled: true
+  replicaCount: 3
+
+redis:
+  enabled: true
+  architecture: replication

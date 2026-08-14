@@ -1,0 +1,18 @@
+const express = require('express');
+const createProxy = require('../services/proxy');
+const config = require('../config');
+const { authenticate, requireRole } = require('../middleware/auth');
+
+const router = express.Router();
+
+// All admin routes require authentication and admin role
+router.use(authenticate, requireRole('admin'));
+
+// Proxy to admin-specific endpoints
+router.use('/products', createProxy(config.services.product));
+router.use('/inventory', createProxy(config.services.inventory));
+router.use('/orders', createProxy(config.services.order));
+router.use('/users', createProxy(config.services.user));
+router.use('/coupons', createProxy(config.services.coupon));
+
+module.exports = router;

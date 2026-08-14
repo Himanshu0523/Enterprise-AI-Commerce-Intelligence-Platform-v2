@@ -1,0 +1,382 @@
+[
+  {
+    "id": "p1",
+    "name": "Product 1",
+    "description": "Description for product 1",
+    "price": 19.99,
+    "images": [
+      "https://picsum.photos/seed/product0/400/400"
+    ],
+    "rating": 4,
+    "reviewCount": 10,
+    "category": "Men",
+    "brand": "BasicWear",
+    "stock": 50,
+    "isFeatured": true,
+    "isNew": true,
+    "isTrending": true,
+    "flashSalePrice": 9.99,
+    "reviews": []
+  },
+  {
+    "id": "p2",
+    "name": "Product 2",
+    "description": "Description for product 2",
+    "price": 24.99,
+    "images": [
+      "https://picsum.photos/seed/product1/400/400"
+    ],
+    "rating": 4.2,
+    "reviewCount": 17,
+    "category": "Women",
+    "brand": "DenimCo",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p3",
+    "name": "Product 3",
+    "description": "Description for product 3",
+    "price": 29.99,
+    "images": [
+      "https://picsum.photos/seed/product2/400/400"
+    ],
+    "rating": 4.4,
+    "reviewCount": 24,
+    "category": "Kids",
+    "brand": "Sporty",
+    "stock": 50,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p4",
+    "name": "Product 4",
+    "description": "Description for product 4",
+    "price": 34.989999999999995,
+    "images": [
+      "https://picsum.photos/seed/product3/400/400"
+    ],
+    "rating": 4.6,
+    "reviewCount": 31,
+    "category": "Accessories",
+    "brand": "Luxe",
+    "stock": 10,
+    "isFeatured": true,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p5",
+    "name": "Product 5",
+    "description": "Description for product 5",
+    "price": 39.989999999999995,
+    "images": [
+      "https://picsum.photos/seed/product4/400/400"
+    ],
+    "rating": 4.8,
+    "reviewCount": 38,
+    "category": "Men",
+    "brand": "BasicWear",
+    "stock": 50,
+    "isFeatured": false,
+    "isNew": true,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p6",
+    "name": "Product 6",
+    "description": "Description for product 6",
+    "price": 44.989999999999995,
+    "images": [
+      "https://picsum.photos/seed/product5/400/400"
+    ],
+    "rating": 4,
+    "reviewCount": 45,
+    "category": "Women",
+    "brand": "DenimCo",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": true,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p7",
+    "name": "Product 7",
+    "description": "Description for product 7",
+    "price": 49.989999999999995,
+    "images": [
+      "https://picsum.photos/seed/product6/400/400"
+    ],
+    "rating": 4.2,
+    "reviewCount": 52,
+    "category": "Kids",
+    "brand": "Sporty",
+    "stock": 50,
+    "isFeatured": true,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": 21.990000000000002,
+    "reviews": []
+  },
+  {
+    "id": "p8",
+    "name": "Product 8",
+    "description": "Description for product 8",
+    "price": 54.989999999999995,
+    "images": [
+      "https://picsum.photos/seed/product7/400/400"
+    ],
+    "rating": 4.4,
+    "reviewCount": 59,
+    "category": "Accessories",
+    "brand": "Luxe",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p9",
+    "name": "Product 9",
+    "description": "Description for product 9",
+    "price": 59.989999999999995,
+    "images": [
+      "https://picsum.photos/seed/product8/400/400"
+    ],
+    "rating": 4.6,
+    "reviewCount": 66,
+    "category": "Men",
+    "brand": "BasicWear",
+    "stock": 50,
+    "isFeatured": false,
+    "isNew": true,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p10",
+    "name": "Product 10",
+    "description": "Description for product 10",
+    "price": 64.99,
+    "images": [
+      "https://picsum.photos/seed/product9/400/400"
+    ],
+    "rating": 4.8,
+    "reviewCount": 73,
+    "category": "Women",
+    "brand": "DenimCo",
+    "stock": 10,
+    "isFeatured": true,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p11",
+    "name": "Product 11",
+    "description": "Description for product 11",
+    "price": 69.99,
+    "images": [
+      "https://picsum.photos/seed/product10/400/400"
+    ],
+    "rating": 4,
+    "reviewCount": 80,
+    "category": "Kids",
+    "brand": "Sporty",
+    "stock": 50,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": true,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p12",
+    "name": "Product 12",
+    "description": "Description for product 12",
+    "price": 74.99,
+    "images": [
+      "https://picsum.photos/seed/product11/400/400"
+    ],
+    "rating": 4.2,
+    "reviewCount": 87,
+    "category": "Accessories",
+    "brand": "Luxe",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p13",
+    "name": "Product 13",
+    "description": "Description for product 13",
+    "price": 79.99,
+    "images": [
+      "https://picsum.photos/seed/product12/400/400"
+    ],
+    "rating": 4.4,
+    "reviewCount": 94,
+    "category": "Men",
+    "brand": "BasicWear",
+    "stock": 50,
+    "isFeatured": true,
+    "isNew": true,
+    "isTrending": false,
+    "flashSalePrice": 33.99,
+    "reviews": []
+  },
+  {
+    "id": "p14",
+    "name": "Product 14",
+    "description": "Description for product 14",
+    "price": 84.99,
+    "images": [
+      "https://picsum.photos/seed/product13/400/400"
+    ],
+    "rating": 4.6,
+    "reviewCount": 101,
+    "category": "Women",
+    "brand": "DenimCo",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p15",
+    "name": "Product 15",
+    "description": "Description for product 15",
+    "price": 89.99,
+    "images": [
+      "https://picsum.photos/seed/product14/400/400"
+    ],
+    "rating": 4.8,
+    "reviewCount": 108,
+    "category": "Kids",
+    "brand": "Sporty",
+    "stock": 50,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p16",
+    "name": "Product 16",
+    "description": "Description for product 16",
+    "price": 94.99,
+    "images": [
+      "https://picsum.photos/seed/product15/400/400"
+    ],
+    "rating": 4,
+    "reviewCount": 115,
+    "category": "Accessories",
+    "brand": "Luxe",
+    "stock": 10,
+    "isFeatured": true,
+    "isNew": false,
+    "isTrending": true,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p17",
+    "name": "Product 17",
+    "description": "Description for product 17",
+    "price": 99.99,
+    "images": [
+      "https://picsum.photos/seed/product16/400/400"
+    ],
+    "rating": 4.2,
+    "reviewCount": 122,
+    "category": "Men",
+    "brand": "BasicWear",
+    "stock": 50,
+    "isFeatured": false,
+    "isNew": true,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p18",
+    "name": "Product 18",
+    "description": "Description for product 18",
+    "price": 104.99,
+    "images": [
+      "https://picsum.photos/seed/product17/400/400"
+    ],
+    "rating": 4.4,
+    "reviewCount": 129,
+    "category": "Women",
+    "brand": "DenimCo",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  },
+  {
+    "id": "p19",
+    "name": "Product 19",
+    "description": "Description for product 19",
+    "price": 109.99,
+    "images": [
+      "https://picsum.photos/seed/product18/400/400"
+    ],
+    "rating": 4.6,
+    "reviewCount": 136,
+    "category": "Kids",
+    "brand": "Sporty",
+    "stock": 50,
+    "isFeatured": true,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": 45.99,
+    "reviews": []
+  },
+  {
+    "id": "p20",
+    "name": "Product 20",
+    "description": "Description for product 20",
+    "price": 114.99,
+    "images": [
+      "https://picsum.photos/seed/product19/400/400"
+    ],
+    "rating": 4.8,
+    "reviewCount": 143,
+    "category": "Accessories",
+    "brand": "Luxe",
+    "stock": 10,
+    "isFeatured": false,
+    "isNew": false,
+    "isTrending": false,
+    "flashSalePrice": null,
+    "reviews": []
+  }
+]

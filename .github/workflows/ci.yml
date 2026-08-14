@@ -1,0 +1,83 @@
+name: Enterprise CI/CD Matrix Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # ─── PATH CHANGE DETECTION ──────────────────────────────────────────────────
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      node_services: ${{ steps.filter.outputs.node_services }}
+      python_services: ${{ steps.filter.outputs.python_services }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            node_services:
+              - 'services/cors/**'
+              - 'services/api-gateway/**'
+              - 'packages/**'
+            python_services:
+              - 'services/intelligence/**'
+              - 'services/operations/**'
+
+  # ─── NODE CORE MICROSERVICES CI ──────────────────────────────────────────────
+  node-microservices-ci:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.node_services == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth-service, user-service, product-service, inventory-service, cart-service, order-service, payment-service, shipping-service, coupon-service, review-service]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Service Dependencies
+        run: |
+          if [ -f "services/cors/${{ matrix.service }}/package.json" ]; then
+            cd services/cors/${{ matrix.service }}
+            npm install
+          fi
+
+      - name: Run Service Unit & Integration Tests
+        run: |
+          if [ -f "services/cors/${{ matrix.service }}/package.json" ]; then
+            cd services/cors/${{ matrix.service }}
+            npm test --if-present
+          fi
+
+  # ─── PYTHON AI MICROSERVICES CI ─────────────────────────────────────────────
+  python-ai-services-ci:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.python_services == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [rag-service, forecast-service, pricing-service, fraud-service, visual-search-service, ml-service, agent-service]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Test Python AI Service Syntax
+        run: |
+          if [ -d "services/operations/${{ matrix.service }}" ]; then
+            cd services/operations/${{ matrix.service }}
+            pip install -r requirements.txt
+            python -c "import main; print('${{ matrix.service }} Valid')"
+          elif [ -d "services/intelligence/${{ matrix.service }}" ]; then
+            cd services/intelligence/${{ matrix.service }}
+            pip install -r requirements.txt
+            python -c "import main; print('${{ matrix.service }} Valid')"
+          fi

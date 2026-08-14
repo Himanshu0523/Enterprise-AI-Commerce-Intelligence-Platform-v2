@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-database",
+  "version": "1.0.0",
+  "description": "Base database connection helper for MongoDB and MySQL warehouse",
+  "main": "index.js",
+  "license": "MIT"
+}

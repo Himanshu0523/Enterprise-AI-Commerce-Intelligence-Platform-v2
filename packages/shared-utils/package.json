@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-utils",
+  "version": "1.0.0",
+  "description": "Shared utility functions for express responses, currency, and validation",
+  "main": "index.js",
+  "license": "MIT"
+}

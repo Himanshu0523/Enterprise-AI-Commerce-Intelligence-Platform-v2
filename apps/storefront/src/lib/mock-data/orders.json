@@ -1,0 +1,90 @@
+[
+  {
+    "id": "ORD-123456-ABC",
+    "date": "2026-07-20T10:30:00Z",
+    "total": 149.97,
+    "status": "delivered",
+    "shippingAddress": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "address": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001",
+      "country": "US",
+      "phone": "+1-555-1234"
+    },
+    "shippingMethod": "Express Shipping",
+    "paymentMethod": "Credit Card",
+    "items": [
+      {
+        "productId": "p2",
+        "name": "Slim Fit Jeans",
+        "price": 59.99,
+        "quantity": 1,
+        "image": "https://picsum.photos/seed/jeans/400/400"
+      },
+      {
+        "productId": "p5",
+        "name": "Running Sneakers",
+        "price": 89.99,
+        "quantity": 1,
+        "image": "https://picsum.photos/seed/sneakers/400/400"
+      }
+    ]
+  },
+  {
+    "id": "ORD-789012-XYZ",
+    "date": "2026-07-15T14:20:00Z",
+    "total": 79.99,
+    "status": "shipped",
+    "shippingAddress": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "address": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001",
+      "country": "US",
+      "phone": "+1-555-1234"
+    },
+    "shippingMethod": "Standard Shipping",
+    "paymentMethod": "PayPal",
+    "items": [
+      {
+        "productId": "p11",
+        "name": "Bluetooth Headphones",
+        "price": 79.99,
+        "quantity": 1,
+        "image": "https://picsum.photos/seed/headphones/400/400"
+      }
+    ]
+  },
+  {
+    "id": "ORD-345678-DEF",
+    "date": "2026-07-10T09:15:00Z",
+    "total": 149.98,
+    "status": "processing",
+    "shippingAddress": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "address": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001",
+      "country": "US",
+      "phone": "+1-555-1234"
+    },
+    "shippingMethod": "Express Shipping",
+    "paymentMethod": "Credit Card",
+    "items": [
+      {
+        "productId": "p9",
+        "name": "Leather Boots",
+        "price": 149.99,
+        "quantity": 1,
+        "image": "https://picsum.photos/seed/boots/400/400"
+      }
+    ]
+  }
+]

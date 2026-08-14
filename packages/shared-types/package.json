@@ -1,0 +1,7 @@
+{
+  "name": "@ecommerce/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript definitions and interfaces",
+  "main": "index.js",
+  "license": "MIT"
+}

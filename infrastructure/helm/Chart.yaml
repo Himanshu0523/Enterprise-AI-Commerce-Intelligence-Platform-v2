@@ -1,0 +1,15 @@
+apiVersion: v2
+name: enterprise-commerce-platform
+description: Helm Chart for Enterprise AI Commerce Intelligence Platform
+type: application
+version: 1.0.0
+appVersion: "2.0.0"
+dependencies:
+  - name: mongodb
+    version: 13.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: mongodb.enabled
+  - name: kafka
+    version: 19.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: kafka.enabled
