@@ -1,21 +1,36 @@
-# shadcn/ui monorepo template
+# 🖥️ Enterprise Merchant Admin Dashboard
 
-This is a Next.js monorepo template with shadcn/ui.
+### Next.js 14 • Turborepo • TailwindCSS • Shadcn/UI • Real-Time AI Agent Control
 
-## Adding components
+This directory contains the **Enterprise Admin Dashboard**, built for store managers and operators to monitor catalog inventory, demand forecasting, real-time fraud flags, dynamic price bounds, and autonomous AI agent operations.
 
-To add components to your app, run the following command at the root of your `web` app:
+---
 
+## 🛠️ Tech Stack & Architecture
+
+- **Framework**: Next.js 14 (App Router)
+- **UI Components**: Shared `@workspace/ui` (Shadcn/UI + TailwindCSS)
+- **State & API**: React Query / Hooks connecting to API Gateway (`http://localhost:8000`)
+- **Monorepo Management**: Turborepo + pnpm workspaces
+
+---
+
+## 🚀 Getting Started
+
+### Run Independently:
 ```bash
-pnpm dlx shadcn@latest add button -c apps/web
+npm run dev --filter admin-dashboard
+# or from root
+pnpm dev --filter admin-dashboard
 ```
 
-This will place the ui components in the `packages/ui/src/components` directory.
+The application will launch on `http://localhost:3002` (or configured admin port).
 
-## Using components
+---
 
-To use the components in your app, import them from the `ui` package.
+## 📊 Key Features
 
-```tsx
-import { Button } from "@workspace/ui/components/button";
-```
+1. **AI Agent Supervisor Monitor**: Real-time graph monitoring for `agent-service` LangGraph loops, financial token budget gauges, and manual Human-In-The-Loop (HITL) price/order approvals.
+2. **Dynamic Pricing Controls**: Set floor prices and MSRP ceilings for automated reinforcement learning dynamic pricing.
+3. **Demand Forecasting Visualizer**: Interactive time-series revenue and SKU stock level charts powered by `forecast-service`.
+4. **Real-time Fraud Review Console**: Audit flagged high-risk transactions from `fraud-service`.
