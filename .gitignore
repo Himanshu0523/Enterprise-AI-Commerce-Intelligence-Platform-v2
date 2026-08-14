@@ -142,3 +142,21 @@ vite.config.ts.timestamp-*
 ToDo.md
 
 .vscode
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python & Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
