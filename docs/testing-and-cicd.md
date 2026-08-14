@@ -7,7 +7,7 @@ This document specifies the testing methodology, consumer-driven API contract te
 
 ## 1. Multi-Tier Testing Strategy
 
-The platform enforces a 3-tier testing pyramid to guarantee quality across all 17 microservices:
+The platform enforces a 3-tier testing pyramid to guarantee quality across all 19 microservices:
 
 ```text
                        ┌───────────────────┐
@@ -53,7 +53,7 @@ The `.github/workflows/ci.yml` pipeline optimizes build speeds by using **path c
 flowchart TD
     Push[Git Push / PR] --> Filter[Path Filter Check]
     
-    Filter -->|Changes in services/cors/*| NodeMatrix["Node Matrix Jobs (10 Services Parallel)"]
+    Filter -->|Changes in services/core/*| NodeMatrix["Node Matrix Jobs (12 Services Parallel)"]
     Filter -->|Changes in services/intelligence/*| PyMatrix["Python Matrix Jobs (7 Services Parallel)"]
     
     NodeMatrix --> TestNode[Run Jest & Supertest]

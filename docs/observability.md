@@ -1,7 +1,7 @@
 # 📊 Observability, Distributed Tracing, & Monitoring Architecture
 
 ## Overview
-This document specifies the centralized logging, distributed tracing, metrics collection, and Kubernetes health probe standards implemented across all 17 microservices in the **Enterprise AI Commerce Intelligence Platform**.
+This document specifies the centralized logging, distributed tracing, metrics collection, and Kubernetes health probe standards implemented across all 19 microservices in the **Enterprise AI Commerce Intelligence Platform**.
 
 ---
 

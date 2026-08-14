@@ -23,25 +23,17 @@
 
 **Enterprise AI Commerce Intelligence Platform** is a full-stack, distributed microservices e-commerce ecosystem integrating Artificial Intelligence, Machine Learning, Data Engineering, Retrieval-Augmented Generation (RAG), Agentic AI, Demand Forecasting, Dynamic Pricing, Fraud Detection, and Data Warehousing.
 
----
-
-> **Engineering Highlights:** Polyglot microservices architecture handling high-concurrency inventory operations via a lock-free Redis Lua allocator, cloud budget protection via a token-aware API Gateway rate limiter, and eventual consistency during network partitions via an automated Saga Orchestrator with compensating transaction retry workers.
-
-> **Project Context:** Solo-built over ~3 months as an architectural deep-dive into distributed systems, AI/ML integration, and modern cloud-native patterns. Portions of scaffolding were AI-assisted; all core architecture, service logic, and resilience patterns were independently designed and implemented.
-
----
-
 # 🚧 Platform Implementation Status
 
-| Component | Status | Details |
-| :--- | :---: | :--- |
-| **Storefront & Admin Dashboards** | ✅ Completed | Next.js 14 React client apps with API Gateway proxying |
-| **API Gateway** | ✅ Completed | Port 8000 central proxy, auth verification, and rate limiting |
-| **Core Microservices (10 Services)** | ✅ Completed | Auth, User, Product, Inventory, Cart, Order, Payment, Shipping, Coupon, Review |
+| Component                                |    Status    | Details                                                                                                      |
+| :--------------------------------------- | :----------: | :----------------------------------------------------------------------------------------------------------- |
+| **Storefront & Admin Dashboards**        | ✅ Completed | Next.js 14 React client apps with API Gateway proxying                                                       |
+| **API Gateway**                          | ✅ Completed | Port 8000 central proxy, auth verification, and rate limiting                                                |
+| **Core Microservices (12 Services)**     | ✅ Completed | Auth, User, Product, Inventory, Cart, Order, Payment, Shipping, Coupon, Review, Notification, Audit Log      |
 | **Python AI Microservices (7 Services)** | ✅ Completed | RAG Support, Demand Forecast, Dynamic Pricing, Fraud Detection, Visual Search, Recommendation ML, Agentic AI |
-| **Data Warehouse & ETL Pipeline** | ✅ Completed | MongoDB-to-MySQL CDC pipelines & automated daily ETL scheduler |
-| **Event Streaming (Kafka)** | ✅ Completed | Kafka event producer in `auth-service` with graceful fallback |
-| **Docker Orchestration** | ✅ Completed | Master `docker-compose.yml` for all 17 microservices + DBs |
+| **Data Warehouse & ETL Pipeline**        | ✅ Completed | MongoDB-to-MySQL CDC pipelines & automated daily ETL scheduler                                               |
+| **Event Streaming (Kafka)**              | ✅ Completed | Kafka event producer in `auth-service` with graceful fallback                                                |
+| **Docker Orchestration**                 | ✅ Completed | Master `docker-compose.yml` for all 19 microservices + DBs                                                   |
 
 ---
 
@@ -120,13 +112,13 @@ flowchart TD
    - Single point of entry running on **Port 8000**.
    - Handles path routing, cross-origin CORS policies, security headers (Helmet), and proxies authentication header validation (`x-user-id`, `x-user-email`) down to internal microservices.
 
-3. **Core Domain Layer (`services/cors/`)**:
+3. **Core Domain Layer (`services/core/`)**:
    - Decoupled Express microservices handling domain transactional logic.
    - Each microservice possesses its own isolated MongoDB database instance (Database-per-Service pattern).
 
 4. **Intelligence & AI Layer (`services/intelligence/` & `services/operations/`)**:
    - High-performance FastAPI Python microservices.
-   - Implements specialized ML models (Prophet/LSTM for forecasting, CLIP embeddings + FAISS/Qdrant for visual search, vector RAG for customer support, and multi-agent execution graphs via LangChain/LangGraph).
+   - Implements specialized ML models (Prophet/LSTM for forecasting, CLIP embeddings + Qdrant for visual search, vector RAG for customer support, and multi-agent execution graphs via LangChain/LangGraph).
 
 5. **Analytics & Data Pipeline Layer (`services/data-pipeline/`)**:
    - Extracts transactional state changes from MongoDB, transforms raw JSON into normalized relational schemas (`dim_products`, `dim_customers`, `fact_orders`), and loads into a MySQL OLAP warehouse for business intelligence querying.
@@ -148,9 +140,10 @@ flowchart TD
 # ⚡ Advanced Architectural & Resilience Features
 
 ### 1. Algorithmic Lock-Free In-Memory Inventory Allocator (Redis Lua Scripts)
+
 - **The Challenge**: Traditional relational databases block during flash sales (limited-edition drops, smartphone releases) when hundreds of thousands of users attempt to purchase items at the exact same millisecond. Relational row-level locks exhaust connection pools, freeze execution threads, and crash the system.
 - **The Solution**: We implemented an **Algorithmic Lock-Free In-Memory Inventory Allocator** in `inventory-service` using a single-threaded **Redis Lua Script** (`reserveStockLua`).
-- **How It Works**: 
+- **How It Works**:
   - Stock allocation checks and reserves are executed inside Redis entirely in-memory in `<1ms` without ever touching a disk.
   - The script executes atomically in a single execution thread, eliminating transaction race conditions and double-selling.
   - **Write-Behind Pattern**: Once Redis confirms allocation, the service returns a successful HTTP response to the client immediately and persists the database update to MongoDB asynchronously in a non-blocking background queue, shielding databases from traffic spikes.
@@ -160,11 +153,13 @@ flowchart TD
   ```
 
 ### 2. Distributed Saga Orchestrator & Eventual Consistency
+
 - Tracks multi-step checkout transactions (`order-service` ➔ `inventory-service` ➔ `payment-service`).
-- Employs compensating transactions (reversing stock reservations) during downstream failures (e.g. card declines, gateway timeouts).
-- Uses a background **Eventual Consistency Worker** to periodically retry failed compensations if network partitions disrupt the immediate rollback phase — validated via custom concurrency test scripts in `scripts/`.
+- Employs compensating transactions (reversing reservations) during downstream failures (e.g. card declines).
+- Uses a background **Eventual Consistency Worker** to periodically retry failed compensations (like restocking) if network partitions disrupt the immediate rollback phase.
 
 ### 3. OpenTelemetry-Compatible Distributed Tracing
+
 - Integrates standard W3C `traceparent` context passing across Node.js services and Python FastAPI servers.
 - Builds a Directed Acyclic Graph (DAG) of request flows, profiling span durations to audit P99 bottlenecks.
 - **Run Latency Audit**:
@@ -173,6 +168,7 @@ flowchart TD
   ```
 
 ### 4. Token-Aware API Gateway Rate Limiter (Cloud Cost Protection)
+
 - **The Challenge**: Recursive loops in autonomous AI agents or malicious spamming of chatbot interfaces can consume millions of LLM tokens (OpenAI/Anthropic) in minutes, leading to massive cloud bill spikes.
 - **The Solution**: We built a custom **Token-Aware Rate Limiter** directly inside the API Gateway (`tokenRateLimiter.js`).
 - **How It Works**:
@@ -186,6 +182,7 @@ flowchart TD
   ```
 
 ### 5. AI Guardrails: Multi-Agent Supervisor Router (agent-service)
+
 - **The Challenge**: Autonomous AI multi-agent workflows (such as LangGraph passing messages between Pricing, Marketing, and Inventory agents) can easily enter cyclic reasoning infinite loops when faced with ambiguous user queries, incurring massive token costs and freezing storefront UX.
 - **The Solution**: We integrated an in-memory/Redis-backed **Supervisor Router** (`supervisor.py`) directly into the agent step-traversal chain.
 - **How It Works**:
@@ -197,6 +194,7 @@ flowchart TD
   ```
 
 ### 6. Vector Sync: Event-Driven Kafka Change Data Capture (CDC)
+
 - **The Challenge**: Pricing, inventory levels, and discounts mutate rapidly in database layers. Without real-time updates, RAG search engines (e.g. Qdrant/FAISS) query outdated metadata and hallucinate obsolete coupon offers or out-of-stock items.
 - **The Solution**: Developed a real-time **Kafka Change Data Capture (CDC) Sync Worker** (`kafka_cdc_worker.py`) in `rag-service`.
 - **How It Works**:
@@ -213,20 +211,20 @@ flowchart TD
 
 For detailed architectural specifications, database schemas, security models, and CI/CD pipelines, explore the system documentation:
 
-| Document | Description | Path Link |
-| :--- | :--- | :--- |
-| **System Architecture & Design** | High-level system design, decoupled service layers, and core data flows | [`docs/system-design.md`](docs/system-design.md) |
-| **Directory & Folder Structure** | Repository layout, service organization, and sub-project blueprints | [`docs/folder-structure.md`](docs/folder-structure.md) |
-| **Database Design & Schemas** | MongoDB document models, MySQL Data Warehouse ERDs, and indexing strategy | [`docs/database-design.md`](docs/database-design.md) |
-| **Data & AI Layer Architecture** | RAG pipelines, vector search, demand forecasting models, and LLM integration | [`docs/data-and-ai-layer.md`](docs/data-and-ai-layer.md) |
-| **API Specifications** | Gateway endpoints, microservice routing maps, and request/response contracts | [`docs/api-spec.md`](docs/api-spec.md) |
-| **Sequence Diagrams** | End-to-end transaction flows, Sagas, auth verification, and event streaming | [`docs/sequence-diagrams.md`](docs/sequence-diagrams.md) |
-| **System Resilience & Sagas** | Lock-free inventory allocators, Saga orchestrators, rate limiters, and fault tolerance | [`docs/resilience.md`](docs/resilience.md) |
-| **Security Architecture** | JWT auth, microservice token validation, CORS policies, and rate-limiting guardrails | [`docs/security.md`](docs/security.md) |
-| **Observability & Tracing** | OpenTelemetry W3C distributed tracing, DAG latency audits, and log aggregation | [`docs/observability.md`](docs/observability.md) |
-| **Testing & CI/CD Pipelines** | Multi-tier testing, Pact contract verification, and GitHub Actions matrix workflows | [`docs/testing-and-cicd.md`](docs/testing-and-cicd.md) |
-| **Backup & Disaster Recovery** | Database snapshot strategies, point-in-time recovery, and failover protocols | [`docs/backup-and-disaster-recovery.md`](docs/backup-and-disaster-recovery.md) |
-| **Software Requirements Spec (SRS)** | System requirements, functional/non-functional specs, and system boundaries | [`docs/SRS.md`](docs/SRS.md) |
+| Document                             | Description                                                                            | Path Link                                                                      |
+| :----------------------------------- | :------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| **System Architecture & Design**     | High-level system design, decoupled service layers, and core data flows                | [`docs/system-design.md`](docs/system-design.md)                               |
+| **Directory & Folder Structure**     | Repository layout, service organization, and sub-project blueprints                    | [`docs/folder-structure.md`](docs/folder-structure.md)                         |
+| **Database Design & Schemas**        | MongoDB document models, MySQL Data Warehouse ERDs, and indexing strategy              | [`docs/database-design.md`](docs/database-design.md)                           |
+| **Data & AI Layer Architecture**     | RAG pipelines, vector search, demand forecasting models, and LLM integration           | [`docs/data-and-ai-layer.md`](docs/data-and-ai-layer.md)                       |
+| **API Specifications**               | Gateway endpoints, microservice routing maps, and request/response contracts           | [`docs/api-spec.md`](docs/api-spec.md)                                         |
+| **Sequence Diagrams**                | End-to-end transaction flows, Sagas, auth verification, and event streaming            | [`docs/sequence-diagrams.md`](docs/sequence-diagrams.md)                       |
+| **System Resilience & Sagas**        | Lock-free inventory allocators, Saga orchestrators, rate limiters, and fault tolerance | [`docs/resilience.md`](docs/resilience.md)                                     |
+| **Security Architecture**            | JWT auth, microservice token validation, CORS policies, and rate-limiting guardrails   | [`docs/security.md`](docs/security.md)                                         |
+| **Observability & Tracing**          | OpenTelemetry W3C distributed tracing, DAG latency audits, and log aggregation         | [`docs/observability.md`](docs/observability.md)                               |
+| **Testing & CI/CD Pipelines**        | Multi-tier testing, Pact contract verification, and GitHub Actions matrix workflows    | [`docs/testing-and-cicd.md`](docs/testing-and-cicd.md)                         |
+| **Backup & Disaster Recovery**       | Database snapshot strategies, point-in-time recovery, and failover protocols           | [`docs/backup-and-disaster-recovery.md`](docs/backup-and-disaster-recovery.md) |
+| **Software Requirements Spec (SRS)** | System requirements, functional/non-functional specs, and system boundaries            | [`docs/SRS.md`](docs/SRS.md)                                                   |
 
 ---
 
@@ -236,22 +234,24 @@ For detailed architectural specifications, database schemas, security models, an
 
 ```bash
 # Clone repository
-git clone https://github.com/Himanshu0523/Enterprise-AI-Commerce-Intelligence-Platform-v2.git
-cd Enterprise-AI-Commerce-Intelligence-Platform-v2
+git clone https://github.com/Himanshu0523/Enterprise-AI-Commerce-Intelligence-Platform.git
+cd Enterprise-AI-Commerce-Intelligence-Platform
 
-# Spin up all 17 microservices + DBs in Docker
+# Spin up all 19 microservices + DBs in Docker
 docker compose up -d
 ```
 
 ### Method 2: Manual Development Launch
 
 1. **Node Core Microservices**:
+
    ```bash
-   cd services/cors/auth-service
+   cd services/core/auth-service
    npm install && npm run dev
    ```
 
 2. **Python AI Microservices**:
+
    ```bash
    cd services/operations/rag-service
    pip install -r requirements.txt

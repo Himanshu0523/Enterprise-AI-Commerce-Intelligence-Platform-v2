@@ -3,6 +3,8 @@
 ## Overview
 This document outlines the backup frequencies, Point-in-Time Recovery (PITR) procedures, and Disaster Recovery target metrics (RPO & RTO) across MongoDB, MySQL Data Warehouse, and Qdrant Vector DB.
 
+> **📌 Architecture Note:** The backup strategies described in this document represent the **target production architecture** for cloud deployment (AWS/GCP). For local development, `docker-compose.yml` uses volume mounts for data persistence. The S3, KMS, and cross-region configurations documented below are implementation blueprints for staging/production environments.
+
 ---
 
 ## 1. Target Recovery Objectives

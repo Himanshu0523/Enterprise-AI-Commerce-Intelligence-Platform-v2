@@ -67,28 +67,26 @@ The platform follows a Polyglot Persistence Architecture where different databas
 
 ---
 
-# 3. MongoDB Database Design
+# 3. MongoDB Design — Database-per-Service Pattern
 
-MongoDB stores real-time operational data.
+Each core microservice owns its **isolated MongoDB database instance**. No cross-service database sharing is permitted — this enforces strict service boundaries, enables independent scaling, and aligns with the Distributed Saga pattern described in [`resilience.md`](resilience.md).
 
-Database:
+| Microservice | Dedicated Database | Primary Collections |
+| :--- | :--- | :--- |
+| `auth-service` | `auth_db` | `users`, `refresh_tokens`, `otp_records` |
+| `user-service` | `user_db` | `profiles`, `addresses` |
+| `product-service` | `product_db` | `products`, `categories` |
+| `inventory-service` | `inventory_db` | `inventory`, `reservations` |
+| `cart-service` | `cart_db` | `carts` |
+| `order-service` | `order_db` | `orders` |
+| `payment-service` | `payment_db` | `transactions`, `refunds` |
+| `shipping-service` | `shipping_db` | `shipments`, `tracking_events` |
+| `coupon-service` | `coupon_db` | `coupons`, `redemptions` |
+| `review-service` | `review_db` | `reviews`, `helpfulness_votes` |
+| `notification-service` | `notification_db` | `notifications`, `templates` |
+| `audit-log-service` | `audit_db` | `audit_logs` |
 
-```text
-ecommerce_db
-```
-
-Collections:
-
-```text
-users
-products
-orders
-carts
-events
-reviews
-inventory
-payments
-```
+> ⚠️ **Cross-service data access is strictly prohibited via direct database connections.** Services communicate only through REST API calls or Kafka event streaming. See [`resilience.md`](resilience.md#3-distributed-transactions-saga-pattern-choreography) for cross-service transaction handling via the Choreography Saga pattern.
 
 ---
 

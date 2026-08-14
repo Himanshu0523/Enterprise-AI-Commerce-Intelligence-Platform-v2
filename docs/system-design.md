@@ -11,7 +11,7 @@ Here is the exact mapping for all deployed microservices in the platform:
 | Service Category | Service Name | Protocol | Port | Primary Responsibility |
 | :--- | :--- | :---: | :---: | :--- |
 | **Gateway** | `api-gateway` | HTTP/REST | `8000` | Single entry point for clients. Routes requests & validates tokens. |
-| **Core Domain (10)** | `auth-service` | HTTP/REST | `3001` | JWT, Google OAuth2, Speakeasy TOTP MFA, Kafka events. |
+| **Core Domain (12)** | `auth-service` | HTTP/REST | `3001` | JWT, Google OAuth2, Speakeasy TOTP MFA, Kafka events. |
 | | `user-service` | HTTP/REST | `3002` | User profiles, addresses, role management. |
 | | `product-service` | HTTP/REST | `3003` | Product catalog CRUD, multi-attribute search. |
 | | `inventory-service` | HTTP/REST | `3004` | Stock levels, checkout reservations, release logic. |
@@ -21,6 +21,8 @@ Here is the exact mapping for all deployed microservices in the platform:
 | | `shipping-service` | HTTP/REST | `3008` | Carrier selection, rate calculation, tracking. |
 | | `coupon-service` | HTTP/REST | `3009` | Promotional discounts, coupon validation. |
 | | `review-service` | HTTP/REST | `3010` | Product ratings, customer reviews, helpfulness votes. |
+| | `notification-service` | HTTP/REST | `3011` | Transactional email & SMS dispatch (order confirmations, alerts). |
+| | `audit-log-service` | HTTP/REST | `3012` | Immutable event audit trail for security & compliance logging. |
 | **Intelligence (7)** | `rag-service` | HTTP/REST | `8001` | Vector search QA, FAQ assistance, review summary. |
 | | `forecast-service` | HTTP/REST | `8002` | Time-series demand forecasting (Prophet/LSTM). |
 | | `pricing-service` | HTTP/REST | `8003` | Dynamic price optimization based on demand/stock. |
@@ -48,6 +50,8 @@ graph TD
     Gateway --> Shipping[Shipping Service - Port 3008]
     Gateway --> Coupon[Coupon Service - Port 3009]
     Gateway --> Review[Review Service - Port 3010]
+    Gateway --> Notif[Notification Service - Port 3011]
+    Gateway --> Audit[Audit Log Service - Port 3012]
 
     %% Gateway Routes to AI Intelligence Services
     Gateway --> Pricing[Pricing Service - Port 8003]

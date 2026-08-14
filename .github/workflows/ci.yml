@@ -20,7 +20,7 @@ jobs:
         with:
           filters: |
             node_services:
-              - 'services/cors/**'
+              - 'services/core/**'
               - 'services/api-gateway/**'
               - 'packages/**'
             python_services:
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [auth-service, user-service, product-service, inventory-service, cart-service, order-service, payment-service, shipping-service, coupon-service, review-service]
+        service: [auth-service, user-service, product-service, inventory-service, cart-service, order-service, payment-service, shipping-service, coupon-service, review-service, notification-service, audit-log-service]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,15 +55,15 @@ jobs:
 
       - name: Install Service Dependencies
         run: |
-          if [ -f "services/cors/${{ matrix.service }}/package.json" ]; then
-            cd services/cors/${{ matrix.service }}
+          if [ -f "services/core/${{ matrix.service }}/package.json" ]; then
+            cd services/core/${{ matrix.service }}
             npm install
           fi
 
       - name: Run Service Unit & Integration Tests
         run: |
-          if [ -f "services/cors/${{ matrix.service }}/package.json" ]; then
-            cd services/cors/${{ matrix.service }}
+          if [ -f "services/core/${{ matrix.service }}/package.json" ]; then
+            cd services/core/${{ matrix.service }}
             npm test --if-present
           fi
 

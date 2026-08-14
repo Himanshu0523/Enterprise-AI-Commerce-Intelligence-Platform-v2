@@ -123,7 +123,7 @@ services:
   # ─── NODE CORE MICROSERVICES (PROFILE: core) 
   auth-service:
     build:
-      context: ./services/cors/auth-service
+      context: ./services/core/auth-service
     container_name: auth-service
     profiles: ["core"]
     environment:
@@ -143,7 +143,7 @@ services:
 
   user-service:
     build:
-      context: ./services/cors/user-service
+      context: ./services/core/user-service
     container_name: user-service
     profiles: ["core"]
     environment:
@@ -156,7 +156,7 @@ services:
 
   product-service:
     build:
-      context: ./services/cors/product-service
+      context: ./services/core/product-service
     container_name: product-service
     profiles: ["core"]
     environment:
@@ -169,7 +169,7 @@ services:
 
   inventory-service:
     build:
-      context: ./services/cors/inventory-service
+      context: ./services/core/inventory-service
     container_name: inventory-service
     profiles: ["core"]
     environment:
@@ -182,7 +182,7 @@ services:
 
   cart-service:
     build:
-      context: ./services/cors/cart-service
+      context: ./services/core/cart-service
     container_name: cart-service
     profiles: ["core"]
     environment:
@@ -197,7 +197,7 @@ services:
 
   order-service:
     build:
-      context: ./services/cors/order-service
+      context: ./services/core/order-service
     container_name: order-service
     profiles: ["core"]
     environment:
@@ -210,7 +210,7 @@ services:
 
   payment-service:
     build:
-      context: ./services/cors/payment-service
+      context: ./services/core/payment-service
     container_name: payment-service
     profiles: ["core"]
     environment:
@@ -223,7 +223,7 @@ services:
 
   shipping-service:
     build:
-      context: ./services/cors/shipping-service
+      context: ./services/core/shipping-service
     container_name: shipping-service
     profiles: ["core"]
     environment:
@@ -236,7 +236,7 @@ services:
 
   coupon-service:
     build:
-      context: ./services/cors/coupon-service
+      context: ./services/core/coupon-service
     container_name: coupon-service
     profiles: ["core"]
     environment:
@@ -249,7 +249,7 @@ services:
 
   review-service:
     build:
-      context: ./services/cors/review-service
+      context: ./services/core/review-service
     container_name: review-service
     profiles: ["core"]
     environment:
@@ -262,7 +262,7 @@ services:
 
   notification-service:
     build:
-      context: ./services/cors/notification-service
+      context: ./services/core/notification-service
     container_name: notification-service
     profiles: ["core"]
     environment:
@@ -275,7 +275,7 @@ services:
 
   audit-log-service:
     build:
-      context: ./services/cors/audit-log-service
+      context: ./services/core/audit-log-service
     container_name: audit-log-service
     profiles: ["core"]
     environment:
