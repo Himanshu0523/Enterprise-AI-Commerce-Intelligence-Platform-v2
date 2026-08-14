@@ -207,6 +207,27 @@ flowchart TD
 
 ---
 
+# 📚 Technical & Architecture Documentation
+
+For detailed architectural specifications, database schemas, security models, and CI/CD pipelines, explore the system documentation:
+
+| Document | Description | Path Link |
+| :--- | :--- | :--- |
+| **System Architecture & Design** | High-level system design, decoupled service layers, and core data flows | [`docs/system-design.md`](docs/system-design.md) |
+| **Directory & Folder Structure** | Repository layout, service organization, and sub-project blueprints | [`docs/folder-structure.md`](docs/folder-structure.md) |
+| **Database Design & Schemas** | MongoDB document models, MySQL Data Warehouse ERDs, and indexing strategy | [`docs/database-design.md`](docs/database-design.md) |
+| **Data & AI Layer Architecture** | RAG pipelines, vector search, demand forecasting models, and LLM integration | [`docs/data-and-ai-layer.md`](docs/data-and-ai-layer.md) |
+| **API Specifications** | Gateway endpoints, microservice routing maps, and request/response contracts | [`docs/api-spec.md`](docs/api-spec.md) |
+| **Sequence Diagrams** | End-to-end transaction flows, Sagas, auth verification, and event streaming | [`docs/sequence-diagrams.md`](docs/sequence-diagrams.md) |
+| **System Resilience & Sagas** | Lock-free inventory allocators, Saga orchestrators, rate limiters, and fault tolerance | [`docs/resilience.md`](docs/resilience.md) |
+| **Security Architecture** | JWT auth, microservice token validation, CORS policies, and rate-limiting guardrails | [`docs/security.md`](docs/security.md) |
+| **Observability & Tracing** | OpenTelemetry W3C distributed tracing, DAG latency audits, and log aggregation | [`docs/observability.md`](docs/observability.md) |
+| **Testing & CI/CD Pipelines** | Multi-tier testing, Pact contract verification, and GitHub Actions matrix workflows | [`docs/testing-and-cicd.md`](docs/testing-and-cicd.md) |
+| **Backup & Disaster Recovery** | Database snapshot strategies, point-in-time recovery, and failover protocols | [`docs/backup-and-disaster-recovery.md`](docs/backup-and-disaster-recovery.md) |
+| **Software Requirements Spec (SRS)** | System requirements, functional/non-functional specs, and system boundaries | [`docs/SRS.md`](docs/SRS.md) |
+
+---
+
 # 🚀 Quick Start & Local Execution
 
 ### Method 1: Master Docker Compose (Recommended)
