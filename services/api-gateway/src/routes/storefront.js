@@ -1,6 +1,6 @@
 const express = require('express');
 const createProxy = require('../services/proxy');
-const config = require('../conifg');
+const config = require('../config');
 const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();

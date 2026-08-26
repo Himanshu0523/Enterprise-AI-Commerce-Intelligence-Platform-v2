@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   ecommerce_net:
     driver: bridge
@@ -92,6 +90,7 @@ services:
     build:
       context: ./services/api-gateway
     container_name: api-gateway
+    profiles: ["core"]
     ports:
       - "8000:8000"
     environment:
