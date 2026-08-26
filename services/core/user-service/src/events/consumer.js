@@ -5,6 +5,7 @@ const UserProfile = require('../models/UserProfile');
 const kafka = new Kafka({
   clientId: config.kafkaClientId,
   brokers: config.kafkaBrokers,
+  ...config.kafkaSaslConfig,
 });
 
 const consumer = kafka.consumer({ groupId: config.kafkaConsumerGroup });

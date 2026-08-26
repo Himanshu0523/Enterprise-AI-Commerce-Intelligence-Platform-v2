@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const { connectDB } = require('./config/db');
+const { startKafkaConsumer, stopKafkaConsumer } = require('./events/kafkaConsumer');
 
 const app = express();
 app.use(cors());
@@ -28,6 +30,29 @@ app.post('/api/notifications/send', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Notification Service running on port ${PORT}`);
-});
+const startServer = async () => {
+  // Connect to Database
+  await connectDB();
+
+  // Start Kafka Consumer
+  await startKafkaConsumer();
+
+  const server = app.listen(PORT, () => {
+    console.log(`Notification Service running on port ${PORT}`);
+  });
+
+  // Graceful shutdown
+  const shutdown = async () => {
+    console.log('[Notification-Service] Shutting down gracefully...');
+    await stopKafkaConsumer();
+    server.close(() => {
+      console.log('[Notification-Service] HTTP server closed.');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+};
+
+startServer();

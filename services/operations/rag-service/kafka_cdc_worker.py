@@ -7,23 +7,38 @@ import requests
 # Fallback in-memory DB references if Qdrant is unreachable
 from main import PRODUCT_CATALOG
 
-QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
-QDRANT_PORT = os.getenv("QDRANT_PORT", "6333")
-QDRANT_URL = f"http://{QDRANT_HOST}:{QDRANT_PORT}"
+QDRANT_URL = os.getenv(
+    "QDRANT_URL",
+    f"http://{os.getenv('QDRANT_HOST', 'localhost')}:{os.getenv('QDRANT_PORT', '6333')}"
+)
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "")
 
 def get_kafka_consumer():
     """Tries to connect to Kafka, returns None if client library or broker is missing."""
     try:
         from kafka import KafkaConsumer
-        broker = os.getenv("KAFKA_BROKER", "localhost:9092")
-        consumer = KafkaConsumer(
-            "product-mutations",
-            bootstrap_servers=[broker],
-            auto_offset_reset="earliest",
-            enable_auto_commit=True,
-            value_deserializer=lambda x: json.loads(x.decode("utf-8")),
-            consumer_timeout_ms=1000
-        )
+        broker = os.getenv("KAFKA_BOOTSTRAP_SERVERS") or os.getenv("KAFKA_BROKER", "localhost:9092")
+        sasl_username = os.getenv("KAFKA_SASL_USERNAME")
+        sasl_password = os.getenv("KAFKA_SASL_PASSWORD")
+
+        kafka_kwargs = {
+            "bootstrap_servers": [broker],
+            "auto_offset_reset": "earliest",
+            "enable_auto_commit": True,
+            "value_deserializer": lambda x: json.loads(x.decode("utf-8")),
+            "consumer_timeout_ms": 1000,
+        }
+
+        # Enable SASL_SSL when Confluent Cloud credentials are present
+        if sasl_username and sasl_password:
+            kafka_kwargs.update({
+                "security_protocol": "SASL_SSL",
+                "sasl_mechanism": "PLAIN",
+                "sasl_plain_username": sasl_username,
+                "sasl_plain_password": sasl_password,
+            })
+
+        consumer = KafkaConsumer("product-mutations", **kafka_kwargs)
         return consumer
     except Exception:
         return None
@@ -54,7 +69,13 @@ def update_vector_db_metadata(product_id: str, new_price: float, new_stock: int)
                 }
             ]
         }
-        res = requests.post(f"{QDRANT_URL}/collections/products_visual/points/payload", json=payload, timeout=1)
+        headers = {"api-key": QDRANT_API_KEY} if QDRANT_API_KEY else {}
+        res = requests.post(
+            f"{QDRANT_URL}/collections/products_visual/points/payload",
+            json=payload,
+            headers=headers,
+            timeout=5
+        )
         if res.status_code == 200:
             print(f"[QDRANT-CDC-SYNC] Upserted payload metadata to Qdrant for {product_id}.")
     except Exception as e:

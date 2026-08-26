@@ -8,7 +8,7 @@ volumes:
   qdrant_data:
 
 services:
-  # ─── INFRASTRUCTURE SERVICES 
+  #  INFRASTRUCTURE SERVICES 
   mongodb:
     image: mongo:latest
     container_name: ecommerce-mongodb
@@ -187,7 +187,8 @@ services:
     environment:
       PORT: 3005
       MONGO_URI: mongodb://mongodb:27017/ecommerce-cart
-      REDIS_URI: redis://redis:6379
+      REDIS_URI: redis://default:6wggg262JxzI4YOxD2dzbGxYS9nEMULJ@start-unmistakable-turn-71479.db.redis.io:16872
+      REDIS_URL: redis://default:6wggg262JxzI4YOxD2dzbGxYS9nEMULJ@start-unmistakable-turn-71479.db.redis.io:16872
     depends_on:
       - mongodb
       - redis
@@ -292,10 +293,10 @@ services:
     container_name: rag-service
     profiles: ["ai"]
     environment:
-      QDRANT_HOST: qdrant
-      QDRANT_PORT: 6333
-    depends_on:
-      - qdrant
+      QDRANT_URL: https://2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
+      QDRANT_HOST: 2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
+      QDRANT_PORT: 443
+      QDRANT_API_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6MWJlMWQ2ZDUtMTNlZS00NjNkLTljZGUtMDJkNDUyMTMyZWNiIn0.Ief67838-2HW947FbhS66fBEivtZEElnMY2ZEpj8xzQ
     deploy:
       resources:
         limits:
@@ -333,10 +334,10 @@ services:
     container_name: visual-search-service
     profiles: ["ai"]
     environment:
-      QDRANT_HOST: qdrant
-      QDRANT_PORT: 6333
-    depends_on:
-      - qdrant
+      QDRANT_URL: https://2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
+      QDRANT_HOST: 2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
+      QDRANT_PORT: 443
+      QDRANT_API_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6MWJlMWQ2ZDUtMTNlZS00NjNkLTljZGUtMDJkNDUyMTMyZWNiIn0.Ief67838-2HW947FbhS66fBEivtZEElnMY2ZEpj8xzQ
     networks:
       - ecommerce_net
 
