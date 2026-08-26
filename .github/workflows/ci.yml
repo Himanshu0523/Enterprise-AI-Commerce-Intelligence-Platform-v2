@@ -67,7 +67,7 @@ jobs:
             npm test --if-present
           fi
 
-  # ─── PYTHON AI MICROSERVICES CI ─────────────────────────────────────────────
+  # ─── PYTHON AI MICROSERVICES CI 
   python-ai-services-ci:
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.python_services == 'true' }}
@@ -85,10 +85,10 @@ jobs:
         run: |
           if [ -d "services/operations/${{ matrix.service }}" ]; then
             cd services/operations/${{ matrix.service }}
-            pip install -r requirements.txt
+            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
             python -c "import main; print('${{ matrix.service }} Valid')"
           elif [ -d "services/intelligence/${{ matrix.service }}" ]; then
             cd services/intelligence/${{ matrix.service }}
-            pip install -r requirements.txt
+            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
             python -c "import main; print('${{ matrix.service }} Valid')"
           fi

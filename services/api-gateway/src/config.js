@@ -1,1 +1,1 @@
-module.exports = require('./conifg');
+module.exports = require('./config/index');

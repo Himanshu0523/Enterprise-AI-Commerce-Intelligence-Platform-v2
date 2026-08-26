@@ -1,7 +1,7 @@
 const express = require('express');
 const createProxy = require('../services/proxy');
 const { canaryRouter } = require('../services/canary');
-const config = require('../conifg');
+const config = require('../config');
 const storefrontRoutes = require('./storefront');
 const adminRoutes = require('./admin');
 

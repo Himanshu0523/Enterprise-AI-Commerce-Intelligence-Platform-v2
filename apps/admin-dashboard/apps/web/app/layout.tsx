@@ -1,1 +1,1 @@
-export { default } from "./layout.jsx";
+// Resolved conflict: Root layout is maintained in layout.jsx
