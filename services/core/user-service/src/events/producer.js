@@ -1,6 +1,6 @@
 const { Kafka } = require('kafkajs');
 const config = require('../config');
-const kafka = new Kafka({ clientId: config.kafkaClientId, brokers: config.kafkaBrokers });
+const kafka = new Kafka({ clientId: config.kafkaClientId, brokers: config.kafkaBrokers, ...config.kafkaSaslConfig });
 const producer = kafka.producer();
 
 let connected = false;

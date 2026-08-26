@@ -4,15 +4,27 @@ const { recordAuditLogInternal } = require('../controllers/auditLogController');
 let kafkaConsumer = null;
 
 const startKafkaConsumer = async () => {
-  const brokers = (process.env.KAFKA_BROKERS || 'localhost:9092').split(',');
+  const brokers = (process.env.KAFKA_BOOTSTRAP_SERVERS || process.env.KAFKA_BROKERS || 'localhost:9092').split(',');
   const clientId = process.env.KAFKA_CLIENT_ID || 'audit-log-service';
   const groupId = process.env.KAFKA_GROUP_ID || 'audit-log-group';
   const topic = process.env.KAFKA_TOPIC || 'audit-logs';
+
+  const saslConfig = process.env.KAFKA_SASL_USERNAME
+    ? {
+        ssl: true,
+        sasl: {
+          mechanism: 'plain',
+          username: process.env.KAFKA_SASL_USERNAME,
+          password: process.env.KAFKA_SASL_PASSWORD,
+        },
+      }
+    : {};
 
   try {
     const kafka = new Kafka({
       clientId,
       brokers,
+      ...saslConfig,
       retry: {
         initialRetryTime: 300,
         retries: 3,

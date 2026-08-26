@@ -11,21 +11,26 @@ async function seedProducts() {
   console.log('Seeding Product DB...');
   const Product = conn.model('Product', new mongoose.Schema({
     name: String,
+    slug: String,
     description: String,
     price: Number,
     category: String,
     stock: Number,
     sku: String,
-    ratings: Number,
+    rating: Number,
     numReviews: Number
   }));
 
-  await Product.deleteMany({});
+  try {
+    await Product.collection.drop();
+  } catch (err) {
+    // Ignore error if collection doesn't exist
+  }
   await Product.insertMany([
-    { name: 'Wireless Noise-Canceling Headphones', description: 'High fidelity audio with ANC', price: 199.99, category: 'Electronics', stock: 50, sku: 'AUDIO-ANC-01', ratings: 4.8, numReviews: 24 },
-    { name: 'Ergonomic Mechanical Keyboard', description: 'RGB hot-swappable switches', price: 129.50, category: 'Electronics', stock: 35, sku: 'KB-MECH-02', ratings: 4.6, numReviews: 18 },
-    { name: 'Ultra-Soft Cotton Hoodie', description: 'Premium heavyweight fleece hoodie', price: 59.99, category: 'Apparel', stock: 100, sku: 'APP-HOODIE-03', ratings: 4.9, numReviews: 42 },
-    { name: 'Smart Fitness Watch', description: 'Heart rate monitor with GPS tracking', price: 149.00, category: 'Electronics', stock: 20, sku: 'SMART-WATCH-04', ratings: 4.5, numReviews: 15 }
+    { name: 'Wireless Noise-Canceling Headphones', slug: 'wireless-noise-canceling-headphones', description: 'High fidelity audio with ANC', price: 199.99, category: 'Electronics', stock: 50, sku: 'AUDIO-ANC-01', rating: 4.8, numReviews: 24 },
+    { name: 'Ergonomic Mechanical Keyboard', slug: 'ergonomic-mechanical-keyboard', description: 'RGB hot-swappable switches', price: 129.50, category: 'Electronics', stock: 35, sku: 'KB-MECH-02', rating: 4.6, numReviews: 18 },
+    { name: 'Ultra-Soft Cotton Hoodie', slug: 'ultra-soft-cotton-hoodie', description: 'Premium heavyweight fleece hoodie', price: 59.99, category: 'Apparel', stock: 100, sku: 'APP-HOODIE-03', rating: 4.9, numReviews: 42 },
+    { name: 'Smart Fitness Watch', slug: 'smart-fitness-watch', description: 'Heart rate monitor with GPS tracking', price: 149.00, category: 'Electronics', stock: 20, sku: 'SMART-WATCH-04', rating: 4.5, numReviews: 15 }
   ]);
   console.log('Products seeded.');
   await conn.close();
@@ -43,7 +48,11 @@ async function seedCoupons() {
     isActive: Boolean
   }));
 
-  await Coupon.deleteMany({});
+  try {
+    await Coupon.collection.drop();
+  } catch (err) {
+    // Ignore error if collection doesn't exist
+  }
   await Coupon.insertMany([
     { code: 'WELCOME10', discountType: 'PERCENTAGE', discountValue: 10, minOrderAmount: 30, expiryDate: new Date('2030-01-01'), isActive: true },
     { code: 'FLAT20', discountType: 'FIXED', discountValue: 20, minOrderAmount: 100, expiryDate: new Date('2030-01-01'), isActive: true },

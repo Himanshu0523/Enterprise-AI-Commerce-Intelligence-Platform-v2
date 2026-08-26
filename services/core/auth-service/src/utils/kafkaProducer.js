@@ -1,8 +1,21 @@
 const { Kafka } = require('kafkajs');
 
+// Build SASL config only when Confluent Cloud credentials are provided
+const saslConfig = process.env.KAFKA_SASL_USERNAME
+  ? {
+      ssl: true,
+      sasl: {
+        mechanism: 'plain',
+        username: process.env.KAFKA_SASL_USERNAME,
+        password: process.env.KAFKA_SASL_PASSWORD,
+      },
+    }
+  : {};
+
 const kafka = new Kafka({
   clientId: 'auth-service',
-  brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
+  brokers: (process.env.KAFKA_BOOTSTRAP_SERVERS || process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
+  ...saslConfig,
 });
 
 const producer = kafka.producer();
