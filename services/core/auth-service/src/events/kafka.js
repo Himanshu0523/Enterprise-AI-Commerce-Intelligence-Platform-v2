@@ -1,7 +1,8 @@
 const { Kafka } = require('kafkajs');
 
-// Build SASL config only when Confluent Cloud credentials are provided
-const saslConfig = process.env.KAFKA_SASL_USERNAME
+const isPlaceholderBroker = (process.env.KAFKA_BOOTSTRAP_SERVERS || '').includes('pkc-xxxx');
+
+const saslConfig = process.env.KAFKA_SASL_USERNAME && !isPlaceholderBroker
   ? {
       ssl: true,
       sasl: {
@@ -15,6 +16,7 @@ const saslConfig = process.env.KAFKA_SASL_USERNAME
 const kafka = new Kafka({
     clientId: 'auth-service',
     brokers: (process.env.KAFKA_BOOTSTRAP_SERVERS || process.env.KAFKA_BROKER || 'localhost:9092').split(','),
+    retry: { retries: 2 },
     ...saslConfig,
 });
 
@@ -24,6 +26,10 @@ const producer = kafka.producer();
 let isConnected = false;
 
 const connectProducer = async () => {
+    if (isPlaceholderBroker) {
+        console.warn('⚠️ KAFKA_BOOTSTRAP_SERVERS contains placeholder (pkc-xxxx). Skipping Kafka connection.');
+        return;
+    }
     try {
         await producer.connect();
         isConnected = true;
