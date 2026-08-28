@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Enterprise AI Commerce Intelligence Platform API
+  description: Unified API Gateway specification for 19 microservices.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Central API Gateway
+paths:
+  /auth/login:
+    post:
+      summary: User Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login Successful
+        '401':
+          description: Unauthorized
+
+  /orders:
+    post:
+      summary: Place E-Commerce Order (Idempotent)
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                shippingAddress:
+                  type: object
+      responses:
+        '201':
+          description: Order Created via Saga Workflow
+        '402':
+          description: Payment Declined (Compensating Tx Triggered)
+
+  /notifications/send:
+    post:
+      summary: Dispatch Notification (Internal)
+      parameters:
+        - in: header
+          name: x-internal-api-key
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Notification Dispatched
+
+  /audit-logs:
+    post:
+      summary: Log Compliance Event (Internal)
+      parameters:
+        - in: header
+          name: x-internal-api-key
+          schema:
+            type: string
+          required: true
+      responses:
+        '201':
+          description: Log Recorded
