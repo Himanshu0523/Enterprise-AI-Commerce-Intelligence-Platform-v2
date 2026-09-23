@@ -1,3 +1,6 @@
+// -- OpenTelemetry: MUST be first require ------
+require('../../../../packages/tracing')('coupon-service');
+
 require('dotenv').config();
 const connectDB = require('./config/db');
 const app = require('./app');

@@ -6,6 +6,7 @@ volumes:
   mongo_data:
   mysql_data:
   qdrant_data:
+  jaeger_data:
 
 services:
   #  INFRASTRUCTURE SERVICES 
@@ -85,6 +86,23 @@ services:
     networks:
       - ecommerce_net
 
+  # ─── OBSERVABILITY: JAEGER ALL-IN-ONE ─────────────────────────────────────
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: ecommerce-jaeger
+    restart: always
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4318:4318"    # OTLP HTTP receiver (used by all services)
+      - "4317:4317"    # OTLP gRPC receiver
+      - "14268:14268"  # Jaeger HTTP thrift
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    volumes:
+      - jaeger_data:/tmp
+    networks:
+      - ecommerce_net
+
   # ─── API GATEWAY 
   api-gateway:
     build:
@@ -96,6 +114,7 @@ services:
     environment:
       PORT: 8000
       NODE_ENV: production
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
       AUTH_SERVICE_URL: http://auth-service:3001
       USER_SERVICE_URL: http://user-service:3002
       PRODUCT_SERVICE_URL: http://product-service:3003
@@ -111,6 +130,7 @@ services:
     depends_on:
       - auth-service
       - product-service
+      - jaeger
     deploy:
       resources:
         limits:
@@ -130,9 +150,11 @@ services:
       MONGO_URI: mongodb://mongodb:27017/ecommerce-auth
       KAFKA_BROKER: kafka:29092
       JWT_SECRET: your-super-secret-key
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     depends_on:
       - mongodb
       - kafka
+      - jaeger
     deploy:
       resources:
         limits:
@@ -148,8 +170,10 @@ services:
     environment:
       PORT: 3002
       MONGO_URI: mongodb://mongodb:27017/ecommerce-user
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     depends_on:
       - mongodb
+      - jaeger
     networks:
       - ecommerce_net
 
@@ -187,8 +211,9 @@ services:
     environment:
       PORT: 3005
       MONGO_URI: mongodb://mongodb:27017/ecommerce-cart
-      REDIS_URI: redis://default:6wggg262JxzI4YOxD2dzbGxYS9nEMULJ@start-unmistakable-turn-71479.db.redis.io:16872
-      REDIS_URL: redis://default:6wggg262JxzI4YOxD2dzbGxYS9nEMULJ@start-unmistakable-turn-71479.db.redis.io:16872
+      REDIS_URI: ${REDIS_URL}
+      REDIS_URL: ${REDIS_URL}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     depends_on:
       - mongodb
       - redis
@@ -293,10 +318,11 @@ services:
     container_name: rag-service
     profiles: ["ai"]
     environment:
-      QDRANT_URL: https://2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
-      QDRANT_HOST: 2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_HOST: ${QDRANT_HOST}
       QDRANT_PORT: 443
-      QDRANT_API_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6MWJlMWQ2ZDUtMTNlZS00NjNkLTljZGUtMDJkNDUyMTMyZWNiIn0.Ief67838-2HW947FbhS66fBEivtZEElnMY2ZEpj8xzQ
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     deploy:
       resources:
         limits:
@@ -334,10 +360,11 @@ services:
     container_name: visual-search-service
     profiles: ["ai"]
     environment:
-      QDRANT_URL: https://2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
-      QDRANT_HOST: 2f7b78c2-be5a-424b-9103-0adfa8ae1e83.sa-east-1-0.aws.cloud.qdrant.io
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_HOST: ${QDRANT_HOST}
       QDRANT_PORT: 443
-      QDRANT_API_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6MWJlMWQ2ZDUtMTNlZS00NjNkLTljZGUtMDJkNDUyMTMyZWNiIn0.Ief67838-2HW947FbhS66fBEivtZEElnMY2ZEpj8xzQ
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     networks:
       - ecommerce_net
 

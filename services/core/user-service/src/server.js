@@ -1,3 +1,6 @@
+// ── OpenTelemetry: MUST be first require ────────────────────────────────────
+require('../../../../packages/tracing')('user-service');
+
 const app = require('./app');
 const config = require('./config');
 const connectDB = require('./db/connection');

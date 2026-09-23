@@ -1,9 +1,15 @@
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../packages/tracing/python'))
+from tracer import init_tracing, instrument_fastapi_app
+init_tracing("pricing-service")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import random
 
 app = FastAPI(title="Dynamic Pricing Service", version="1.0.0")
+instrument_fastapi_app(app)
 
 app.add_middleware(
     CORSMiddleware,

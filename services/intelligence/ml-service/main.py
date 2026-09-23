@@ -1,3 +1,8 @@
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../packages/tracing/python'))
+from tracer import init_tracing, instrument_fastapi_app
+init_tracing("ml-service")
+
 import time
 import json
 import hashlib
@@ -7,6 +12,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
 app = FastAPI(title="ML Recommendation & Feature Store Service", version="2.0.0")
+instrument_fastapi_app(app)
 
 app.add_middleware(
     CORSMiddleware,

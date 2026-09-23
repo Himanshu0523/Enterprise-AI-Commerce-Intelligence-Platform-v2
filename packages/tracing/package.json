@@ -1,0 +1,15 @@
+{
+  "name": "@ecommerce/tracing",
+  "version": "1.0.0",
+  "description": "Shared OpenTelemetry tracing bootstrap for all Node.js microservices",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+    "@opentelemetry/resources": "^1.29.0",
+    "@opentelemetry/sdk-node": "^0.57.0",
+    "@opentelemetry/semantic-conventions": "^1.28.0"
+  }
+}

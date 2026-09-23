@@ -1,0 +1,7 @@
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-requests
+opentelemetry-instrumentation-pymongo
+opentelemetry-instrumentation-redis
+opentelemetry-instrumentation-sqlalchemy

@@ -1,3 +1,8 @@
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../packages/tracing/python'))
+from tracer import init_tracing, instrument_fastapi_app
+init_tracing("visual-search-service")
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -5,6 +10,7 @@ from typing import List
 import random
 
 app = FastAPI(title="Visual Search Microservice", version="1.0.0")
+instrument_fastapi_app(app)
 
 app.add_middleware(
     CORSMiddleware,

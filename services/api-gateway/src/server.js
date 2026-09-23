@@ -1,3 +1,6 @@
+// ── OpenTelemetry: MUST be first require before any other imports ──────────
+require('../../../packages/tracing')('api-gateway');
+
 const app = require('./app');
 const config = require('./config');
 

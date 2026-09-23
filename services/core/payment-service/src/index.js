@@ -1,3 +1,6 @@
+// -- OpenTelemetry: MUST be first require ------
+require('../../../../packages/tracing')('payment-service');
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
