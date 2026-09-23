@@ -1,4 +1,4 @@
-// ── OpenTelemetry: MUST be first require ────────────────────────────────────
+//  OpenTelemetry: MUST be first require 
 require('../../../../packages/tracing')('order-service');
 
 require('dotenv').config();

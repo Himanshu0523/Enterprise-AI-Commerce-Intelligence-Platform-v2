@@ -1,4 +1,4 @@
-// ── OpenTelemetry: MUST be first require ────────────────────────────────────
+// OpenTelemetry: MUST be first require  
 require('../../../../packages/tracing')('user-service');
 
 const app = require('./app');

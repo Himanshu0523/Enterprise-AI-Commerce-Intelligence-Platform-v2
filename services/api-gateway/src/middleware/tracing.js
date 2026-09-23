@@ -24,12 +24,12 @@ function gatewayTracingMiddleware(req, res, next) {
   activeSpan.setAttribute('user.id', userId);
   activeSpan.setAttribute('user.role', userRole);
 
-  // ── Route classification ──────────────────────────────────────────────────
+  // ── Route classification
   const path = req.path || req.url || '';
   activeSpan.setAttribute('http.route', path);
   activeSpan.setAttribute('gateway.method', req.method);
 
-  // ── Upstream service tagging ──────────────────────────────────────────────
+  //  Upstream service tagging 
   const upstreamMap = {
     '/api/auth':          'auth-service',
     '/api/users':         'user-service',
@@ -59,12 +59,12 @@ function gatewayTracingMiddleware(req, res, next) {
     activeSpan.setAttribute('gateway.upstream_service', upstream[1]);
   }
 
-  // ── AI endpoint marker (for cost tracking) ────────────────────────────────
+  // AI endpoint marker (for cost tracking) 
   const AI_PREFIXES = ['/api/agent', '/api/search', '/api/visual-search', '/api/ml'];
   const isAiEndpoint = AI_PREFIXES.some((p) => path.startsWith(p));
   activeSpan.setAttribute('ai.endpoint', isAiEndpoint);
 
-  // ── Response status tagging ───────────────────────────────────────────────
+  //  Response status tagging 
   res.on('finish', () => {
     activeSpan.setAttribute('http.status_code', res.statusCode);
     if (res.statusCode >= 500) {
