@@ -13,6 +13,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
@@ -34,6 +36,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -47,6 +51,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -60,6 +66,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -73,6 +81,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -86,6 +96,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -99,6 +111,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -112,6 +126,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -125,6 +141,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -138,6 +156,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -151,6 +171,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -164,6 +186,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -177,6 +201,8 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
 
@@ -189,8 +215,8 @@ services:
     name: agent-service
     runtime: python
     rootDir: services/operations/agent-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
@@ -202,8 +228,8 @@ services:
     name: rag-service
     runtime: python
     rootDir: services/operations/rag-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
@@ -215,8 +241,8 @@ services:
     name: ml-service
     runtime: python
     rootDir: services/intelligence/ml-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
@@ -228,8 +254,8 @@ services:
     name: pricing-service
     runtime: python
     rootDir: services/intelligence/pricing-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
@@ -241,8 +267,8 @@ services:
     name: forecast-service
     runtime: python
     rootDir: services/intelligence/forecast-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
@@ -254,8 +280,8 @@ services:
     name: fraud-service
     runtime: python
     rootDir: services/intelligence/fraud-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
@@ -267,8 +293,8 @@ services:
     name: visual-search-service
     runtime: python
     rootDir: services/intelligence/visual-search-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
     plan: free
     healthCheckPath: /health
     envVars:
