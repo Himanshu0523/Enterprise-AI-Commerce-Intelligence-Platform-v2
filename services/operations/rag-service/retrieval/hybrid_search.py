@@ -1,6 +1,6 @@
 """
 Hybrid BM25 Sparse Keyword + Dense Vector Similarity Search Strategy
-Combines lexical term frequencies (BM25) with semantic vector similarity via RRF.
+Combines lexical term frequencies (BM25) with semantic vector similarity via RRF rank fusion.
 """
 
 import math
@@ -43,10 +43,10 @@ class BM25Okapi:
         return scores
 
 
-def hybrid_retrieve(query: str, documents: List[Dict[str, Any]], alpha: float = 0.5, top_k: int = 5) -> List[Dict[str, Any]]:
+def hybrid_retrieve(query: str, documents: List[Dict[str, Any]], alpha: float = 0.5, top_k: int = 5, k_rrf: int = 60) -> List[Dict[str, Any]]:
     """
-    Executes Hybrid Search combining BM25 Sparse & Dense Similarity.
-    alpha = 1.0 -> purely dense vector, alpha = 0.0 -> purely BM25 sparse.
+    Executes Hybrid Search combining BM25 Sparse & Dense Similarity using Reciprocal Rank Fusion (RRF).
+    RRF Score = 1 / (k + rank_dense) + 1 / (k + rank_bm25).
     """
     if not documents:
         return []
@@ -57,20 +57,31 @@ def hybrid_retrieve(query: str, documents: List[Dict[str, Any]], alpha: float = 
     bm25 = BM25Okapi(tokenized_corpus)
     sparse_scores = bm25.get_scores(tokenized_query)
 
+    # Rank by BM25 sparse score
+    sparse_ranked_indices = sorted(range(len(documents)), key=lambda i: sparse_scores[i], reverse=True)
+    sparse_ranks = {doc_idx: rank + 1 for rank, doc_idx in enumerate(sparse_ranked_indices)}
+
+    # Rank by Dense similarity score
+    dense_ranked_indices = sorted(range(len(documents)), key=lambda i: documents[i].get('score', 0.5), reverse=True)
+    dense_ranks = {doc_idx: rank + 1 for rank, doc_idx in enumerate(dense_ranked_indices)}
+
     results = []
     max_sparse = max(sparse_scores) if sparse_scores and max(sparse_scores) > 0 else 1.0
 
     for idx, doc in enumerate(documents):
         norm_sparse = sparse_scores[idx] / max_sparse
         dense_score = doc.get('score', 0.5)
-        hybrid_score = round(alpha * dense_score + (1 - alpha) * norm_sparse, 4)
+        
+        # Scale-free Reciprocal Rank Fusion (RRF)
+        rrf_score = (1.0 / (k_rrf + dense_ranks[idx])) + (1.0 / (k_rrf + sparse_ranks[idx]))
 
         results.append({
             **doc,
             "sparse_score": round(norm_sparse, 4),
             "dense_score": round(dense_score, 4),
-            "hybrid_score": hybrid_score
+            "rrf_score": round(rrf_score, 6),
+            "hybrid_score": round(alpha * dense_score + (1 - alpha) * norm_sparse, 4)
         })
 
-    results.sort(key=lambda x: x['hybrid_score'], reverse=True)
+    results.sort(key=lambda x: x['rrf_score'], reverse=True)
     return results[:top_k]

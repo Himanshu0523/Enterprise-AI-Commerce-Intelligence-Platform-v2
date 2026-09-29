@@ -17,7 +17,7 @@ def get_redis_client():
         import redis
         redis_host = os.getenv("REDIS_HOST", "localhost")
         redis_port = int(os.getenv("REDIS_PORT", 6379))
-        r = redis.Redis(host=redis_host, port=redis_port, db=0, socket_timeout=1)
+        r = redis.Redis(host=redis_host, port=redis_port, db=0, socket_timeout=1, decode_responses=True)
         r.ping()
         return r
     except Exception:
@@ -97,6 +97,7 @@ def save_conversation_checkpoint(session_id: str, prompt: str, output: str, step
         try:
             key = f"agent_checkpoint:{session_id}"
             r_client.rpush(key, json.dumps(payload))
+            r_client.ltrim(key, -50, -1) # Keep max 50 recent turns
             r_client.expire(key, 86400) # 24h retention
             return True
         except Exception as e:
@@ -105,6 +106,8 @@ def save_conversation_checkpoint(session_id: str, prompt: str, output: str, step
     if session_id not in _memory_checkpoints:
         _memory_checkpoints[session_id] = []
     _memory_checkpoints[session_id].append(payload)
+    if len(_memory_checkpoints[session_id]) > 50:
+        _memory_checkpoints[session_id] = _memory_checkpoints[session_id][-50:]
     return True
 
 def get_conversation_history(session_id: str) -> list:
@@ -113,9 +116,9 @@ def get_conversation_history(session_id: str) -> list:
         try:
             key = f"agent_checkpoint:{session_id}"
             items = r_client.lrange(key, 0, -1)
-            return [json.loads(item.decode('utf-8') if isinstance(item, bytes) else item) for item in items]
-
+            return [json.loads(item) for item in items]
         except Exception as e:
             print(f"[Redis Checkpointer Error] {e}")
     return _memory_checkpoints.get(session_id, [])
+
 

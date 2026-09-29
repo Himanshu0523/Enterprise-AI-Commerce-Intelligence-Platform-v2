@@ -162,6 +162,8 @@ exports.refundPaymentByOrderId = async (req, res) => {
   }
 };
 
+const processedWebhooks = new Set();
+
 exports.handleWebhook = async (req, res) => {
   try {
     const sig = req.headers['stripe-signature'];
@@ -170,7 +172,8 @@ exports.handleWebhook = async (req, res) => {
     // Verify Stripe signature if webhook secret is configured
     if (stripe && process.env.STRIPE_WEBHOOK_SECRET && sig) {
       try {
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        const rawBody = req.rawBody || req.body;
+        event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
         console.log(`[PAYMENT WEBHOOK] Signature verified successfully for event type ${event.type}`);
       } catch (err) {
         console.error('[PAYMENT WEBHOOK] Signature verification failed:', err.message);
@@ -178,7 +181,18 @@ exports.handleWebhook = async (req, res) => {
       }
     }
 
+    // Deduplicate webhook event handling
+    if (event.id && processedWebhooks.has(event.id)) {
+      console.log(`[PAYMENT WEBHOOK] Duplicate event ${event.id} skipped`);
+      return res.json({ success: true, duplicate: true });
+    }
+    if (event.id) {
+      processedWebhooks.add(event.id);
+      if (processedWebhooks.size > 5000) processedWebhooks.clear();
+    }
+
     console.log('[PAYMENT WEBHOOK] Received event:', event.type || 'Custom/Mock Event');
+
 
     // Event Handling
     switch (event.type) {
