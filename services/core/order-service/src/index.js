@@ -7,7 +7,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const orderRoutes = require('./routes/order.routes');
 
-const { chaosMiddleware, registerChaosRoutes } = require('../../../packages/shared-utils/chaos');
+const { chaosMiddleware, registerChaosRoutes } = require('../../../../packages/shared-utils/chaos');
 
 const app = express();
 connectDB();

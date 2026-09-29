@@ -22,9 +22,6 @@ services:
       - key: CLIENT_URL
         sync: false
 
-  # ---------------------------------------------------------------------------
-  # 2. Core Node Microservices
-  # ---------------------------------------------------------------------------
   - type: web
     name: auth-service
     runtime: node

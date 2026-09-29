@@ -1,6 +1,6 @@
 const Order = require('../models/Order');
-const { chaosFetch } = require('../../../packages/shared-utils/chaos');
-const { Tracer } = require('../../../packages/shared-utils/tracing');
+const { chaosFetch } = require('../../../../../packages/shared-utils/chaos');
+const { Tracer } = require('../../../../../packages/shared-utils/tracing');
 
 const tracer = new Tracer('order-service');
 
