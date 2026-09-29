@@ -1,0 +1,30 @@
+# Render Infrastructure-as-Code Blueprint
+# Minimal Blueprint: Top 2 Commerce Services (2 Services)
+# Use this if your Render Workspace only has 2 free slots left.
+
+services:
+  # 1. User & Profile Service
+  - type: web
+    name: user-service
+    runtime: node
+    rootDir: services/core/user-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2. Shopping Cart Service
+  - type: web
+    name: cart-service
+    runtime: node
+    rootDir: services/core/cart-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
