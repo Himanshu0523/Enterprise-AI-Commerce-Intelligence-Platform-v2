@@ -413,7 +413,7 @@ services:
         fromService:
           type: web
           name: api-gateway
-          property: url
+          property: hostport
 
   # 4.2 Admin & Merchant Intelligence Dashboard
   - type: web
@@ -430,4 +430,4 @@ services:
         fromService:
           type: web
           name: api-gateway
-          property: url
+          property: hostport

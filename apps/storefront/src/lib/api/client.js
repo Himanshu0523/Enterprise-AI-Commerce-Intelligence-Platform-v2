@@ -1,5 +1,8 @@
 // src/lib/api/client.js
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || '/api';
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || '/api';
+const API_BASE_URL = (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('/'))
+  ? rawUrl
+  : `http://${rawUrl}`;
 
 /**
  * @typedef {Object} FetchOptions
