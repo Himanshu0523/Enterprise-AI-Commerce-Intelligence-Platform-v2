@@ -1,6 +1,8 @@
 # 🛒 Customer Storefront Web Application
 
-### Next.js 14 • React 18 • RAG Search Widget • Visual Search • Dynamic Pricing
+### Next.js 16 • React 19 • RAG Search Widget • Visual Search • Dynamic Pricing
+
+- **Live Production App**: [https://storefront-ept1.onrender.com](https://storefront-ept1.onrender.com)
 
 This directory contains the **Customer-Facing Storefront**, providing an AI-native shopping experience featuring RAG-powered customer support, visual product search, dynamic personalized recommendations, and checkout flows.
 
