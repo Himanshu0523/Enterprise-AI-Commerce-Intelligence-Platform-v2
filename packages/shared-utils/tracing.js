@@ -8,7 +8,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
+const uuidv4 = () => (crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex'));
 
 const TRACE_FILE = path.join(__dirname, '..', '..', 'artifacts', 'traces.json');
 

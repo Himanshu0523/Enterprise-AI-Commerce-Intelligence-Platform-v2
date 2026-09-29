@@ -1,3 +1,23 @@
+import sys, os, importlib
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../packages/tracing/python')))
+
+try:
+    from packages.tracing.python.tracer import init_tracing, instrument_fastapi_app
+except ImportError:
+    try:
+        _tracer_mod = importlib.import_module("tracer")
+        init_tracing = getattr(_tracer_mod, "init_tracing")
+        instrument_fastapi_app = getattr(_tracer_mod, "instrument_fastapi_app")
+    except Exception:
+        def init_tracing(*args, **kwargs): pass
+        def instrument_fastapi_app(*args, **kwargs): pass
+
+init_tracing("ml-service")
+
+
+
+
 import time
 import json
 import hashlib
@@ -7,6 +27,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
 app = FastAPI(title="ML Recommendation & Feature Store Service", version="2.0.0")
+instrument_fastapi_app(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,7 +37,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── In-Memory Feature Store (Simulates Redis) ───────────────────────────────
+#  In-Memory Feature Store (Simulates Redis)    
 # In production this is backed by Redis with TTL-based expiry.
 # Keys: "features:{user_id}" -> dict of real-time behavior signals.
 
@@ -143,7 +164,7 @@ class FeatureVector(BaseModel):
     featureStalenessSec: float
 
 
-# ─── Endpoints ────────────────────────────────────────────────────────────────
+#  Endpoints 
 
 @app.get("/health")
 def health_check():

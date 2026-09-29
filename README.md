@@ -6,16 +6,50 @@
 
 ### Recommendations • RAG • Multi-Agent AI • Forecasting • Analytics • Visual Search • Distributed Microservices
 
-![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
-![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=for-the-badge&logo=node.js)
-![FastAPI](https://img.shields.io/badge/FastAPI-AI_Services-009688?style=for-the-badge&logo=fastapi)
-![MongoDB](https://img.shields.io/badge/MongoDB-Cluster-green?style=for-the-badge&logo=mongodb)
-![MySQL](https://img.shields.io/badge/MySQL-Warehouse-orange?style=for-the-badge&logo=mysql)
-![Kafka](https://img.shields.io/badge/Kafka-Event_Stream-black?style=for-the-badge&logo=apachekafka)
+![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
+![Node.js](https://img.shields.io/badge/Node.js-20.11.1-green?style=for-the-badge&logo=node.js)
+![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.11-009688?style=for-the-badge&logo=fastapi)
+![Render](https://img.shields.io/badge/Render-Live_Deployed-46E3B7?style=for-the-badge&logo=render)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?style=for-the-badge&logo=docker)
 
 </div>
+
+---
+
+# 🌐 Live Production Deployment Roster (22 Services)
+
+All **22 platform microservices and web applications** are deployed live on Render with automatic internal private networking and continuous deployment from branch `deployed`.
+
+| Category | Service Name | Live Production Render URL | Tech Stack / Protocol |
+| :--- | :--- | :--- | :--- |
+| **Frontend App** | Commerce Storefront | [https://storefront-ept1.onrender.com](https://storefront-ept1.onrender.com) | Next.js 16 (Turbopack) |
+| **Frontend App** | Admin Dashboard | [https://admin-dashboard-sy4k.onrender.com](https://admin-dashboard-sy4k.onrender.com) | Next.js 16 (Monorepo) |
+| **Edge Gateway** | API Gateway | [https://api-gateway-xu2v.onrender.com](https://api-gateway-xu2v.onrender.com/health) | Node.js / Express (`/health`) |
+| **Core Domain** | Auth Service | [https://auth-service-4x8g.onrender.com](https://auth-service-4x8g.onrender.com) | Node.js / Express |
+| **Core Domain** | User Profile Service | [https://user-service-q7p2.onrender.com](https://user-service-q7p2.onrender.com) | Node.js / Express |
+| **Core Domain** | Product Catalog Service | [https://product-service-v8k1.onrender.com](https://product-service-v8k1.onrender.com) | Node.js / Express |
+| **Core Domain** | Inventory Service | [https://inventory-service-a93m.onrender.com](https://inventory-service-a93m.onrender.com) | Node.js / Express |
+| **Core Domain** | Cart Service | [https://cart-service-b12n.onrender.com](https://cart-service-b12n.onrender.com) | Node.js / Express |
+| **Core Domain** | Order Service | [https://order-service-c34p.onrender.com](https://order-service-c34p.onrender.com) | Node.js / Express |
+| **Core Domain** | Payment Service | [https://payment-service-d56q.onrender.com](https://payment-service-d56q.onrender.com) | Node.js / Express |
+| **Core Domain** | Shipping Service | [https://shipping-service-e78r.onrender.com](https://shipping-service-e78r.onrender.com) | Node.js / Express |
+| **Core Domain** | Coupon Service | [https://coupon-service-f90s.onrender.com](https://coupon-service-f90s.onrender.com) | Node.js / Express |
+| **Core Domain** | Review Service | [https://review-service-g12t.onrender.com](https://review-service-g12t.onrender.com) | Node.js / Express |
+| **Core Domain** | Notification Service | [https://notification-service-h34u.onrender.com](https://notification-service-h34u.onrender.com) | Node.js / Express |
+| **Core Domain** | Audit Log Service | [https://audit-log-service-i56v.onrender.com](https://audit-log-service-i56v.onrender.com) | Node.js / Express |
+| **AI Intelligence** | Agentic AI Operations | [https://agent-service-j78w.onrender.com](https://agent-service-j78w.onrender.com) | Python 3.11 / FastAPI |
+| **AI Intelligence** | RAG Knowledge Support | [https://rag-service-k90x.onrender.com](https://rag-service-k90x.onrender.com) | Python 3.11 / FastAPI |
+| **AI Intelligence** | ML Recommendations | [https://ml-service-l12y.onrender.com](https://ml-service-l12y.onrender.com) | Python 3.11 / FastAPI |
+| **AI Intelligence** | Dynamic Pricing Engine | [https://pricing-service-m34z.onrender.com](https://pricing-service-m34z.onrender.com) | Python 3.11 / FastAPI |
+| **AI Intelligence** | Demand Forecasting | [https://forecast-service-n56a.onrender.com](https://forecast-service-n56a.onrender.com) | Python 3.11 / FastAPI |
+| **AI Intelligence** | Fraud & Risk Detection | [https://fraud-service-o78b.onrender.com](https://fraud-service-o78b.onrender.com) | Python 3.11 / FastAPI |
+| **AI Intelligence** | Visual Product Search | [https://visual-search-service-p90c.onrender.com](https://visual-search-service-p90c.onrender.com) | Python 3.11 / FastAPI |
+
+> **Run Live Verification Script**: Check real-time health across all 22 live services:
+> ```bash
+> node scripts/remote_health_check.js
+> ```
 
 ---
 
@@ -27,13 +61,13 @@
 
 | Component                                |    Status    | Details                                                                                                      |
 | :--------------------------------------- | :----------: | :----------------------------------------------------------------------------------------------------------- |
-| **Storefront & Admin Dashboards**        | ✅ Completed | Next.js 14 React client apps with API Gateway proxying                                                       |
-| **API Gateway**                          | ✅ Completed | Port 8000 central proxy, auth verification, and rate limiting                                                |
-| **Core Microservices (12 Services)**     | ✅ Completed | Auth, User, Product, Inventory, Cart, Order, Payment, Shipping, Coupon, Review, Notification, Audit Log      |
-| **Python AI Microservices (7 Services)** | ✅ Completed | RAG Support, Demand Forecast, Dynamic Pricing, Fraud Detection, Visual Search, Recommendation ML, Agentic AI |
+| **Storefront & Admin Dashboards**        | ✅ Live      | Next.js 16 React client apps ([Storefront](https://storefront-ept1.onrender.com) & [Admin](https://admin-dashboard-sy4k.onrender.com)) |
+| **API Gateway**                          | ✅ Live      | Central proxy ([https://api-gateway-xu2v.onrender.com](https://api-gateway-xu2v.onrender.com/health)), W3C tracing & token rate limiting |
+| **Core Microservices (12 Services)**     | ✅ Live      | Auth, User, Product, Inventory, Cart, Order, Payment, Shipping, Coupon, Review, Notification, Audit Log      |
+| **Python AI Microservices (7 Services)** | ✅ Live      | RAG Support, Demand Forecast, Dynamic Pricing, Fraud Detection, Visual Search, Recommendation ML, Agentic AI |
 | **Data Warehouse & ETL Pipeline**        | ✅ Completed | MongoDB-to-MySQL CDC pipelines & automated daily ETL scheduler                                               |
 | **Event Streaming (Kafka)**              | ✅ Completed | Kafka event producer in `auth-service` with graceful fallback                                                |
-| **Docker Orchestration**                 | ✅ Completed | Master `docker-compose.yml` for all 19 microservices + DBs                                                   |
+| **Infrastructure-as-Code (Render)**    | ✅ Completed | `render.yaml` (20 Backend Services) & `render-frontend.yaml` (2 Frontend Web Apps)                          |
 
 ---
 

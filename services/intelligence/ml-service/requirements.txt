@@ -6,3 +6,9 @@ scikit-learn
 pymysql
 sqlalchemy
 joblib
+# OpenTelemetry distributed tracing
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-requests
+

@@ -11,6 +11,15 @@ const kafka = new Kafka({
 const consumer = kafka.consumer({ groupId: config.kafkaConsumerGroup });
 
 const run = async () => {
+  const isCloudWithoutKafka = process.env.NODE_ENV === 'production' &&
+    !process.env.KAFKA_BOOTSTRAP_SERVERS &&
+    !process.env.KAFKA_BROKERS;
+
+  if (isCloudWithoutKafka) {
+    console.log('[USER-KAFKA] No remote Kafka cluster configured. Profiles will be managed via API.');
+    return;
+  }
+
   await consumer.connect();
   await consumer.subscribe({ topic: config.authServiceEventTopic, fromBeginning: true });
 

@@ -1,3 +1,6 @@
+// -- OpenTelemetry: MUST be first require ------
+require('../../../../packages/tracing')('audit-log-service');
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();

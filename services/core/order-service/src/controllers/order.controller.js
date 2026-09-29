@@ -1,29 +1,70 @@
 const Order = require('../models/Order');
-const { chaosFetch } = require('../../../packages/shared-utils/chaos');
-const { Tracer } = require('../../../packages/shared-utils/tracing');
+const { chaosFetch } = require('../../../../../packages/shared-utils/chaos');
+const { Tracer } = require('../../../../../packages/shared-utils/tracing');
 
 const tracer = new Tracer('order-service');
 
 /**
- * In-memory idempotency store.
- * Production: use Redis with TTL (e.g., SET idem:{key} {orderId} EX 86400 NX)
- * Key = X-Idempotency-Key header value
- * Value = { orderId, status, response, createdAt }
+ * Redis-Backed Idempotency Store for order-service.
+ * Falls back to in-memory Map if Redis is unavailable.
+ * Key format: idem:order:<X-Idempotency-Key>
+ * TTL: 24 hours — keys expire automatically.
  */
-const _idempotencyStore = new Map();
-const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const IDEMPOTENCY_TTL_SECONDS = 24 * 60 * 60;
+const IDEM_PREFIX = 'idem:order:';
 
-function cleanExpiredKeys() {
-  const now = Date.now();
-  for (const [key, entry] of _idempotencyStore) {
-    if (now - entry.createdAt > IDEMPOTENCY_TTL_MS) {
-      _idempotencyStore.delete(key);
-    }
+let _redisClient = null;
+const _memStore = new Map(); // Fallback in-memory store
+
+(function initRedis() {
+  try {
+    const ioredis = require('ioredis');
+    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+    _redisClient = new ioredis(redisUrl, {
+      maxRetriesPerRequest: 1,
+      retryStrategy: (t) => (t > 2 ? null : Math.min(t * 100, 2000)),
+    });
+    _redisClient.on('error', () => { _redisClient = null; });
+    console.log('[ORDER-IDEM] Redis idempotency store: REAL REDIS');
+  } catch {
+    console.warn('[ORDER-IDEM] ioredis not available. Using in-memory fallback.');
   }
-}
+})();
 
-// Purge stale keys every 10 minutes
-setInterval(cleanExpiredKeys, 10 * 60 * 1000);
+const idempotencyStore = {
+  async get(key) {
+    const rKey = `${IDEM_PREFIX}${key}`;
+    if (_redisClient) {
+      const val = await _redisClient.get(rKey).catch(() => null);
+      return val ? JSON.parse(val) : null;
+    }
+    // In-memory fallback
+    const entry = _memStore.get(key);
+    if (!entry) return null;
+    if (Date.now() - entry.createdAt > IDEMPOTENCY_TTL_SECONDS * 1000) {
+      _memStore.delete(key);
+      return null;
+    }
+    return entry;
+  },
+
+  async set(key, value) {
+    const rKey = `${IDEM_PREFIX}${key}`;
+    if (_redisClient) {
+      await _redisClient.set(rKey, JSON.stringify(value), 'EX', IDEMPOTENCY_TTL_SECONDS).catch(() => {});
+      return;
+    }
+    _memStore.set(key, { ...value, createdAt: Date.now() });
+  },
+};
+
+// Purge stale in-memory keys every 10 minutes (fallback mode only)
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of _memStore) {
+    if (now - v.createdAt > IDEMPOTENCY_TTL_SECONDS * 1000) _memStore.delete(k);
+  }
+}, 10 * 60 * 1000);
 
 
 /**
@@ -44,7 +85,7 @@ exports.createOrder = async (req, res) => {
     }
 
     // Check idempotency cache
-    const existingEntry = _idempotencyStore.get(idempotencyKey);
+    const existingEntry = await idempotencyStore.get(idempotencyKey);
     if (existingEntry) {
       console.log(`[ORDER] Idempotency hit: returning cached order for key=${idempotencyKey}`);
       rootSpan.setAttribute('idempotency.hit', true);
@@ -69,7 +110,7 @@ exports.createOrder = async (req, res) => {
 
     let order;
     
-    // ── STEP 1: Persist Local Order (Traced) ─────────────────────────────────
+    // STEP 1: Persist Local Order (Traced)
     const dbSpan = tracer.startSpan('mongodb.create_order', { parent: rootSpan });
     try {
       order = await Order.create({
@@ -110,12 +151,12 @@ exports.createOrder = async (req, res) => {
       dbSpan.end();
     }
 
-    // ── Execute Saga Steps ────────────────────────────────────────────────────
-    let stockReserved = false;
+    //  Execute Saga Steps 
+   let stockReserved = false;
     let paymentCharged = false;
 
     try {
-      // ── STEP 2: Reserve Stock (Traced) ───────────────────────────
+      //  STEP 2: Reserve Stock (Traced) 
       const invSpan = tracer.startSpan('inventory.reserve_stock', { parent: rootSpan });
       invSpan.setAttribute('items.count', items.length);
       try {
@@ -146,7 +187,7 @@ exports.createOrder = async (req, res) => {
       order.sagaState = 'STOCK_RESERVED';
       await order.save();
 
-      // ── STEP 3: Charge Payment (Traced) ─────────────────────────────
+      //  STEP 3: Charge Payment (Traced) 
       order.sagaState = 'PAYING';
       await order.save();
 
@@ -185,8 +226,8 @@ exports.createOrder = async (req, res) => {
       order.paymentStatus = 'PAID';
       await order.save();
 
-      // Cache response
-      _idempotencyStore.set(idempotencyKey, {
+      // Cache response in Redis (or in-memory fallback)
+      await idempotencyStore.set(idempotencyKey, {
         orderId: order._id.toString(),
         status: order.orderStatus,
         response: order,
@@ -209,7 +250,7 @@ exports.createOrder = async (req, res) => {
       order.reconciliationTasks = pendingTasks;
       await order.save();
 
-      // ── Apply Immediate compensations (best-effort) ─────────────────────────
+      //  Apply Immediate compensations (best-effort) 
       if (stockReserved) {
         const compSpan = tracer.startSpan('saga.compensate_restock', { parent: rootSpan });
         try {

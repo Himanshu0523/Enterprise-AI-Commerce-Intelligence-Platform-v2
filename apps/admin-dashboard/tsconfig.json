@@ -1,6 +1,7 @@
 {
-  "extends": "@platform/tsconfig/nextjs.json",
+  "extends": "./packages/typescript-config/nextjs.json",
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

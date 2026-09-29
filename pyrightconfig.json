@@ -1,0 +1,10 @@
+{
+  "venvPath": "services/intelligence/ml-service",
+  "venv": "venv",
+  "extraPaths": [
+    "packages/tracing/python",
+    "services/intelligence/ml-service"
+  ],
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "none"
+}

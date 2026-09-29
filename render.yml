@@ -1,0 +1,397 @@
+# Render Unified Infrastructure-as-Code Blueprint
+# Platform: Enterprise AI-Powered Autonomous Commerce Platform v2
+# Total Microservices: 20 (Compliant with Render 20-Resource Blueprint Limit)
+
+services:
+  # 1. API GATEWAY & EDGE PROXY
+  - type: web
+    name: api-gateway
+    runtime: node
+    rootDir: services/api-gateway
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      # Downstream Client Microservice Network Connections
+      - key: AUTH_SERVICE_URL
+        fromService:
+          type: web
+          name: auth-service
+          property: hostport
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: user-service
+          property: hostport
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: web
+          name: product-service
+          property: hostport
+      - key: INVENTORY_SERVICE_URL
+        fromService:
+          type: web
+          name: inventory-service
+          property: hostport
+      - key: CART_SERVICE_URL
+        fromService:
+          type: web
+          name: cart-service
+          property: hostport
+      - key: ORDER_SERVICE_URL
+        fromService:
+          type: web
+          name: order-service
+          property: hostport
+      - key: PAYMENT_SERVICE_URL
+        fromService:
+          type: web
+          name: payment-service
+          property: hostport
+      - key: SHIPPING_SERVICE_URL
+        fromService:
+          type: web
+          name: shipping-service
+          property: hostport
+      - key: COUPON_SERVICE_URL
+        fromService:
+          type: web
+          name: coupon-service
+          property: hostport
+      - key: REVIEW_SERVICE_URL
+        fromService:
+          type: web
+          name: review-service
+          property: hostport
+      - key: NOTIFICATION_SERVICE_URL
+        fromService:
+          type: web
+          name: notification-service
+          property: hostport
+      - key: AUDIT_LOG_SERVICE_URL
+        fromService:
+          type: web
+          name: audit-log-service
+          property: hostport
+      - key: PRICING_SERVICE_URL
+        fromService:
+          type: web
+          name: pricing-service
+          property: hostport
+      - key: RAG_SERVICE_URL
+        fromService:
+          type: web
+          name: rag-service
+          property: hostport
+      - key: AGENT_SERVICE_URL
+        fromService:
+          type: web
+          name: agent-service
+          property: hostport
+      - key: ML_SERVICE_URL
+        fromService:
+          type: web
+          name: ml-service
+          property: hostport
+      - key: FORECAST_SERVICE_URL
+        fromService:
+          type: web
+          name: forecast-service
+          property: hostport
+      - key: FRAUD_SERVICE_URL
+        fromService:
+          type: web
+          name: fraud-service
+          property: hostport
+      - key: VISUAL_SEARCH_SERVICE_URL
+        fromService:
+          type: web
+          name: visual-search-service
+          property: hostport
+
+
+  # 2. CORE COMMERCE & USER MICROSERVICES (12 Node.js Services)
+
+  # 2.1 Authentication & RBAC Service
+  - type: web
+    name: auth-service
+    runtime: node
+    rootDir: services/core/auth-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.2 User Profile & Account Service
+  - type: web
+    name: user-service
+    runtime: node
+    rootDir: services/core/user-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.3 Product Catalog & Search Service
+  - type: web
+    name: product-service
+    runtime: node
+    rootDir: services/core/product-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.4 Order Processing & Saga Orchestrator
+  - type: web
+    name: order-service
+    runtime: node
+    rootDir: services/core/order-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.5 Shopping Cart Service
+  - type: web
+    name: cart-service
+    runtime: node
+    rootDir: services/core/cart-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.6 Inventory & Stock Service
+  - type: web
+    name: inventory-service
+    runtime: node
+    rootDir: services/core/inventory-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.7 Payment Integration Service
+  - type: web
+    name: payment-service
+    runtime: node
+    rootDir: services/core/payment-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.8 Shipping & Logistics Service
+  - type: web
+    name: shipping-service
+    runtime: node
+    rootDir: services/core/shipping-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.9 Coupon & Promotions Service
+  - type: web
+    name: coupon-service
+    runtime: node
+    rootDir: services/core/coupon-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.10 Customer Reviews & Ratings Service
+  - type: web
+    name: review-service
+    runtime: node
+    rootDir: services/core/review-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.11 Notifications Service (Email/SMS/Push)
+  - type: web
+    name: notification-service
+    runtime: node
+    rootDir: services/core/notification-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # 2.12 Tamper-Evident Audit Logging Service
+  - type: web
+    name: audit-log-service
+    runtime: node
+    rootDir: services/core/audit-log-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NODE_ENV
+        value: production
+
+  # ===========================================================================
+  # 3. AI, INTELLIGENCE & AGENTIC MICROSERVICES (7 Python Services)
+  # ===========================================================================
+
+  # 3.1 Autonomous AI Agent Supervisor
+  - type: web
+    name: agent-service
+    runtime: python
+    rootDir: services/operations/agent-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.2 Retrieval-Augmented Generation (RAG) Support Service
+  - type: web
+    name: rag-service
+    runtime: python
+    rootDir: services/operations/rag-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.3 ML Recommendations & Personalization Service
+  - type: web
+    name: ml-service
+    runtime: python
+    rootDir: services/intelligence/ml-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.4 Dynamic Pricing & Markdown Intelligence Service
+  - type: web
+    name: pricing-service
+    runtime: python
+    rootDir: services/intelligence/pricing-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.5 Demand Forecasting Service (Prophet / LSTM)
+  - type: web
+    name: forecast-service
+    runtime: python
+    rootDir: services/intelligence/forecast-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.6 Real-Time Fraud & Anomaly Detection Service
+  - type: web
+    name: fraud-service
+    runtime: python
+    rootDir: services/intelligence/fraud-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.7 Visual Search & CLIP Vector Embeddings Service
+  - type: web
+    name: visual-search-service
+    runtime: python
+    rootDir: services/intelligence/visual-search-service
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9

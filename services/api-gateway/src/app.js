@@ -5,6 +5,7 @@ const loggerMiddleware = require('./middleware/logger');
 const { standardLimiter } = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 const { metricsMiddleware, getMetrics } = require('./middleware/metrics');
+const gatewayTracingMiddleware = require('./middleware/tracing');
 const routes = require('./routes');
 
 const app = express();
@@ -17,6 +18,9 @@ app.use(corsMiddleware);
 
 // Request logging & W3C correlation ID tracing
 app.use(loggerMiddleware);
+
+// OpenTelemetry span enrichment (user context, upstream service, AI endpoint tag)
+app.use(gatewayTracingMiddleware);
 
 // Prometheus metrics collection middleware
 app.use(metricsMiddleware);

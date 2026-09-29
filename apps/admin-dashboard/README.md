@@ -1,6 +1,8 @@
 # 🖥️ Enterprise Merchant Admin Dashboard
 
-### Next.js 14 • Turborepo • TailwindCSS • Shadcn/UI • Real-Time AI Agent Control
+### Next.js 16 • Turborepo • TailwindCSS • Shadcn/UI • Real-Time AI Agent Control
+
+- **Live Production App**: [https://admin-dashboard-sy4k.onrender.com](https://admin-dashboard-sy4k.onrender.com)
 
 This directory contains the **Enterprise Admin Dashboard**, built for store managers and operators to monitor catalog inventory, demand forecasting, real-time fraud flags, dynamic price bounds, and autonomous AI agent operations.
 
