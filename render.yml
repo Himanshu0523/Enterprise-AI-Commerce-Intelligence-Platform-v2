@@ -1,6 +1,6 @@
 # Render Unified Infrastructure-as-Code Blueprint
 # Platform: Enterprise AI-Powered Autonomous Commerce Platform v2
-# Total Microservices: 20 (Compliant with Render Hobby 25-Resource Limit)
+# Total Microservices & Web Apps: 22 (Compliant with Render Hobby 25-Resource Limit)
 
 services:
   # 1. API GATEWAY & EDGE PROXY
@@ -395,3 +395,39 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+
+  # 4. FRONTEND & CLIENT WEB APPLICATIONS (2 Next.js Web Apps)
+
+  # 4.1 Commerce Storefront Web App
+  - type: web
+    name: storefront
+    runtime: node
+    rootDir: apps/storefront
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: api-gateway
+          property: url
+
+  # 4.2 Admin & Merchant Intelligence Dashboard
+  - type: web
+    name: admin-dashboard
+    runtime: node
+    rootDir: apps/admin-dashboard
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: api-gateway
+          property: url
