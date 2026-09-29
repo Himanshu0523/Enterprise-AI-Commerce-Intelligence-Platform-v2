@@ -1,4 +1,5 @@
-# Render Blueprint - Batch 2: Core Commerce Microservices
+# Render Infrastructure-as-Code Blueprint
+# Modular Blueprint: Core Commerce & User Microservices
 
 services:
   - type: web
@@ -66,3 +67,36 @@ services:
     envVars:
       - key: PORT
         value: 3009
+
+  - type: web
+    name: review-service
+    runtime: node
+    rootDir: services/core/review-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3010
+
+  - type: web
+    name: notification-service
+    runtime: node
+    rootDir: services/core/notification-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3011
+
+  - type: web
+    name: audit-log-service
+    runtime: node
+    rootDir: services/core/audit-log-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3012

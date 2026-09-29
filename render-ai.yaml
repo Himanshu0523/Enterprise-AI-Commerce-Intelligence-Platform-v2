@@ -1,4 +1,5 @@
-# Render Blueprint - Batch 3: Python AI & Intelligence Microservices
+# Render Infrastructure-as-Code Blueprint
+# Modular Blueprint: Python AI & Intelligence Microservices
 
 services:
   - type: web
