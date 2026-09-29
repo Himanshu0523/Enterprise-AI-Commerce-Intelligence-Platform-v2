@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB connected');
+    const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/auth-service';
+    const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
-    console.error(err.message);
-    process.exit(1);
+    console.warn(`[AUTH-DB] MongoDB Connection Warning: ${err.message}. Running service without blocking.`);
   }
 };
 

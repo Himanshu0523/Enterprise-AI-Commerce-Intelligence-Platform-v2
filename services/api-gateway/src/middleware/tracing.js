@@ -7,14 +7,21 @@
  * and AI endpoint markers to every span.
  */
 
-const { trace, SpanStatusCode } = require('@opentelemetry/api');
+let trace, SpanStatusCode;
+try {
+  const otelApi = require('@opentelemetry/api');
+  trace = otelApi.trace;
+  SpanStatusCode = otelApi.SpanStatusCode;
+} catch (e) {
+  trace = null;
+}
 
 /**
  * Express middleware that enriches the active OTel span with gateway-specific
  * attributes. Must be registered AFTER the OTel auto-instrumentation bootstrap.
  */
 function gatewayTracingMiddleware(req, res, next) {
-  const activeSpan = trace.getActiveSpan();
+  const activeSpan = trace ? trace.getActiveSpan() : null;
 
   if (!activeSpan) return next();
 
