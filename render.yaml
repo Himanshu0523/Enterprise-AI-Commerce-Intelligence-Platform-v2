@@ -1,13 +1,9 @@
-# =============================================================================
 # Render Unified Infrastructure-as-Code Blueprint
 # Platform: Enterprise AI-Powered Autonomous Commerce Platform v2
 # Total Microservices: 20 (Compliant with Render Hobby 25-Resource Limit)
-# =============================================================================
 
 services:
-  # ===========================================================================
   # 1. API GATEWAY & EDGE PROXY
-  # ===========================================================================
   - type: web
     name: api-gateway
     runtime: node
