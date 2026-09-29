@@ -1,5 +1,5 @@
 # Render Infrastructure-as-Code Blueprint
-# Consolidated Core & AI Microservices Blueprint (10 Essential Microservices)
+# Essential Microservices Blueprint (Top 5 Core Services)
 
 services:
   # ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ services:
         sync: false
 
   # ---------------------------------------------------------------------------
-  # 2. Primary Core Node Microservices
+  # 2. Core Node Microservices
   # ---------------------------------------------------------------------------
   - type: web
     name: auth-service
@@ -37,17 +37,6 @@ services:
         value: 3001
 
   - type: web
-    name: user-service
-    runtime: node
-    rootDir: services/core/user-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3002
-
-  - type: web
     name: product-service
     runtime: node
     rootDir: services/core/product-service
@@ -57,28 +46,6 @@ services:
     envVars:
       - key: PORT
         value: 3003
-
-  - type: web
-    name: inventory-service
-    runtime: node
-    rootDir: services/core/inventory-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3004
-
-  - type: web
-    name: cart-service
-    runtime: node
-    rootDir: services/core/cart-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3005
 
   - type: web
     name: order-service
@@ -91,36 +58,9 @@ services:
       - key: PORT
         value: 3006
 
-  - type: web
-    name: payment-service
-    runtime: node
-    rootDir: services/core/payment-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3007
-
   # ---------------------------------------------------------------------------
-  # 3. Primary Python AI & Intelligence Microservices
+  # 3. Python AI Operations Service
   # ---------------------------------------------------------------------------
-  - type: web
-    name: ml-service
-    runtime: python
-    rootDir: services/intelligence/ml-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
-
-  - type: web
-    name: rag-service
-    runtime: python
-    rootDir: services/operations/rag-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
-
   - type: web
     name: agent-service
     runtime: python
