@@ -248,8 +248,9 @@ async def multimodal_search(
             span = tracer.start_span("lexical_matching", traceparent=root_span.traceparent)
             text_scores = {}
             for p in PRODUCT_CATALOG:
-                searchable = f"{p['name']} {p['category']} {' ' .join(p['tags'])}"
-                text_scores[p["id"]] = lexical_score(query, searchable)
+                tags_list = [str(t) for t in p.get("tags", [])]
+                searchable = f"{p['name']} {p['category']} {' '.join(tags_list)}"
+                text_scores[str(p["id"])] = lexical_score(query, searchable)
             ranked_lists.append(text_scores)
             span.set_status("OK").end()
 
@@ -258,7 +259,8 @@ async def multimodal_search(
             span = tracer.start_span("semantic_tag_matching", traceparent=root_span.traceparent)
             tag_scores = {}
             for p in PRODUCT_CATALOG:
-                tag_scores[p["id"]] = semantic_tag_score(query, p["tags"])
+                tags_list = [str(t) for t in p.get("tags", [])]
+                tag_scores[str(p["id"])] = semantic_tag_score(query, tags_list)
             ranked_lists.append(tag_scores)
             span.set_status("OK").end()
 
@@ -267,7 +269,7 @@ async def multimodal_search(
             span = tracer.start_span("visual_similarity_matching", traceparent=root_span.traceparent)
             visual_scores = {}
             for p in PRODUCT_CATALOG:
-                visual_scores[p["id"]] = image_fingerprint_score(image_bytes, p["id"])
+                visual_scores[str(p["id"])] = image_fingerprint_score(image_bytes, str(p["id"]))
             ranked_lists.append(visual_scores)
             span.set_status("OK").end()
 
@@ -279,23 +281,25 @@ async def multimodal_search(
         # Build results sorted by fused score
         results = []
         for pid, fscore in sorted(fused.items(), key=lambda x: x[1], reverse=True)[:limit]:
-            product = next(p for p in PRODUCT_CATALOG if p["id"] == pid)
+            product = next(p for p in PRODUCT_CATALOG if str(p["id"]) == pid)
+            tags_list = [str(t) for t in product.get("tags", [])]
             sources = {}
             if query:
-                sources["lexical"] = round(lexical_score(query, f"{product['name']} {product['category']} {' '.join(product['tags'])}"), 4)
-                sources["semantic_tags"] = round(semantic_tag_score(query, product["tags"]), 4)
+                sources["lexical"] = round(lexical_score(query, f"{product['name']} {product['category']} {' '.join(tags_list)}"), 4)
+                sources["semantic_tags"] = round(semantic_tag_score(query, tags_list), 4)
             if image_bytes:
                 sources["visual_similarity"] = image_fingerprint_score(image_bytes, pid)
             results.append(ProductMatch(
                 productId=pid,
-                name=product["name"],
-                category=product["category"],
-                price=product["price"],
-                stock=product.get("stock", 0),
-                image=product["image"],
+                name=str(product["name"]),
+                category=str(product["category"]),
+                price=float(product["price"]),
+                stock=int(product.get("stock", 0)),
+                image=str(product["image"]),
                 fusedScore=round(fscore, 4),
                 scoreSources=sources,
             ))
+
 
         elapsed = int((time.time() - start) * 1000)
         root_span.set_status("OK").end()
