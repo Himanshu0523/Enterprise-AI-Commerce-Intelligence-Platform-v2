@@ -2,9 +2,7 @@
 # Essential Microservices Blueprint (Top 5 Core Services)
 
 services:
-  # ---------------------------------------------------------------------------
   # 1. API Gateway
-  # ---------------------------------------------------------------------------
   - type: web
     name: api-gateway
     runtime: node
@@ -55,9 +53,7 @@ services:
       - key: PORT
         value: 3006
 
-  # ---------------------------------------------------------------------------
   # 3. Python AI Operations Service
-  # ---------------------------------------------------------------------------
   - type: web
     name: agent-service
     runtime: python

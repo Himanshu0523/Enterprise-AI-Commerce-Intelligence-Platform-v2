@@ -1,0 +1,68 @@
+# Render Blueprint - Batch 2: Core Commerce Microservices
+
+services:
+  - type: web
+    name: user-service
+    runtime: node
+    rootDir: services/core/user-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3002
+
+  - type: web
+    name: inventory-service
+    runtime: node
+    rootDir: services/core/inventory-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3004
+
+  - type: web
+    name: cart-service
+    runtime: node
+    rootDir: services/core/cart-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3005
+
+  - type: web
+    name: payment-service
+    runtime: node
+    rootDir: services/core/payment-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3007
+
+  - type: web
+    name: shipping-service
+    runtime: node
+    rootDir: services/core/shipping-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3008
+
+  - type: web
+    name: coupon-service
+    runtime: node
+    rootDir: services/core/coupon-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3009
