@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { CartProvider } from '@/lib/contexts/CartContext';
@@ -6,6 +7,8 @@ import { CheckoutProvider } from '@/lib/contexts/CheckoutContext';
 import { QuickViewProvider } from '@/lib/contexts/QuickViewContext';
 import FloatingCompareBar from '@/components/product/FloatingCompareBar';
 import AiChatWidget from '@/features/ai-assistant/components/AiChatWidget';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * @type {import('next').Metadata}
@@ -38,8 +41,12 @@ export default function RootLayout({ children }) {
               <CheckoutProvider>
                 <QuickViewProvider>
                   {children}
-                  <FloatingCompareBar />
-                  <AiChatWidget />
+                  <Suspense fallback={null}>
+                    <FloatingCompareBar />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <AiChatWidget />
+                  </Suspense>
                 </QuickViewProvider>
               </CheckoutProvider>
             </WishlistProvider>
