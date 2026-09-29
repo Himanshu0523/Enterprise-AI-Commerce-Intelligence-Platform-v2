@@ -113,7 +113,8 @@ def get_conversation_history(session_id: str) -> list:
         try:
             key = f"agent_checkpoint:{session_id}"
             items = r_client.lrange(key, 0, -1)
-            return [json.loads(item.decode('utf-8')) for item in items]
+            return [json.loads(item.decode('utf-8') if isinstance(item, bytes) else item) for item in items]
+
         except Exception as e:
             print(f"[Redis Checkpointer Error] {e}")
     return _memory_checkpoints.get(session_id, [])
