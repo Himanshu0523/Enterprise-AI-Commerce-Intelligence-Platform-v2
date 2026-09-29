@@ -1,8 +1,13 @@
-# Render Infrastructure-as-Code Blueprint
-# Blueprint 1 of 3: Core Platform Services & Gateway (5 Services)
+# =============================================================================
+# Render Unified Infrastructure-as-Code Blueprint
+# Platform: Enterprise AI-Powered Autonomous Commerce Platform v2
+# Total Microservices: 20 (Compliant with Render Hobby 25-Resource Limit)
+# =============================================================================
 
 services:
-  # 1. API Gateway
+  # ===========================================================================
+  # 1. API GATEWAY & EDGE PROXY
+  # ===========================================================================
   - type: web
     name: api-gateway
     runtime: node
@@ -19,7 +24,11 @@ services:
       - key: CLIENT_URL
         sync: false
 
-  # 2. Auth Service
+  # ===========================================================================
+  # 2. CORE COMMERCE & USER MICROSERVICES (12 Node.js Services)
+  # ===========================================================================
+
+  # 2.1 Authentication & RBAC Service
   - type: web
     name: auth-service
     runtime: node
@@ -32,7 +41,20 @@ services:
       - key: NODE_ENV
         value: production
 
-  # 3. Product Catalog Service
+  # 2.2 User Profile & Account Service
+  - type: web
+    name: user-service
+    runtime: node
+    rootDir: services/core/user-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.3 Product Catalog & Search Service
   - type: web
     name: product-service
     runtime: node
@@ -45,7 +67,7 @@ services:
       - key: NODE_ENV
         value: production
 
-  # 4. Order Management Service
+  # 2.4 Order Processing & Saga Orchestrator
   - type: web
     name: order-service
     runtime: node
@@ -58,11 +80,197 @@ services:
       - key: NODE_ENV
         value: production
 
-  # 5. AI Agent Supervisor Service
+  # 2.5 Shopping Cart Service
+  - type: web
+    name: cart-service
+    runtime: node
+    rootDir: services/core/cart-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.6 Inventory & Stock Service
+  - type: web
+    name: inventory-service
+    runtime: node
+    rootDir: services/core/inventory-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.7 Payment Integration Service
+  - type: web
+    name: payment-service
+    runtime: node
+    rootDir: services/core/payment-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.8 Shipping & Logistics Service
+  - type: web
+    name: shipping-service
+    runtime: node
+    rootDir: services/core/shipping-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.9 Coupon & Promotions Service
+  - type: web
+    name: coupon-service
+    runtime: node
+    rootDir: services/core/coupon-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.10 Customer Reviews & Ratings Service
+  - type: web
+    name: review-service
+    runtime: node
+    rootDir: services/core/review-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.11 Notifications Service (Email/SMS/Push)
+  - type: web
+    name: notification-service
+    runtime: node
+    rootDir: services/core/notification-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # 2.12 Tamper-Evident Audit Logging Service
+  - type: web
+    name: audit-log-service
+    runtime: node
+    rootDir: services/core/audit-log-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # ===========================================================================
+  # 3. AI, INTELLIGENCE & AGENTIC MICROSERVICES (7 Python Services)
+  # ===========================================================================
+
+  # 3.1 Autonomous AI Agent Supervisor
   - type: web
     name: agent-service
     runtime: python
     rootDir: services/operations/agent-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.2 Retrieval-Augmented Generation (RAG) Support Service
+  - type: web
+    name: rag-service
+    runtime: python
+    rootDir: services/operations/rag-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.3 ML Recommendations & Personalization Service
+  - type: web
+    name: ml-service
+    runtime: python
+    rootDir: services/intelligence/ml-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.4 Dynamic Pricing & Markdown Intelligence Service
+  - type: web
+    name: pricing-service
+    runtime: python
+    rootDir: services/intelligence/pricing-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.5 Demand Forecasting Service (Prophet / LSTM)
+  - type: web
+    name: forecast-service
+    runtime: python
+    rootDir: services/intelligence/forecast-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.6 Real-Time Fraud & Anomaly Detection Service
+  - type: web
+    name: fraud-service
+    runtime: python
+    rootDir: services/intelligence/fraud-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # 3.7 Visual Search & CLIP Vector Embeddings Service
+  - type: web
+    name: visual-search-service
+    runtime: python
+    rootDir: services/intelligence/visual-search-service
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
