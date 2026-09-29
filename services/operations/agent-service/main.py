@@ -207,28 +207,35 @@ def fetch_live_products() -> list:
         print(f"[Live Tool Warning] Could not reach product service: {e}")
     return [{"id": "prod-1", "name": "Wireless Headphones", "price": 99.99, "stock": 45}]
 
-def fetch_live_order(order_id: str) -> dict:
+def fetch_live_order(order_id: str, requesting_user_id: Optional[str] = None) -> dict:
     try:
         url = f"{ORDER_SERVICE_URL.rstrip('/')}/api/orders/{order_id}"
+        headers = get_internal_headers()
+        if requesting_user_id:
+            headers["X-User-Id"] = requesting_user_id
+        with httpx.Client(timeout=2.0) as client:
+            resp = client.get(url, headers=headers)
+            if resp.status_code == 200:
+                order = resp.json()
+                order_owner = order.get("userId") or order.get("user")
+                if requesting_user_id and order_owner and str(order_owner) != str(requesting_user_id) and requesting_user_id != "admin":
+                    return {"id": order_id, "error": "FORBIDDEN", "message": "Unauthorized access to order."}
+                return order
+    except Exception as e:
+        print(f"[Live Tool Warning] Could not reach order service: {e}")
+    return {"id": order_id, "status": "REFUNDED", "userId": requesting_user_id or "usr_guest", "totalAmount": 149.99}
+
+def fetch_live_user_segments() -> dict:
+    try:
+        url = f"{USER_SERVICE_URL.rstrip('/')}/api/users/stats/summary"
         with httpx.Client(timeout=2.0) as client:
             resp = client.get(url, headers=get_internal_headers())
             if resp.status_code == 200:
                 return resp.json()
     except Exception as e:
-        print(f"[Live Tool Warning] Could not reach order service: {e}")
-    return {"id": order_id, "status": "REFUNDED", "totalAmount": 149.99}
-
-def fetch_live_user_segments() -> dict:
-    try:
-        url = f"{USER_SERVICE_URL.rstrip('/')}/api/users"
-        with httpx.Client(timeout=2.0) as client:
-            resp = client.get(url, headers=get_internal_headers())
-            if resp.status_code == 200:
-                users = resp.json()
-                return {"count": len(users) if isinstance(users, list) else 150}
-    except Exception as e:
-        print(f"[Live Tool Warning] Could not reach user service: {e}")
+        print(f"[Live Tool Warning] Could not reach user service stats summary: {e}")
     return {"count": 420, "segment": "VIP Shoppers"}
+
 
 
 # ─── Agent Workflow Executor ─────────────────────────────────────────────────
@@ -276,20 +283,29 @@ def execute_agent_logic(agent: str, prompt: str, context_data: Optional[Dict[str
         output = f"Marketing campaign 'VIP Fall Sale' generated for {user_count} active customers and queued for dispatch."
 
     else:  # customer_assistance
+        user_id = context_data.get("userId") if context_data else None
         order_match = re.search(r"ORD-\d+|[0-9a-fA-F]{24}", prompt)
         order_id = order_match.group(0) if order_match else "ORD-9918"
-        order = fetch_live_order(order_id)
-        order_status = order.get("status", "REFUNDED")
+        order = fetch_live_order(order_id, requesting_user_id=user_id)
 
-        steps = [
-            AgentStep(stepNumber=1, agentName="CustomerIntentAgent", action="parse_intent",
-                      thought="Parsing customer query intent and order identifiers",
-                      observation=f"Extracted customer target order identifier: {order_id}."),
-            AgentStep(stepNumber=2, agentName="OrderLookupAgent", action="query_order_service",
-                      thought="Calling order-service REST API to fetch live order status",
-                      observation=f"Live order response for {order_id}: status='{order_status}'."),
-        ]
-        output = f"Customer Support Agent Response: Your order #{order_id} is currently in '{order_status}' state."
+        if order.get("error") == "FORBIDDEN":
+            steps = [
+                AgentStep(stepNumber=1, agentName="CustomerIntentAgent", action="verify_order_access",
+                          thought="Verifying order ownership against authenticated user context",
+                          observation="Access Denied: Order ID does not belong to requesting user."),
+            ]
+            output = f"I am unable to access details for order #{order_id} because it does not match your authenticated account."
+        else:
+            order_status = order.get("status", "REFUNDED")
+            steps = [
+                AgentStep(stepNumber=1, agentName="CustomerIntentAgent", action="parse_intent",
+                          thought="Parsing customer query intent and order identifiers",
+                          observation=f"Extracted customer target order identifier: {order_id}."),
+                AgentStep(stepNumber=2, agentName="OrderLookupAgent", action="query_order_service",
+                          thought="Calling order-service REST API to fetch authorized order status",
+                          observation=f"Authorized order response for {order_id}: status='{order_status}'."),
+            ]
+            output = f"Customer Support Agent Response: Your order #{order_id} is currently in '{order_status}' state."
 
     return output, steps
 
@@ -343,11 +359,16 @@ def execute_agent_workflow(payload: AgentTaskRequest):
         latencyMs=elapsed,
     )
 
+from fastapi import Header
+
 @app.get("/api/agent/session/{session_id}/history")
-def get_session_conversation_history(session_id: str):
-    """Retrieves saved conversation memory history for a session."""
+def get_session_conversation_history(session_id: str, x_user_id: Optional[str] = Header(None)):
+    """Retrieves saved conversation memory history for a session with ownership validation."""
+    if session_id.startswith("user_") and x_user_id and not session_id.startswith(f"user_{x_user_id}"):
+        raise HTTPException(status_code=403, detail="Forbidden: You do not have permission to view this session history.")
     history = get_conversation_history(session_id)
     return {"sessionId": session_id, "checkpointCount": len(history), "history": history}
+
 
 
 class AgentRouteRequest(BaseModel):

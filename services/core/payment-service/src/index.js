@@ -19,7 +19,12 @@ connectDB();
 
 // 6. Global Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
+
 
 // 7. Health Check Endpoints (Always first for fast PaaS health probes)
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok', service: 'payment-service' }));

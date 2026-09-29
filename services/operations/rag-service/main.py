@@ -145,17 +145,32 @@ def health_check():
     return {"status": "ok", "service": "rag-service", "version": "2.0.0"}
 
 
+MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB Cap
+ALLOWED_EXTENSIONS = {".pdf", ".txt", ".md", ".markdown", ".json"}
+
 @app.post("/api/support/upload-doc")
 async def upload_document(
     file: UploadFile = File(...),
-    category: str = Form("General Specs")
+    category: str = Form("General Specs"),
+    x_internal_service_token: Optional[str] = Header(None)
 ):
     """
     Automated Document Ingestion & Chunking Pipeline.
     Processes uploaded text/markdown/specs, chunks via sliding window, and indexes into RAG knowledge base.
     """
+    expected_token = os.getenv("INTERNAL_SERVICE_TOKEN", "internal-secret-token-v2")
+    if not x_internal_service_token or x_internal_service_token != expected_token:
+        raise HTTPException(status_code=401, detail="Unauthorized: Invalid internal service token")
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"Unsupported file extension '{ext}'. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
+
     try:
         content_bytes = await file.read()
+        if len(content_bytes) > MAX_UPLOAD_SIZE_BYTES:
+            raise HTTPException(status_code=413, detail=f"File exceeds maximum allowed size of 5MB")
+
         text_content = content_bytes.decode("utf-8", errors="ignore")
         doc_id = f"doc_{int(time.time())}_{file.filename}"
 
@@ -176,8 +191,11 @@ async def upload_document(
             "chunksCreated": len(chunks),
             "message": f"Successfully ingested {len(chunks)} chunks into RAG Knowledge Base"
         }
+    except HTTPException:
+        raise
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Document ingestion failed: {str(err)}")
+
 
 
 @app.post("/api/support/query", response_model=SupportQueryResponse)
