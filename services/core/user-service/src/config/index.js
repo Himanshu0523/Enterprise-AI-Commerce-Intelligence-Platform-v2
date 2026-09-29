@@ -13,7 +13,7 @@ const saslConfig = process.env.KAFKA_SASL_USERNAME
   : {};
 
 module.exports = {
-  port: process.env.USER_SERVICE_PORT || 3002,
+  port: process.env.PORT || process.env.USER_SERVICE_PORT || 3002,
   mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/user-service',
   kafkaBrokers: (process.env.KAFKA_BOOTSTRAP_SERVERS || process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
   kafkaSaslConfig: saslConfig,

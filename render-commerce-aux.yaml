@@ -1,29 +1,13 @@
 # Render Infrastructure-as-Code Blueprint
-# Blueprint 1 of 3: Core Platform Services & Gateway (5 Services)
+# Optional Auxiliary Commerce Microservices (5 Services)
+# Deploy this blueprint if you need shipping, coupons, reviews, notifications, and audit logging.
 
 services:
-  # 1. API Gateway
+  # 1. Shipping & Logistics Service
   - type: web
-    name: api-gateway
+    name: shipping-service
     runtime: node
-    rootDir: services/api-gateway
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    healthCheckPath: /health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: JWT_SECRET
-        sync: false
-      - key: CLIENT_URL
-        sync: false
-
-  # 2. Auth Service
-  - type: web
-    name: auth-service
-    runtime: node
-    rootDir: services/core/auth-service
+    rootDir: services/core/shipping-service
     buildCommand: npm install
     startCommand: npm start
     plan: free
@@ -32,11 +16,11 @@ services:
       - key: NODE_ENV
         value: production
 
-  # 3. Product Catalog Service
+  # 2. Coupon & Promotions Service
   - type: web
-    name: product-service
+    name: coupon-service
     runtime: node
-    rootDir: services/core/product-service
+    rootDir: services/core/coupon-service
     buildCommand: npm install
     startCommand: npm start
     plan: free
@@ -45,11 +29,11 @@ services:
       - key: NODE_ENV
         value: production
 
-  # 4. Order Management Service
+  # 3. Customer Reviews Service
   - type: web
-    name: order-service
+    name: review-service
     runtime: node
-    rootDir: services/core/order-service
+    rootDir: services/core/review-service
     buildCommand: npm install
     startCommand: npm start
     plan: free
@@ -58,15 +42,28 @@ services:
       - key: NODE_ENV
         value: production
 
-  # 5. AI Agent Supervisor Service
+  # 4. Multi-Channel Notification Service
   - type: web
-    name: agent-service
-    runtime: python
-    rootDir: services/operations/agent-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    name: notification-service
+    runtime: node
+    rootDir: services/core/notification-service
+    buildCommand: npm install
+    startCommand: npm start
     plan: free
     healthCheckPath: /health
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
+      - key: NODE_ENV
+        value: production
+
+  # 5. Tamper-Evident Audit Log Service
+  - type: web
+    name: audit-log-service
+    runtime: node
+    rootDir: services/core/audit-log-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production

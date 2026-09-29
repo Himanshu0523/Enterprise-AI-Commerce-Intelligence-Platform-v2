@@ -1,6 +1,7 @@
 /**
  * Live Deployed Remote Health Check Script for All Platform Services
  */
+require('dotenv').config();
 const https = require('https');
 const http = require('http');
 
@@ -47,18 +48,19 @@ function checkDeployedService(service, retries = 1) {
 
       req.on('error', (err) => {
         if (remaining > 0) {
-          setTimeout(() => attempt(remaining - 1), 2000);
+          setTimeout(() => attempt(remaining - 1), 3000);
         } else {
           resolve({ service: service.name, status: 'OFFLINE / PENDING ⏳', details: err.message });
         }
       });
 
-      req.setTimeout(15000, () => {
+      // Free tier cold starts on Render take ~30-50s
+      req.setTimeout(45000, () => {
         req.destroy();
         if (remaining > 0) {
           setTimeout(() => attempt(remaining - 1), 3000);
         } else {
-          resolve({ service: service.name, status: 'TIMEOUT ⏱️', details: 'Warming up on Render' });
+          resolve({ service: service.name, status: 'TIMEOUT ⏱️', details: 'Warming up on Render (free tier cold start)' });
         }
       });
     }
