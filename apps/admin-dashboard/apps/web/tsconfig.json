@@ -1,6 +1,7 @@
 {
   "extends": "../../packages/typescript-config/nextjs.json",
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": ["./*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
