@@ -1,0 +1,32 @@
+# Render Infrastructure-as-Code Blueprint — Frontend Web Applications
+# Platform: Enterprise AI-Powered Autonomous Commerce Platform v2
+# Total Frontend Applications: 2
+
+services:
+  # 1. Commerce Storefront Web App (Next.js)
+  - type: web
+    name: storefront
+    runtime: node
+    rootDir: apps/storefront
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api-gateway-xu2v.onrender.com
+
+  # 2. Admin & Merchant Intelligence Dashboard (Next.js)
+  - type: web
+    name: admin-dashboard
+    runtime: node
+    rootDir: apps/admin-dashboard
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api-gateway-xu2v.onrender.com
