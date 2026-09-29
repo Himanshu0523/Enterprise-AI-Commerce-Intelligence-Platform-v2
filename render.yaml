@@ -1,5 +1,5 @@
 # Render Infrastructure-as-Code Blueprint
-# Deploy all 20 microservices (API Gateway + Core Node Microservices + Python AI Services)
+# Consolidated Core & AI Microservices Blueprint (10 Essential Microservices)
 
 services:
   # ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ services:
         sync: false
 
   # ---------------------------------------------------------------------------
-  # 2. Core Node Microservices
+  # 2. Primary Core Node Microservices
   # ---------------------------------------------------------------------------
   - type: web
     name: auth-service
@@ -102,100 +102,13 @@ services:
       - key: PORT
         value: 3007
 
-  - type: web
-    name: shipping-service
-    runtime: node
-    rootDir: services/core/shipping-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3008
-
-  - type: web
-    name: coupon-service
-    runtime: node
-    rootDir: services/core/coupon-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3009
-
-  - type: web
-    name: review-service
-    runtime: node
-    rootDir: services/core/review-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3010
-
-  - type: web
-    name: notification-service
-    runtime: node
-    rootDir: services/core/notification-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3011
-
-  - type: web
-    name: audit-log-service
-    runtime: node
-    rootDir: services/core/audit-log-service
-    buildCommand: npm install
-    startCommand: npm start
-    plan: free
-    envVars:
-      - key: PORT
-        value: 3012
-
   # ---------------------------------------------------------------------------
-  # 3. Python AI & Intelligence Microservices (FastAPI)
+  # 3. Primary Python AI & Intelligence Microservices
   # ---------------------------------------------------------------------------
   - type: web
     name: ml-service
     runtime: python
     rootDir: services/intelligence/ml-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
-
-  - type: web
-    name: pricing-service
-    runtime: python
-    rootDir: services/intelligence/pricing-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
-
-  - type: web
-    name: forecast-service
-    runtime: python
-    rootDir: services/intelligence/forecast-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
-
-  - type: web
-    name: fraud-service
-    runtime: python
-    rootDir: services/intelligence/fraud-service
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    plan: free
-
-  - type: web
-    name: visual-search-service
-    runtime: python
-    rootDir: services/intelligence/visual-search-service
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
