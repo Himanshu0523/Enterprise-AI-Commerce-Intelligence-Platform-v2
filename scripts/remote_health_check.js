@@ -19,6 +19,7 @@ const DEPLOYED_SERVICES = [
   { name: 'Auth Service', url: process.env.AUTH_SERVICE_URL || 'https://auth-service.onrender.com/health' },
   { name: 'Product Service', url: process.env.PRODUCT_SERVICE_URL || 'https://product-service.onrender.com/health' },
   { name: 'Order Service', url: process.env.ORDER_SERVICE_URL || 'https://order-service.onrender.com/health' },
+  { name: 'User Service', url: process.env.USER_SERVICE_URL || 'https://user-service-e3hq.onrender.com/health' },
   { name: 'Inventory Service', url: process.env.INVENTORY_SERVICE_URL || 'https://inventory-service.onrender.com/health' },
   { name: 'Cart Service', url: process.env.CART_SERVICE_URL || 'https://cart-service.onrender.com/health' },
   { name: 'Payment Service', url: process.env.PAYMENT_SERVICE_URL || 'https://payment-service.onrender.com/health' },
