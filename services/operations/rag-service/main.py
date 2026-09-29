@@ -131,32 +131,87 @@ class MultiModalSearchResponse(BaseModel):
     latencyMs: int
 
 
-# ─── Endpoints ────────────────────────────────────────────────────────────────
+#  Endpoints 
+
+#  Ingestion & Retrieval Imports 
+try:
+    from ingestion.chunker import chunker
+    from retrieval.hybrid_search import hybrid_retrieve
+except Exception as e:
+    print(f"[RAG-INIT] Warning importing chunker/hybrid search: {e}")
 
 @app.get("/health")
 def health_check():
     return {"status": "ok", "service": "rag-service", "version": "2.0.0"}
 
 
+@app.post("/api/support/upload-doc")
+async def upload_document(
+    file: UploadFile = File(...),
+    category: str = Form("General Specs")
+):
+    """
+    Automated Document Ingestion & Chunking Pipeline.
+    Processes uploaded text/markdown/specs, chunks via sliding window, and indexes into RAG knowledge base.
+    """
+    try:
+        content_bytes = await file.read()
+        text_content = content_bytes.decode("utf-8", errors="ignore")
+        doc_id = f"doc_{int(time.time())}_{file.filename}"
+
+        chunks = chunker.split_text(text_content, doc_id=doc_id, source=file.filename)
+        
+        for c in chunks:
+            KNOWLEDGE_BASE.append({
+                "id": c["id"],
+                "category": category,
+                "question": f"Doc Snippet ({file.filename})",
+                "answer": c["content"],
+                "content": c["content"]
+            })
+
+        return {
+            "success": True,
+            "filename": file.filename,
+            "chunksCreated": len(chunks),
+            "message": f"Successfully ingested {len(chunks)} chunks into RAG Knowledge Base"
+        }
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Document ingestion failed: {str(err)}")
+
+
 @app.post("/api/support/query", response_model=SupportQueryResponse)
 def support_query(payload: SupportQueryRequest):
-    """RAG-powered customer support Q&A against knowledge base."""
+    """RAG-powered customer support Q&A using Hybrid BM25 + Dense Retrieval."""
     q = payload.query
     if not q.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
     scored_docs = []
     for item in KNOWLEDGE_BASE:
-        full_text = f"{item['category']} {item['question']} {item['answer']}"
+        full_text = f"{item['category']} {item.get('question', '')} {item['answer']}"
         score = lexical_score(q, full_text)
-        scored_docs.append({**item, "score": round(score, 4)})
+        scored_docs.append({**item, "score": round(score, 4), "content": full_text})
 
-    scored_docs.sort(key=lambda x: x["score"], reverse=True)
-    top_docs = [ContextDoc(**d) for d in scored_docs[:2]]
+    # Run Hybrid BM25 + Dense retrieval
+    try:
+        hybrid_results = hybrid_retrieve(q, scored_docs, alpha=0.6, top_k=3)
+    except Exception:
+        hybrid_results = sorted(scored_docs, key=lambda x: x["score"], reverse=True)[:3]
 
-    best = top_docs[0] if top_docs and top_docs[0].score > 0.05 else None
+    top_docs = [
+        ContextDoc(
+            id=d["id"],
+            category=d["category"],
+            question=d.get("question", "Document Spec Snippet"),
+            answer=d["answer"],
+            score=d.get("hybrid_score", d["score"])
+        ) for d in hybrid_results
+    ]
+
+    best = top_docs[0] if top_docs and top_docs[0].score > 0.01 else None
     if best:
-        answer = f"Based on our support docs ({best.category}): {best.answer}"
+        answer = f"Based on our knowledge base ({best.category}): {best.answer}"
     else:
         answer = "I couldn't find an exact match. Please contact support@example.com."
 

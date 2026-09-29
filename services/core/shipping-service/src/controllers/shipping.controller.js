@@ -78,3 +78,37 @@ exports.updateShipmentStatus = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.handleCarrierWebhook = async (req, res) => {
+  try {
+    const { tracking_number, status, event_details, tracking_status } = req.body;
+    const trackingNo = tracking_number || (event_details && event_details.tracking_number);
+    const newStatus = status || (tracking_status && tracking_status.status) || 'IN_TRANSIT';
+
+    if (!trackingNo) {
+      return res.status(400).json({ msg: 'tracking_number is required in webhook payload' });
+    }
+
+    const shipment = await Shipment.findOne({ trackingNumber: trackingNo });
+    if (!shipment) {
+      return res.status(404).json({ msg: `No shipment found for tracking number ${trackingNo}` });
+    }
+
+    shipment.status = newStatus.toUpperCase();
+    shipment.trackingHistory.push({
+      status: shipment.status,
+      location: (event_details && event_details.location) || 'Carrier Network',
+      description: (event_details && event_details.description) || `Carrier webhook status update: ${newStatus}`,
+      timestamp: new Date()
+    });
+
+    await shipment.save();
+
+    console.log(`[Shipping Webhook] Updated shipment ${shipment._id} tracking ${trackingNo} -> ${shipment.status}`);
+    res.json({ success: true, shipment });
+  } catch (error) {
+    console.error('[Shipping Webhook Error]', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
