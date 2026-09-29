@@ -58,11 +58,8 @@ async function runJepsenChaosTest() {
     await setupInventory(sku, 10);
     const initialInv = await getInventoryStock(sku);
     console.log(`[INIT] Initial Stock for ${sku}: quantity=${initialInv.quantity}, reserved=${initialInv.reserved}`);
-
-    // ────────────────────────────────────────────────────────────────────────
     // SCENARIO 1: Partition between Order-Service and Payment-Service
-    // ────────────────────────────────────────────────────────────────────────
-    console.log('\n================================──────────────────────');
+
     console.log('🧪 SCENARIO: Partition between Order & Payment Services');
     console.log('================================──────────────────────');
 
@@ -124,9 +121,7 @@ async function runJepsenChaosTest() {
     const midInv = await getInventoryStock(sku);
     console.log(`  - Current SKU Reserved: ${midInv.reserved} (Expected: 2)`);
 
-    // ────────────────────────────────────────────────────────────────────────
     // HEAL PHASE
-    // ────────────────────────────────────────────────────────────────────────
     console.log('\n🩹 Healing network partition...');
     await configureServiceChaos(ORDER_CHAOS, {
       partitionActive: false,

@@ -1,0 +1,217 @@
+# Render Infrastructure-as-Code Blueprint
+# Deploy all 20 microservices (API Gateway + Core Node Microservices + Python AI Services)
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. API Gateway
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: api-gateway
+    runtime: node
+    rootDir: services/api-gateway
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+
+  # ---------------------------------------------------------------------------
+  # 2. Core Node Microservices
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: auth-service
+    runtime: node
+    rootDir: services/core/auth-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3001
+
+  - type: web
+    name: user-service
+    runtime: node
+    rootDir: services/core/user-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3002
+
+  - type: web
+    name: product-service
+    runtime: node
+    rootDir: services/core/product-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3003
+
+  - type: web
+    name: inventory-service
+    runtime: node
+    rootDir: services/core/inventory-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3004
+
+  - type: web
+    name: cart-service
+    runtime: node
+    rootDir: services/core/cart-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3005
+
+  - type: web
+    name: order-service
+    runtime: node
+    rootDir: services/core/order-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3006
+
+  - type: web
+    name: payment-service
+    runtime: node
+    rootDir: services/core/payment-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3007
+
+  - type: web
+    name: shipping-service
+    runtime: node
+    rootDir: services/core/shipping-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3008
+
+  - type: web
+    name: coupon-service
+    runtime: node
+    rootDir: services/core/coupon-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3009
+
+  - type: web
+    name: review-service
+    runtime: node
+    rootDir: services/core/review-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3010
+
+  - type: web
+    name: notification-service
+    runtime: node
+    rootDir: services/core/notification-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3011
+
+  - type: web
+    name: audit-log-service
+    runtime: node
+    rootDir: services/core/audit-log-service
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3012
+
+  # ---------------------------------------------------------------------------
+  # 3. Python AI & Intelligence Microservices (FastAPI)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: ml-service
+    runtime: python
+    rootDir: services/intelligence/ml-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  - type: web
+    name: pricing-service
+    runtime: python
+    rootDir: services/intelligence/pricing-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  - type: web
+    name: forecast-service
+    runtime: python
+    rootDir: services/intelligence/forecast-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  - type: web
+    name: fraud-service
+    runtime: python
+    rootDir: services/intelligence/fraud-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  - type: web
+    name: visual-search-service
+    runtime: python
+    rootDir: services/intelligence/visual-search-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  - type: web
+    name: rag-service
+    runtime: python
+    rootDir: services/operations/rag-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+  - type: web
+    name: agent-service
+    runtime: python
+    rootDir: services/operations/agent-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free

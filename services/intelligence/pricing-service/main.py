@@ -1,7 +1,20 @@
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../packages/tracing/python'))
-from tracer import init_tracing, instrument_fastapi_app
+import sys, os, importlib
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../packages/tracing/python')))
+
+try:
+    from packages.tracing.python.tracer import init_tracing, instrument_fastapi_app
+except ImportError:
+    try:
+        _tracer_mod = importlib.import_module("tracer")
+        init_tracing = getattr(_tracer_mod, "init_tracing")
+        instrument_fastapi_app = getattr(_tracer_mod, "instrument_fastapi_app")
+    except Exception:
+        def init_tracing(*args, **kwargs): pass
+        def instrument_fastapi_app(*args, **kwargs): pass
+
 init_tracing("pricing-service")
+
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

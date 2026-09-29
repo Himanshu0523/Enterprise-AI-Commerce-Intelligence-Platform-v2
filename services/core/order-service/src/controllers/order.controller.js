@@ -110,7 +110,7 @@ exports.createOrder = async (req, res) => {
 
     let order;
     
-    // ── STEP 1: Persist Local Order (Traced) ─────────────────────────────────
+    // STEP 1: Persist Local Order (Traced)
     const dbSpan = tracer.startSpan('mongodb.create_order', { parent: rootSpan });
     try {
       order = await Order.create({
@@ -151,12 +151,12 @@ exports.createOrder = async (req, res) => {
       dbSpan.end();
     }
 
-    // ── Execute Saga Steps ────────────────────────────────────────────────────
-    let stockReserved = false;
+    //  Execute Saga Steps 
+   let stockReserved = false;
     let paymentCharged = false;
 
     try {
-      // ── STEP 2: Reserve Stock (Traced) ───────────────────────────
+      //  STEP 2: Reserve Stock (Traced) 
       const invSpan = tracer.startSpan('inventory.reserve_stock', { parent: rootSpan });
       invSpan.setAttribute('items.count', items.length);
       try {
@@ -187,7 +187,7 @@ exports.createOrder = async (req, res) => {
       order.sagaState = 'STOCK_RESERVED';
       await order.save();
 
-      // ── STEP 3: Charge Payment (Traced) ─────────────────────────────
+      //  STEP 3: Charge Payment (Traced) 
       order.sagaState = 'PAYING';
       await order.save();
 
@@ -250,7 +250,7 @@ exports.createOrder = async (req, res) => {
       order.reconciliationTasks = pendingTasks;
       await order.save();
 
-      // ── Apply Immediate compensations (best-effort) ─────────────────────────
+      //  Apply Immediate compensations (best-effort) 
       if (stockReserved) {
         const compSpan = tracer.startSpan('saga.compensate_restock', { parent: rootSpan });
         try {
