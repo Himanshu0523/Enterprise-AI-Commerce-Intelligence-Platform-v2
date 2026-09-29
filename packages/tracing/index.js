@@ -13,6 +13,17 @@
  *   NODE_ENV                      — Sets deployment.environment attribute
  */
 
+function resolveModule(name) {
+  try {
+    return require(name);
+  } catch (e) {
+    if (require.main && typeof require.main.require === 'function') {
+      return require.main.require(name);
+    }
+    throw e;
+  }
+}
+
 /**
  * Initializes OpenTelemetry tracing for the calling microservice.
  * Must be called BEFORE any other require statements.
@@ -20,11 +31,11 @@
  */
 function initTracing(serviceName) {
   try {
-    const { NodeSDK } = require('@opentelemetry/sdk-node');
-    const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
-    const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
-    const { Resource } = require('@opentelemetry/resources');
-    const { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_DEPLOYMENT_ENVIRONMENT } = require('@opentelemetry/semantic-conventions');
+    const { NodeSDK } = resolveModule('@opentelemetry/sdk-node');
+    const { getNodeAutoInstrumentations } = resolveModule('@opentelemetry/auto-instrumentations-node');
+    const { OTLPTraceExporter } = resolveModule('@opentelemetry/exporter-trace-otlp-http');
+    const { Resource } = resolveModule('@opentelemetry/resources');
+    const { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_DEPLOYMENT_ENVIRONMENT } = resolveModule('@opentelemetry/semantic-conventions');
 
     const otlpEndpoint =
       process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://jaeger:4318';
