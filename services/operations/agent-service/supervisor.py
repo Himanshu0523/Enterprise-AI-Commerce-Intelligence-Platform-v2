@@ -80,3 +80,41 @@ def track_tokens_and_cost(session_id: str, input_tokens: int, output_tokens: int
     increment_session_metric(session_id, "input_tokens", float(input_tokens))
     increment_session_metric(session_id, "output_tokens", float(output_tokens))
     return new_cost
+
+import json
+
+_memory_checkpoints = {}
+
+def save_conversation_checkpoint(session_id: str, prompt: str, output: str, steps: list) -> bool:
+    """Persists multi-turn agent interaction history into Redis or fallback memory."""
+    payload = {
+        "prompt": prompt,
+        "output": output,
+        "step_count": len(steps),
+        "timestamp": os.getenv("CURRENT_TIME", "2026-09-29")
+    }
+    if r_client:
+        try:
+            key = f"agent_checkpoint:{session_id}"
+            r_client.rpush(key, json.dumps(payload))
+            r_client.expire(key, 86400) # 24h retention
+            return True
+        except Exception as e:
+            print(f"[Redis Checkpointer Error] {e}")
+
+    if session_id not in _memory_checkpoints:
+        _memory_checkpoints[session_id] = []
+    _memory_checkpoints[session_id].append(payload)
+    return True
+
+def get_conversation_history(session_id: str) -> list:
+    """Retrieves multi-turn conversation checkpoints from Redis or fallback memory."""
+    if r_client:
+        try:
+            key = f"agent_checkpoint:{session_id}"
+            items = r_client.lrange(key, 0, -1)
+            return [json.loads(item.decode('utf-8')) for item in items]
+        except Exception as e:
+            print(f"[Redis Checkpointer Error] {e}")
+    return _memory_checkpoints.get(session_id, [])
+

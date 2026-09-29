@@ -19,13 +19,17 @@ function createServiceProxy(target, options = {}) {
     pathRewrite: options.pathRewrite || {},
     on: {
       proxyReq: (proxyReq, req) => {
-        // ── Distributed Tracing Headers ──────────────────────────────────
+        // ── Distributed Tracing Headers 
         if (req.correlationId) {
           proxyReq.setHeader('x-correlation-id', req.correlationId);
         }
         if (req.traceParent) {
           proxyReq.setHeader('traceparent', req.traceParent);
         }
+
+        // ── Internal Service Security Header ────────────────────────────
+        const internalToken = process.env.INTERNAL_SERVICE_TOKEN || 'internal-secret-token-v2';
+        proxyReq.setHeader('x-internal-service-token', internalToken);
 
         // ── Authenticated User Context ───────────────────────────────────
         if (req.user) {
@@ -35,6 +39,7 @@ function createServiceProxy(target, options = {}) {
             proxyReq.setHeader('x-user-email', req.user.email);
           }
         }
+
       },
 
       proxyRes: (proxyRes, req) => {
