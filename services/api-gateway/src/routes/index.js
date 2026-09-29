@@ -26,5 +26,9 @@ router.use('/admin', adminRoutes);
 // AI & Agent routes protected by Token-Aware Rate Limiter
 router.use('/support', tokenRateLimiter, createProxy(config.services.rag));
 router.use('/agent', tokenRateLimiter, createProxy(config.services.agent));
+router.use('/ml', tokenRateLimiter, createProxy(config.services.ml));
+router.use('/forecast', tokenRateLimiter, createProxy(config.services.forecast));
+router.use('/fraud', tokenRateLimiter, createProxy(config.services.fraud));
+router.use('/visual-search', tokenRateLimiter, createProxy(config.services.visualSearch));
 
 module.exports = router;

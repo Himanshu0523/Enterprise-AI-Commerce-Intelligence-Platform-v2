@@ -21,10 +21,105 @@ services:
         sync: false
       - key: CLIENT_URL
         sync: false
+      # Downstream Client Microservice Network Connections
+      - key: AUTH_SERVICE_URL
+        fromService:
+          type: web
+          name: auth-service
+          property: hostport
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: user-service
+          property: hostport
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: web
+          name: product-service
+          property: hostport
+      - key: INVENTORY_SERVICE_URL
+        fromService:
+          type: web
+          name: inventory-service
+          property: hostport
+      - key: CART_SERVICE_URL
+        fromService:
+          type: web
+          name: cart-service
+          property: hostport
+      - key: ORDER_SERVICE_URL
+        fromService:
+          type: web
+          name: order-service
+          property: hostport
+      - key: PAYMENT_SERVICE_URL
+        fromService:
+          type: web
+          name: payment-service
+          property: hostport
+      - key: SHIPPING_SERVICE_URL
+        fromService:
+          type: web
+          name: shipping-service
+          property: hostport
+      - key: COUPON_SERVICE_URL
+        fromService:
+          type: web
+          name: coupon-service
+          property: hostport
+      - key: REVIEW_SERVICE_URL
+        fromService:
+          type: web
+          name: review-service
+          property: hostport
+      - key: NOTIFICATION_SERVICE_URL
+        fromService:
+          type: web
+          name: notification-service
+          property: hostport
+      - key: AUDIT_LOG_SERVICE_URL
+        fromService:
+          type: web
+          name: audit-log-service
+          property: hostport
+      - key: PRICING_SERVICE_URL
+        fromService:
+          type: web
+          name: pricing-service
+          property: hostport
+      - key: RAG_SERVICE_URL
+        fromService:
+          type: web
+          name: rag-service
+          property: hostport
+      - key: AGENT_SERVICE_URL
+        fromService:
+          type: web
+          name: agent-service
+          property: hostport
+      - key: ML_SERVICE_URL
+        fromService:
+          type: web
+          name: ml-service
+          property: hostport
+      - key: FORECAST_SERVICE_URL
+        fromService:
+          type: web
+          name: forecast-service
+          property: hostport
+      - key: FRAUD_SERVICE_URL
+        fromService:
+          type: web
+          name: fraud-service
+          property: hostport
+      - key: VISUAL_SEARCH_SERVICE_URL
+        fromService:
+          type: web
+          name: visual-search-service
+          property: hostport
 
-  # ===========================================================================
+
   # 2. CORE COMMERCE & USER MICROSERVICES (12 Node.js Services)
-  # ===========================================================================
 
   # 2.1 Authentication & RBAC Service
   - type: web
