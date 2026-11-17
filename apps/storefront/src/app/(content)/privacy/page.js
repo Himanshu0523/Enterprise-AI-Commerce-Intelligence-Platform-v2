@@ -1,10 +1,1 @@
-export default function PrivacyPolicyPage() {
-  return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
-      <p className="text-gray-600 mb-4">
-        Your privacy is important to us. This policy outlines how we collect, use, and protect your personal information.
-      </p>
-    </div>
-  );
-}
+export default function PrivacyPolicyPage(){return <div className="page-shell max-w-4xl"><p className="editorial-kicker">Platform information</p><h1 className="page-title mt-3">Privacy and data.</h1><p className="page-description">A technical summary of how this project currently handles account data. This page is not a substitute for a reviewed production privacy notice.</p><div className="content-prose mt-10"><h2>Account information</h2><p>Registration and sign-in credentials are handled by the authentication service. The user service stores account profile details, preferences and saved addresses.</p><h2>Browser storage</h2><p>The current storefront stores access tokens, refresh tokens, user profile data and local shopping state in browser localStorage. This is a development implementation. A production deployment should move authentication tokens to secure, HttpOnly, SameSite cookies and review token rotation and CSRF protections.</p><h2>Payments</h2><p>The storefront does not ask users to enter card numbers or CVV values into its account pages. A verified payment provider integration must handle payment details. Mock payments are disabled unless explicitly enabled for a demo environment.</p><h2>Demonstration catalogue</h2><p>Product names, images, prices and categories in the showcase catalogue are sample content. They do not represent a promise of stock availability or a real commercial offer.</p></div></div>}
