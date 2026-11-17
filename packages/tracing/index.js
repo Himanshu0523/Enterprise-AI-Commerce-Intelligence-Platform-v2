@@ -1,83 +1,39 @@
 'use strict';
 
-/**
- * @file packages/tracing/index.js
- * @description Shared OpenTelemetry bootstrap for all Node.js microservices.
- *
- * USAGE — Add this as the VERY FIRST line in each service's entry file:
- *   require('../../packages/tracing')('service-name');
- *
- * Environment Variables:
- *   OTEL_EXPORTER_OTLP_ENDPOINT  — Jaeger OTLP endpoint (default: http://jaeger:4318)
- *   OTEL_SERVICE_NAME             — Overrides the serviceName argument if set
- *   NODE_ENV                      — Sets deployment.environment attribute
- */
-
-function resolveModule(name) {
-  try {
-    return require(name);
-  } catch (e) {
-    if (require.main && typeof require.main.require === 'function') {
-      return require.main.require(name);
-    }
-    throw e;
-  }
-}
-
-/**
- * Initializes OpenTelemetry tracing for the calling microservice.
- * Must be called BEFORE any other require statements.
- * @param {string} serviceName - The logical service name (e.g. 'order-service')
- */
+// Set OTEL_SDK_DISABLED=true when this service has no configured OTLP collector.
+// Check before requiring optional OpenTelemetry packages because Render installs
+// dependencies from the service root, not the monorepo tracing package.
 function initTracing(serviceName) {
+  if (process.env.OTEL_SDK_DISABLED === 'true') {
+    console.log(`[OTel] Tracing explicitly disabled for "${serviceName}".`);
+    return;
+  }
+
   try {
-    const { NodeSDK } = resolveModule('@opentelemetry/sdk-node');
-    const { getNodeAutoInstrumentations } = resolveModule('@opentelemetry/auto-instrumentations-node');
-    const { OTLPTraceExporter } = resolveModule('@opentelemetry/exporter-trace-otlp-http');
-    const { Resource } = resolveModule('@opentelemetry/resources');
-    const { SEMRESATTRS_SERVICE_NAME, SEMRESATTRS_DEPLOYMENT_ENVIRONMENT } = resolveModule('@opentelemetry/semantic-conventions');
+    const { NodeSDK } = require('@opentelemetry/sdk-node');
+    const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
+    const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
+    const { Resource } = require('@opentelemetry/resources');
+    const {
+      SEMRESATTRS_SERVICE_NAME,
+      SEMRESATTRS_DEPLOYMENT_ENVIRONMENT,
+    } = require('@opentelemetry/semantic-conventions');
 
-    const otlpEndpoint =
-      process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://jaeger:4318';
-
-    const exporter = new OTLPTraceExporter({
-      url: `${otlpEndpoint}/v1/traces`,
-    });
-
+    const endpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://jaeger:4318';
     const sdk = new NodeSDK({
       resource: new Resource({
         [SEMRESATTRS_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || serviceName,
         [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: process.env.NODE_ENV || 'development',
       }),
-      traceExporter: exporter,
-      instrumentations: [
-        getNodeAutoInstrumentations({
-          '@opentelemetry/instrumentation-http': { enabled: true },
-          '@opentelemetry/instrumentation-express': { enabled: true },
-          '@opentelemetry/instrumentation-mongoose': { enabled: true },
-          '@opentelemetry/instrumentation-redis': { enabled: true },
-          '@opentelemetry/instrumentation-ioredis': { enabled: true },
-          '@opentelemetry/instrumentation-fs': { enabled: false },
-        }),
-      ],
+      traceExporter: new OTLPTraceExporter({ url: `${endpoint}/v1/traces` }),
+      instrumentations: [getNodeAutoInstrumentations()],
     });
 
     sdk.start();
-
-    process.on('SIGTERM', () => {
-      sdk.shutdown().finally(() => process.exit(0));
-    });
-    process.on('SIGINT', () => {
-      sdk.shutdown().finally(() => process.exit(0));
-    });
-
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(
-        `[OTel] Tracing initialized for "${serviceName}" → ${otlpEndpoint}`
-      );
-    }
-  } catch (err) {
-    console.warn(`[OTel] Tracing disabled for "${serviceName}": ${err.message}`);
+    process.on('SIGTERM', () => sdk.shutdown().finally(() => process.exit(0)));
+    process.on('SIGINT', () => sdk.shutdown().finally(() => process.exit(0)));
+  } catch (error) {
+    console.warn(`[OTel] Tracing unavailable for "${serviceName}": ${error.message}`);
   }
 }
 
