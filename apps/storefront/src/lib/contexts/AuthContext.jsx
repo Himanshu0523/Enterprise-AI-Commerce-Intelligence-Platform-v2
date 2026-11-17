@@ -30,22 +30,34 @@ export function AuthProvider({ children }) {
   const [pendingMfa, setPendingMfa] = useState(null);
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem(USER_KEY);
-      const accessToken = localStorage.getItem(ACCESS_KEY);
-      if (storedUser && accessToken) setUser(JSON.parse(storedUser));
-      else {
+    let active = true;
+    const restoreSession = async () => {
+      try {
+        const storedUser = localStorage.getItem(USER_KEY);
+        const refreshToken = localStorage.getItem(REFRESH_KEY);
+        if (!storedUser || !refreshToken) {
+          localStorage.removeItem(USER_KEY);
+          localStorage.removeItem(ACCESS_KEY);
+          localStorage.removeItem(REFRESH_KEY);
+          return;
+        }
+        const parsedUser = JSON.parse(storedUser);
+        const tokens = await authRequest('refresh-token', { refreshToken });
+        if (!tokens.accessToken || !tokens.refreshToken) throw new Error('Session refresh failed.');
+        localStorage.setItem(ACCESS_KEY, tokens.accessToken);
+        localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
+        if (active) setUser(parsedUser);
+      } catch {
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(ACCESS_KEY);
         localStorage.removeItem(REFRESH_KEY);
+        if (active) setUser(null);
+      } finally {
+        if (active) setIsLoading(false);
       }
-    } catch {
-      localStorage.removeItem(USER_KEY);
-      localStorage.removeItem(ACCESS_KEY);
-      localStorage.removeItem(REFRESH_KEY);
-    } finally {
-      setIsLoading(false);
-    }
+    };
+    restoreSession();
+    return () => { active = false; };
   }, []);
 
   const persistSession = useCallback((session, fallbackUser) => {
