@@ -35,20 +35,20 @@ export function QuickViewProvider({ children }) {
       name: product.name,
       price: product.flashSalePrice ?? product.price,
       image: product.images?.[0] || '/placeholder.jpg',
-      quantity,
-    });
+      stock,
+    }, quantity);
     setIsAdded(true);
   };
 
   const handleBuyNow = () => {
     if (!product || Number(product.stock) <= 0) return;
     addItem({
-      id: product.id,
+      productId: product.id,
       name: product.name,
       price: product.flashSalePrice ?? product.price,
       image: product.images?.[0] || '/placeholder.jpg',
-      quantity,
-    });
+      stock,
+    }, quantity);
     closeQuickView();
     router.push('/checkout/shipping');
   };
