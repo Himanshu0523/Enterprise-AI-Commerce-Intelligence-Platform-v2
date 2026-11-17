@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import {
   LayoutDashboard, ShoppingBag, MapPin, User, Heart, CreditCard,
-  Star, Shield, Bell, SlidersHorizontal, Gift, LogOut,
+  Star, Shield, Bell, SlidersHorizontal, LogOut,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -50,13 +50,13 @@ export default function AccountSidebar() {
   return (
     <nav className="space-y-5 border border-[#e5e4dc] bg-[#fffefa] p-4">
       {/* User info */}
-      <div className="flex items-center gap-3 px-2 pb-4 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-sm shadow-sm">
+      <div className="flex items-center gap-3 px-2 pb-4 border-b border-[#e5e4dc]">
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#dce5dc] text-[#315b49] font-bold text-sm">
           {user?.name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.name || 'My Account'}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email || ''}</p>
+          <p className="text-sm font-semibold text-[#27362e] truncate">{user?.name || 'My Account'}</p>
+          <p className="text-xs text-[#879087] truncate">{user?.email || ''}</p>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export default function AccountSidebar() {
       <div className="space-y-5">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="px-3 mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-600">
+            <p className="px-3 mb-1.5 text-xs font-semibold uppercase tracking-wider text-[#879087]">
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -77,10 +77,10 @@ export default function AccountSidebar() {
                     className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                       active
                         ? 'bg-[#e8eee7] text-[#315b49]'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                        : 'text-[#59665e] hover:bg-[#f2f2ec] hover:text-[#315b49]'
                     }`}
                   >
-                    <Icon size={17} className={active ? 'text-[#315b49]' : 'text-gray-400 dark:text-gray-500'} />
+                    <Icon size={17} className={active ? 'text-[#315b49]' : 'text-[#879087]'} />
                     {label}
                     {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#315b49]" />}
                   </Link>
@@ -92,10 +92,10 @@ export default function AccountSidebar() {
       </div>
 
       {/* Logout */}
-      <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+      <div className="pt-2 border-t border-[#e5e4dc]">
         <button
-          onClick={async () => { await logout(); router.replace('/login'); router.refresh(); }}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+          onClick={async () => { try { await logout(); } finally { router.replace('/login'); router.refresh(); } }}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#9b5147] hover:bg-[#fbf0ed] transition-colors"
         >
           <LogOut size={17} />
           Sign Out
