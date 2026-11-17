@@ -66,7 +66,7 @@ export function CartProvider({ children }) {
 
   const addItem = useCallback((product, quantity = 1) => {
     setItems((prev) => {
-      const stock = Number(product.stock) > 0 ? Number(product.stock) : 99;
+      const stock = product.stock === undefined || product.stock === null ? 99 : Math.max(0, Number(product.stock));
       if (stock < 1) return prev;
       const existing = prev.find((item) => item.productId === product.productId);
       if (existing) {
@@ -91,7 +91,7 @@ export function CartProvider({ children }) {
     }
     setItems((prev) =>
       prev.map((item) => {
-        const stock = Number(item.stock) > 0 ? Number(item.stock) : 99;
+        const stock = item.stock === undefined || item.stock === null ? 99 : Math.max(0, Number(item.stock));
         return item.productId === productId
           ? { ...item, quantity: Math.min(stock, quantity) }
           : item;
