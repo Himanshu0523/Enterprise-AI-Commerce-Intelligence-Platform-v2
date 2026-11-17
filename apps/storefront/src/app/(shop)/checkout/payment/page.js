@@ -10,7 +10,7 @@ import { LockKeyhole, ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
 const DEMO_ENABLED = process.env.NEXT_PUBLIC_PAYMENT_DEMO_MODE === 'true';
 
 export default function PaymentPage() {
-  const { setPaymentMethod, placeOrder } = useCheckout();
+  const { placeOrder } = useCheckout();
   const { getTotalPrice, getTotalItems } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,8 +22,7 @@ export default function PaymentPage() {
     setError('');
     setIsSubmitting(true);
     try {
-      setPaymentMethod('DEMO');
-      const orderId = await placeOrder();
+      const orderId = await placeOrder('DEMO');
       router.replace('/checkout/confirmation/' + encodeURIComponent(orderId));
     } catch (err) {
       setError(err.message || 'Unable to submit this order.');
