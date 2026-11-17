@@ -137,6 +137,10 @@ services:
         value: production
       - key: JWT_SECRET
         sync: false
+      - key: JWT_ACCESS_EXPIRES
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES
+        value: 7d
       - key: MONGO_URI
         sync: false
       - key: CLIENT_URL
