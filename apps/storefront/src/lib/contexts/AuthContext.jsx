@@ -51,6 +51,7 @@ export function AuthProvider({ children }) {
               ...sessionUser,
               id: validation.user.id,
               email: validation.user.email,
+              name: validation.user.name || sessionUser.name,
               roles: validation.user.roles || sessionUser.roles || [],
             };
             localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
@@ -112,12 +113,9 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       const data = await authRequest('mfa/verify-login', { userId: pendingMfa.userId, token });
-      const fallbackUser = {
-        id: pendingMfa.userId,
-        email: pendingMfa.email,
-        name: pendingMfa.email.split('@')[0],
-      };
-      return persistSession(data, fallbackUser);
+      const validation = await authRequest('validate', { token: data.accessToken });
+      if (!validation.valid || !validation.user) throw new Error('The verified session could not be validated.');
+      return persistSession({ ...data, user: validation.user });
     } finally {
       setIsLoading(false);
     }
