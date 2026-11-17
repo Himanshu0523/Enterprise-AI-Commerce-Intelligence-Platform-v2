@@ -5,8 +5,8 @@ export default function AccountLayout({ children }) {
   return (
     <ProtectedRoute>
       <div className="page-shell">
-        <div className="grid gap-8 lg:grid-cols-[250px_minmax(0,1fr)]">
-          <aside className="min-w-0"><AccountSidebar/></aside>
+        <div className="grid items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)] xl:gap-8">
+          <div className="min-w-0 lg:sticky lg:top-36"><AccountSidebar/></div>
           <main className="min-w-0">{children}</main>
         </div>
       </div>
