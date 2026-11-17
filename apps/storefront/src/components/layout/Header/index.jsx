@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Search, ShoppingBag, UserRound, Heart, Menu, X, ArrowUpRight, ChevronDown, LogOut } from 'lucide-react';
 import { useCart } from '@/lib/contexts/CartContext';
 import { useAuth } from '@/lib/contexts/AuthContext';
@@ -22,11 +22,20 @@ export default function Header() {
   const { user, logout, isLoading } = useAuth();
   const { items = [] } = useWishlist();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [query, setQuery] = useState('');
   const itemCount = getTotalItems();
+  const activeCategory = searchParams.get('category');
+  const isNavActive = (item) => {
+    if (item.href.startsWith('/products?category=')) {
+      return pathname === '/products' && activeCategory === new URLSearchParams(item.href.split('?')[1]).get('category');
+    }
+    if (item.href === '/products') return pathname === '/products' && !activeCategory;
+    return pathname === item.href;
+  };
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -65,7 +74,7 @@ export default function Header() {
 
         <nav className="hidden h-full items-center gap-5 xl:gap-7 xl:flex" aria-label="Main navigation">
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href} aria-current={pathname === item.href.split('?')[0] ? 'page' : undefined} className="relative flex h-full items-center text-[11px] font-semibold text-[#526057] transition-colors hover:text-[#315b49] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-[#315b49] after:transition-all hover:after:w-full">
+            <Link key={item.label} href={item.href} aria-current={isNavActive(item) ? 'page' : undefined} className={'relative flex h-full items-center text-[11px] font-semibold transition-colors after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-[#315b49] after:transition-all hover:after:w-full ' + (isNavActive(item) ? 'text-[#315b49] after:w-full' : 'text-[#526057] after:w-0 hover:text-[#315b49]')}>
               {item.label}
             </Link>
           ))}
@@ -127,7 +136,7 @@ export default function Header() {
             <button type="submit" aria-label="Submit search"><ArrowUpRight size={16} /></button>
           </form>
           <nav className="grid grid-cols-2 gap-x-5" aria-label="Mobile navigation">
-            {navItems.map((item) => <Link key={item.label} onClick={() => setMobileOpen(false)} href={item.href} className="border-b border-[#e5e4dc] py-4 text-sm font-medium text-[#43534a]">{item.label}</Link>)}
+            {navItems.map((item) => <Link key={item.label} onClick={() => setMobileOpen(false)} href={item.href} aria-current={isNavActive(item) ? 'page' : undefined} className={'border-b border-[#e5e4dc] py-4 text-sm font-medium ' + (isNavActive(item) ? 'text-[#315b49]' : 'text-[#43534a]')}>{item.label}</Link>)}
           </nav>
           {!user && <div className="mt-5 grid grid-cols-2 gap-2"><Link onClick={() => setMobileOpen(false)} href="/login" className="flex h-11 items-center justify-center border border-[#315b49] text-xs font-semibold text-[#315b49]">Sign in</Link><Link onClick={() => setMobileOpen(false)} href="/register" className="flex h-11 items-center justify-center bg-[#315b49] text-xs font-semibold text-white">Create account</Link></div>}
           {user && <Link onClick={() => setMobileOpen(false)} href="/account" className="mt-5 block py-3 text-sm font-semibold text-[#315b49]">My account <ArrowUpRight className="inline" size={14} /></Link>}
