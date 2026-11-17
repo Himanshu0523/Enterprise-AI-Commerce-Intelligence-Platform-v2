@@ -28,7 +28,7 @@ export default function CustomersPage() {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/admin/users');
+      const res = await fetch('/api/admin/users');
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
