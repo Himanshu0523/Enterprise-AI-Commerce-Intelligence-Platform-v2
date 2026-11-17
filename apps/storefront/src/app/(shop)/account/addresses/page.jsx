@@ -14,7 +14,6 @@ export default function AddressesPage() {
   const [saving,setSaving]=useState(false);
   const [error,setError]=useState('');
 
-  const load=async()=>{const result=await apiClient('/users/me/addresses');setAddresses(result.addresses||[]);};
   useEffect(()=>{let active=true;apiClient('/users/me/addresses').then(r=>{if(active)setAddresses(r.addresses||[])}).catch(e=>{if(active)setError(e.message||'Unable to load addresses.')}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[]);
 
   const save=async(event)=>{
