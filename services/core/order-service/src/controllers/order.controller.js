@@ -271,14 +271,12 @@ exports.createOrder = async (req, res) => {
         try {
           console.log(`[SAGA COMPENSATE] Restocking items for order ${orderNumber}`);
           for (const item of reservedItems) {
-            await chaosFetch('http://localhost:3004/api/inventory/release', {
+            const releaseRes = await chaosFetch('http://localhost:3004/api/inventory/release', {
               method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'traceparent': rootSpan.traceparent
-              },
+              headers: { 'Content-Type': 'application/json', 'traceparent': rootSpan.traceparent },
               body: JSON.stringify({ sku: item.productId, quantity: item.quantity }),
             });
+            if (!releaseRes.ok) throw new Error('Inventory release failed for ' + item.productId);
           }
           // Success: remove task
           order.reconciliationTasks = order.reconciliationTasks.filter(t => t !== 'RESTOCK');
@@ -366,8 +364,11 @@ exports.cancelOrder = async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ success: false, error: { code: 'RES_404', message: 'Order not found' } });
 
-    if (order.orderStatus === 'SHIPPED' || order.orderStatus === 'DELIVERED') {
-      return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Cannot cancel a shipped or delivered order' } });
+    if (order.userId !== req.user.id && !req.user.roles?.includes('admin')) {
+      return res.status(403).json({ success: false, error: { code: 'AUTH_003', message: 'Access denied' } });
+    }
+    if (order.orderStatus !== 'PENDING' || order.paymentStatus !== 'PENDING') {
+      return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Cancellation is unavailable after checkout processing has started' } });
     }
 
     order.orderStatus = 'CANCELLED';
@@ -393,11 +394,12 @@ setInterval(async () => {
       if (newTasks.includes('RESTOCK')) {
         try {
           for (const item of (order.reservedItems?.length ? order.reservedItems : order.items)) {
-            await chaosFetch('http://localhost:3004/api/inventory/release', {
+            const releaseRes = await chaosFetch('http://localhost:3004/api/inventory/release', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ sku: item.productId, quantity: item.quantity }),
             });
+            if (!releaseRes.ok) throw new Error('Inventory release failed for ' + item.productId);
           }
           const idx = newTasks.indexOf('RESTOCK');
           if (idx > -1) newTasks.splice(idx, 1);
@@ -411,14 +413,12 @@ setInterval(async () => {
       // REFUND compensation task
       if (newTasks.includes('REFUND')) {
         try {
-          await chaosFetch('http://localhost:3007/api/payments/refund-by-order', {
+          const refundRes = await chaosFetch('http://localhost:3007/api/payments/refund-by-order', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-user-id': order.userId,
-            },
+            headers: { 'Content-Type': 'application/json', 'x-user-id': order.userId },
             body: JSON.stringify({ orderId: order._id.toString() }),
           });
+          if (!refundRes.ok) throw new Error('Payment refund request failed');
           const idx = newTasks.indexOf('REFUND');
           if (idx > -1) newTasks.splice(idx, 1);
           order.paymentStatus = 'REFUNDED';
