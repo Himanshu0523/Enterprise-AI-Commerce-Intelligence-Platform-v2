@@ -62,7 +62,7 @@ export default function ProductCard({ product, view = 'grid' }) {
           {flashSalePrice && <span className="bg-[#315b49] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.16em] text-white">Special price</span>}
         </div>
         <div className="absolute right-3 top-3"><WishlistToggle productId={id} size={19} /></div>
-        <div className="absolute inset-x-3 bottom-3 flex translate-y-2 items-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+        <div className="absolute inset-x-3 bottom-3 flex translate-y-0 items-center gap-2 opacity-100 transition-all duration-300 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
           <button type="button" onClick={handleQuickViewClick} className="flex flex-1 items-center justify-center gap-2 bg-[#f5f4ef] px-3 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#1c2924] shadow-lg">
             <Eye size={14} /> Quick view
           </button>
