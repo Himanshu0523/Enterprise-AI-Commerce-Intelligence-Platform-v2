@@ -41,7 +41,7 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/products');
+      const res = await fetch('/api/admin/products');
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
