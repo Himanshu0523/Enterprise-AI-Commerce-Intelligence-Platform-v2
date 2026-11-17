@@ -8,10 +8,10 @@ import ProductFilters from './index';
 import { useProductFilters } from '@/lib/hooks/useProductFilters';
 import Breadcrumbs from '@/components/common/Breadcrumbs';
 
-export default function ProductListingWithFilters({ initialCategory, initialQuery, title = 'Products' }) {
+export default function ProductListingWithFilters({ initialCategory, initialQuery, collection, title = 'Products' }) {
   const [viewMode, setViewMode] = useState('grid');
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const { filteredProducts, totalResults, brands, priceRange, filters, sortBy, toggleBrand, setPriceRange, setRating, setSortBy, clearFilters } = useProductFilters({ initialCategory, initialQuery });
+  const { filteredProducts, totalResults, brands, priceRange, filters, sortBy, toggleBrand, setPriceRange, setRating, setSortBy, clearFilters } = useProductFilters({ initialCategory, initialQuery, collection });
   const breadcrumbItems = [{ label: 'Products', href: '/products' }, ...(initialCategory ? [{ label: initialCategory }] : []), ...(initialQuery ? [{ label: 'Search: ' + initialQuery }] : [])];
 
   return (
@@ -31,7 +31,7 @@ export default function ProductListingWithFilters({ initialCategory, initialQuer
       <div className="flex flex-col gap-8 lg:flex-row">
         <aside className={(filtersOpen?'block':'hidden') + ' w-full shrink-0 lg:block lg:w-60'}>
           <div className="mb-3 flex items-center justify-between lg:hidden"><span className="text-sm font-semibold">Filters</span><button onClick={()=>setFiltersOpen(false)} aria-label="Close filters"><X size={18}/></button></div>
-          <ProductFilters brands={brands} priceRange={priceRange} filters={filters} onToggleBrand={toggleBrand} onPriceChange={setPriceRange} onRatingChange={setRating} onClear={clearFilters}/>
+          <ProductFilters priceRange={priceRange} filters={filters} onPriceChange={setPriceRange} onClear={clearFilters}/>
         </aside>
         <section className="min-w-0 flex-1">
           {filteredProducts.length === 0 ? <div className="surface-card px-6 py-20 text-center"><p className="editorial-heading text-3xl">No matching products.</p><p className="mt-3 text-sm text-[#788078]">Adjust your search or clear the filters.</p><button onClick={clearFilters} className="primary-action mt-6">Clear filters</button></div> : <div className={viewMode==='list'?'flex flex-col':'grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-3'}>{filteredProducts.map(product=><ProductCard key={product.id} product={product} view={viewMode}/>)}</div>}
