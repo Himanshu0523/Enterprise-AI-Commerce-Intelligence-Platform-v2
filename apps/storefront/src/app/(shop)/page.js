@@ -53,8 +53,8 @@ export default function HomePage() {
           <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
             <div>
               <p className="editorial-kicker">An intelligent layer</p>
-              <h2 className="editorial-heading mt-3 text-4xl leading-[.98] sm:text-6xl">A better way to explore.</h2>
-              <p className="mt-5 max-w-md text-sm leading-7 text-[#657168]">Product discovery, comparison and conversational assistance come together in one experience.</p>
+              <h2 className="editorial-heading mt-3 text-4xl leading-[.98] sm:text-6xl">Explore with more context.</h2>
+              <p className="mt-5 max-w-md text-sm leading-7 text-[#657168]">Search the catalogue, compare product details and ask the connected assistant about the collection.</p>
             </div>
             <div className="grid gap-0 border-t border-[#cfd3c9] sm:grid-cols-3 sm:border-l">
               {PILLARS.map(({number,icon:Icon,title,description}) => (
