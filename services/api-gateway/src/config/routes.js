@@ -1,5 +1,3 @@
-const config = require('./index');
-
 module.exports = {
   publicRoutes: [
     '/health',
@@ -22,6 +20,7 @@ module.exports = {
     '/api/auth/mfa/setup',
     '/api/auth/mfa/verify-enable',
     '/api/auth/mfa/disable',
+    '/api/auth/mfa/status',
     '/api/storefront/cart',
     '/api/storefront/orders',
     '/api/storefront/payments',
