@@ -4,7 +4,7 @@ import ProductListingWithFilters from '@/components/product/ProductFilters/Produ
 export default function NewArrivalsPage() {
   return (
     <Suspense fallback={<div className="container mx-auto px-4 py-12 text-center text-gray-500">Loading new arrivals...</div>}>
-      <ProductListingWithFilters title="New Arrivals" />
+      <ProductListingWithFilters collection="new" title="New arrivals" />
     </Suspense>
   );
 }
