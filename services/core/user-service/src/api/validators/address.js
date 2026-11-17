@@ -1,27 +1,12 @@
-const mongoose = require ('mongoose');
+const Joi = require('joi');
 
-const addressSchema = new mongoose.Schema (
-  {
-    userId: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    addressLine1: String,
-    addressLine2: String,
-    city: String,
-    state: String,
-    country: String,
-    postalCode: String,
-    isDefault: {type: Boolean, default: false},
-    type: {
-      type: String,
-      enum: ['shipping', 'billing'],
-      default: 'shipping',
-    },
-    storefrontId: {type: String, default: null}, 
-  },
-  {timestamps: true}
-);
-
-module.exports = mongoose.model ('Address', addressSchema);
+module.exports = Joi.object({
+  addressLine1: Joi.string().trim().min(3).max(160).required(),
+  addressLine2: Joi.string().trim().max(160).allow(''),
+  city: Joi.string().trim().max(80).allow(''),
+  state: Joi.string().trim().max(80).allow(''),
+  country: Joi.string().trim().max(80).required(),
+  postalCode: Joi.string().trim().max(24).allow(''),
+  isDefault: Joi.boolean(),
+  type: Joi.string().valid('shipping', 'billing').default('shipping'),
+});
