@@ -10,12 +10,9 @@ function authenticate(req, res, next) {
 
   const token = authHeader.split(' ')[1];
   try {
-    const secret = config.jwt.secret || process.env.JWT_ACCESS_SECRET || 'your_access_token_secret';
-    const verifyOptions = {};
-    if (config.jwt.issuer) {
-      verifyOptions.issuer = config.jwt.issuer;
-    }
-    const decoded = jwt.verify(token, secret, verifyOptions);
+    const secret = config.jwt.secret;
+    if (!secret) throw new Error('JWT_ACCESS_SECRET is not configured.');
+    const decoded = jwt.verify(token, secret);
     req.user = decoded; // { id, roles/role, email, ... }
     req.userId = decoded.id;
     next();

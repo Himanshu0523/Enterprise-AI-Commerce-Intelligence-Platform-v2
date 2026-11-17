@@ -1,163 +1,18 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { useCompare } from '@/lib/hooks/useCompare';
-import { getAllProducts } from '@/lib/api/products';
+import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X, Scale } from 'lucide-react';
-import '@/types/product';
+import { useCompare } from '@/lib/hooks/useCompare';
+import { getAllProducts } from '@/lib/api/products';
+import { X, Scale, ArrowUpRight } from 'lucide-react';
 
-/**
- * Compare Page Content Component
- * Displays products in the compare list side-by-side with attributes.
- */
-function CompareContent() {
-  const { ids, remove, clear } = useCompare();
-  const allProducts = getAllProducts();
-  const compareProducts = ids.map((id) => allProducts.find((p) => p.id === id)).filter(Boolean);
-
-  if (compareProducts.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <Scale className="mx-auto h-16 w-16 text-gray-300" />
-        <h1 className="mt-4 text-2xl font-bold">No Products to Compare</h1>
-        <p className="mt-2 text-gray-600">Add products using the &quot;Compare&quot; button.</p>
-        <Link href="/products" className="mt-4 inline-block text-indigo-600 hover:underline">
-          Browse Products
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Compare Products</h1>
-        <button
-          onClick={clear}
-          className="rounded border border-red-300 px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors"
-        >
-          Clear All
-        </button>
-      </div>
-
-      <div className="overflow-x-auto bg-white rounded-lg border shadow-sm">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="border-b p-4 bg-gray-50 text-left font-medium w-32 text-gray-700">Product</th>
-              {compareProducts.map((product) => (
-                <th key={product.id} className="border-b border-l p-4 bg-gray-50 min-w-[200px] text-left">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="font-semibold text-gray-800">{product.name}</span>
-                    <button
-                      onClick={() => remove(product.id)}
-                      className="text-gray-400 hover:text-red-600 flex-shrink-0"
-                      title="Remove from compare"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Image</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-center">
-                  <div className="relative h-32 w-32 mx-auto">
-                    <Image
-                      src={product.images[0] || '/placeholder.jpg'}
-                      alt={product.name}
-                      fill
-                      className="object-cover rounded"
-                      sizes="128px"
-                    />
-                  </div>
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Brand</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-center text-gray-600">
-                  {product.brand}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Category</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-center text-gray-600">
-                  {product.category}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Price</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-center font-bold text-indigo-600">
-                  ${product.price.toFixed(2)}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Rating</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-center text-gray-600">
-                  {product.rating.toFixed(1)} ★ ({product.reviewCount})
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Stock</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-center text-gray-600">
-                  {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="border-b p-4 font-medium text-gray-700 bg-gray-50/50">Description</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-b border-l p-4 text-sm text-gray-600">
-                  {product.description}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td className="p-4 font-medium text-gray-700 bg-gray-50/50">Actions</td>
-              {compareProducts.map((product) => (
-                <td key={product.id} className="border-l p-4 text-center">
-                  <Link
-                    href={`/products/${product.id}`}
-                    className="inline-block rounded bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
-                  >
-                    View
-                  </Link>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+function CompareContent(){
+ const {ids,remove,clear}=useCompare();
+ const products=getAllProducts();
+ const selected=ids.map(id=>products.find(p=>p.id===id)).filter(Boolean);
+ if(!selected.length)return <div className="page-shell"><div className="surface-card mx-auto max-w-xl px-6 py-16 text-center"><Scale size={28} className="mx-auto text-[#829b88]"/><h1 className="editorial-heading mt-4 text-4xl">Nothing to compare.</h1><p className="mt-3 text-xs text-[#879087]">Add products using the compare control on a product card.</p><Link href="/products" className="primary-action mt-6">Browse products <ArrowUpRight size={14}/></Link></div></div>;
+ return <div className="page-shell"><header className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-[#e5e4dc] pb-6"><div><p className="editorial-kicker">Product exploration</p><h1 className="page-title mt-3">Compare products.</h1><p className="page-description">{selected.length} products selected for comparison.</p></div><button onClick={clear} className="secondary-action"><X size={14}/> Clear comparison</button></header>
+ <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{selected.map(product=><article key={product.id} className="surface-card overflow-hidden"><div className="relative aspect-[.95] bg-[#eeeee8]"><Image src={product.images?.[0]||'/placeholder.jpg'} alt={product.name} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover"/></div><div className="p-5"><p className="editorial-kicker">{product.category}</p><h2 className="editorial-heading mt-2 text-2xl">{product.name}</h2><p className="mt-3 text-sm font-semibold text-[#315b49]">USD {Number(product.price).toFixed(2)}</p><p className="mt-4 min-h-12 text-xs leading-6 text-[#788078]">{product.description}</p><div className="mt-4 border-t border-[#e5e4dc] pt-4 text-xs text-[#788078]"><span className={product.stock>0?'text-[#315b49]':'text-[#9b5147]'}>{product.stock>0?'Available in sample catalogue':'Out of stock'}</span></div><div className="mt-5 flex items-center justify-between"><Link href={'/products/'+product.id} className="text-xs font-semibold text-[#315b49]">View details <ArrowUpRight size={13} className="inline"/></Link><button onClick={()=>remove(product.id)} className="text-xs text-[#9b5147]">Remove</button></div></div></article>)}</div></div>;
 }
-
-export default function ComparePage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-12 text-center">
-          <p className="text-gray-500 font-medium">Loading comparison...</p>
-        </div>
-      }
-    >
-      <CompareContent />
-    </Suspense>
-  );
-}
+export default function ComparePage(){return <Suspense fallback={<div className="page-shell py-16 text-center text-xs text-[#879087]">Loading comparison…</div>}><CompareContent/></Suspense>}

@@ -10,7 +10,8 @@ import { apiClient } from './client';
 export async function getProductReviews(productId, params = {}) {
   const query = new URLSearchParams(params).toString();
   const endpoint = `/reviews/product/${productId}${query ? `?${query}` : ''}`;
-  return apiClient(endpoint);
+  const response = await apiClient(endpoint);
+  return { ...response, reviews: (response.reviews || []).map((review) => ({ ...review, id: review._id || review.id, author: review.userName || 'Account', date: review.createdAt, helpfulCount: review.helpfulVotes || 0, isVerifiedPurchase: Boolean(review.verifiedPurchase), media: review.images || [] })), pagination: { page: response.page || 1, limit: Number(params.limit || 5), total: response.total || 0, totalPages: response.pages || 1 } };
 }
 
 /**
@@ -70,44 +71,11 @@ export async function markHelpful(reviewId) {
 }
 
 /**
- * Report a review
- * @param {string} reviewId 
- * @param {string} reason 
- * @returns {Promise<Object>}
- */
-export async function reportReview(reviewId, reason) {
-  return apiClient(`/reviews/${reviewId}/report`, {
-    method: 'POST',
-    body: JSON.stringify({ reason }),
-  });
-}
-
-/**
  * Get reviews written by the currently logged-in user
  * @returns {Promise<Array>}
  */
 export async function getUserReviews() {
-  return apiClient('/reviews/user');
+  const response = await apiClient('/reviews/user');
+  return (response.reviews || []).map((review) => ({ ...review, id: review._id || review.id, author: review.userName || 'Account', date: review.createdAt, helpfulCount: review.helpfulVotes || 0, isVerifiedPurchase: Boolean(review.verifiedPurchase) }));
 }
 
-/**
- * Get details of a single review
- * @param {string} reviewId 
- * @returns {Promise<Object>}
- */
-export async function getReviewById(reviewId) {
-  return apiClient(`/reviews/${reviewId}`);
-}
-
-/**
- * Upload media files (photos/videos) for a review
- * @param {string} reviewId 
- * @param {FormData} formData 
- * @returns {Promise<Object>}
- */
-export async function uploadReviewMedia(reviewId, formData) {
-  return apiClient(`/reviews/${reviewId}/media`, {
-    method: 'POST',
-    body: formData,
-  });
-}

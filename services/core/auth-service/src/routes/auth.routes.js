@@ -21,7 +21,7 @@ const loginValidation = [
 router.post('/register', registerValidation, authController.register);
 router.post('/login', loginValidation, authController.login);
 router.post('/refresh-token', authController.refreshToken);
-router.post('/logout', authController.logout);
+router.post('/logout', authMiddleware, authController.logout);
 
 // ─── Password reset ─────────────────────────────────
 router.post('/forgot-password', authController.forgotPassword);
@@ -37,8 +37,9 @@ router.get('/google/callback',
 // ─── MFA ────────────────────────────────────────────
 router.post('/mfa/setup', authMiddleware, authController.setupMFA);
 router.post('/mfa/verify-enable', authMiddleware, authController.verifyAndEnableMFA);
-router.post('/mfa/verify-login', authController.verifyMFA);   // no auth middleware needed
 router.post('/mfa/disable', authMiddleware, authController.disableMFA);
+router.get('/mfa/status', authMiddleware, authController.getMFAStatus);
+router.post('/mfa/verify-login', authController.verifyMFA);   // no auth middleware needed
 
 // ─── Token validation (for other services) ──────────
 router.post('/validate', authController.validateToken);

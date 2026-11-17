@@ -147,14 +147,18 @@ exports.logout = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) return res.status(400).json({ msg: 'Refresh token required' });
 
-await publishEvent('UserLoggedOut', {
-  userId: req.user.id,
-  timestamp: new Date(),
-});
-
   try {
-    // Revoke the token
-    await RefreshToken.updateOne({ token: refreshToken }, { revoked: true });
+    // Revoke the refresh token before publishing the analytics event.
+    await RefreshToken.updateOne({ token: refreshToken, user: req.user.id }, { revoked: true });
+    try {
+      await publishEvent('UserLoggedOut', {
+        userId: req.user.id,
+        timestamp: new Date(),
+      });
+    } catch (eventError) {
+      // A Kafka outage must not prevent the refresh token from being revoked.
+      console.warn('Logout event could not be published:', eventError.message);
+    }
     res.json({ msg: 'Logged out successfully' });
   } catch (err) {
     console.error(err.message);
@@ -177,7 +181,8 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
     await emailService.sendResetEmail(email, resetUrl);
 
     res.json({ msg: 'Password reset link sent to your email.' });
@@ -218,24 +223,25 @@ exports.resetPassword = async (req, res) => {
 
 // ─── GOOGLE OAUTH ───────────────────────────────────
 // (handled by Passport, so just the callback controller)
-exports.googleCallback = (req, res) => {
-  // After Passport authenticates, req.user is set
+exports.googleCallback = async (req, res) => {
+  const clientUrl = process.env.CLIENT_URL;
+  if (!clientUrl) return res.status(500).json({ msg: 'CLIENT_URL is not configured on the auth service.' });
   const user = req.user;
-  if (!user) return res.redirect(`${process.env.CLIENT_URL}/login?error=auth_failed`);
+  if (!user) return res.redirect(clientUrl + '/login?error=auth_failed');
 
-  // Generate tokens
-  const accessToken = tokenUtils.generateAccessToken(user);
-  const refreshToken = tokenUtils.generateRefreshToken(user);
-
-  // Save refresh token
-  RefreshToken.create({
-    token: refreshToken,
-    user: user._id,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
-
-  // Redirect to frontend with tokens in query (or set cookies)
-  res.redirect(`${process.env.CLIENT_URL}/oauth-success?access=${accessToken}&refresh=${refreshToken}`);
+  try {
+    const accessToken = tokenUtils.generateAccessToken(user);
+    const refreshToken = tokenUtils.generateRefreshToken(user);
+    await RefreshToken.create({
+      token: refreshToken,
+      user: user._id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+    return res.redirect(clientUrl + '/oauth-success#access=' + encodeURIComponent(accessToken) + '&refresh=' + encodeURIComponent(refreshToken));
+  } catch (error) {
+    console.error('[AUTH] Google OAuth callback failed:', error.message);
+    return res.redirect(clientUrl + '/login?error=oauth_callback_failed');
+  }
 };
 
 // ─── MFA ────────────────────────────────────────────
@@ -364,8 +370,18 @@ exports.validateToken = async (req, res) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ msg: 'User not found' });
 
-    res.json({ valid: true, user: { id: user._id, email: user.email, roles: user.roles } });
+    res.json({ valid: true, user: { id: user._id, email: user.email, name: user.name, roles: user.roles } });
   } catch (err) {
     res.status(401).json({ valid: false, msg: 'Invalid or expired token' });
+  }
+};
+
+exports.getMFAStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('+mfaEnabled');
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    return res.json({ enabled: Boolean(user.mfaEnabled) });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Unable to read MFA status' });
   }
 };

@@ -1,63 +1,13 @@
 import { Star } from 'lucide-react';
 
-/**
- * Info Component
- * @param {Object} props
- * @param {string} props.name
- * @param {number} props.price
- * @param {number} props.rating
- * @param {number} props.reviewCount
- * @param {string} props.description
- * @param {number} props.stock
- */
-export default function Info({
-  name,
-  price,
-  rating,
-  reviewCount,
-  description,
-  stock,
-}) {
-  const isInStock = stock > 0;
-
-  return (
-    <div>
-      <h1 className="text-3xl font-bold">{name}</h1>
-
-      <div className="mt-2 flex items-center gap-2">
-        <div className="flex items-center">
-          {Array.from({ length: 5 }, (_, i) => (
-            <Star
-              key={i}
-              size={20}
-              className={
-                i < Math.floor(rating)
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'text-gray-300'
-              }
-            />
-          ))}
-        </div>
-        <span className="text-sm text-gray-600">({reviewCount} reviews)</span>
-      </div>
-
-      <p className="mt-4 text-3xl font-bold text-indigo-600">
-        ${price.toFixed(2)}
-      </p>
-
-      <p className="mt-4 text-gray-700">{description}</p>
-
-      <div className="mt-4 flex items-center gap-2">
-        <span
-          className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
-            isInStock
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {isInStock ? `In Stock (${stock})` : 'Out of Stock'}
-        </span>
-      </div>
-    </div>
-  );
+export default function Info({ name, price, rating, reviewCount, description, stock }) {
+  const inStock=Number(stock)>0;
+  return <div>
+    <p className="editorial-kicker">Product details</p>
+    <h1 className="editorial-heading mt-3 text-4xl leading-tight sm:text-5xl">{name}</h1>
+    {Number(reviewCount)>0?<div className="mt-4 flex items-center gap-2"><span className="flex gap-1 text-[#c39a55]">{[1,2,3,4,5].map(n=><Star key={n} size={13} className={n<=Math.round(rating||0)?'fill-current':'text-[#d9ddd4]'}/>)}</span><span className="text-[10px] text-[#879087]">{Number(rating).toFixed(1)} · {reviewCount} reviews</span></div>:<p className="mt-4 text-[10px] text-[#879087]">No reviews yet</p>}
+    <p className="mt-6 text-2xl font-semibold tracking-tight text-[#315b49]">USD {Number(price||0).toFixed(2)}</p>
+    <p className="mt-5 max-w-xl text-sm leading-7 text-[#657168]">{description}</p>
+    <div className="mt-6 inline-flex items-center gap-2 border border-[#e5e4dc] bg-[#fffefa] px-3 py-2 text-[10px] font-semibold"><span className={'h-2 w-2 rounded-full '+(inStock?'bg-[#6b9276]':'bg-[#bd7770]')}/>{inStock?'Available in sample catalogue':'Out of stock'}</div>
+  </div>;
 }

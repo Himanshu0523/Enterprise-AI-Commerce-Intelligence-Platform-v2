@@ -1,131 +1,96 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useCheckout } from '@/lib/contexts/CheckoutContext';
+import { useCart } from '@/lib/contexts/CartContext';
+import { LockKeyhole, ArrowLeft, ArrowRight, AlertCircle, ShieldCheck } from 'lucide-react';
 
+const STANDARD_DELIVERY = 5.99;
 
 export default function PaymentPage() {
-  const { state, setPaymentMethod, placeOrder } = useCheckout();
+  const { state, placeOrder } = useCheckout();
+  const { getTotalPrice, getTotalItems } = useCart();
   const router = useRouter();
-
-  const [paymentMethod, setPaymentMethodState] = useState(
-    state.paymentMethod || 'card'
-  );
-  const [cardNumber, setCardNumber] = useState('4111 1111 1111 1111');
-  const [expiry, setExpiry] = useState('12/25');
-  const [cvv, setCvv] = useState('123');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const itemCount = getTotalItems();
+  const subtotal = getTotalPrice();
+  const total = subtotal + STANDARD_DELIVERY;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (!paymentMethod) {
-      setError('Please select a payment method');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+    if (!itemCount) {
+      router.replace('/cart');
+      return;
+    }
+    if (!state.shippingAddress || !state.shippingMethod) {
+      router.replace('/checkout/shipping');
       return;
     }
 
-    // Save payment method
-    setPaymentMethod(paymentMethod);
-
+    setError('');
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      const orderId = await placeOrder();
-      router.push(`/checkout/confirmation/${orderId}`);
+      // Explicit showcase mode: the API only accepts this when
+      // ALLOW_MOCK_PAYMENTS=true is enabled on the payment service.
+      const orderId = await placeOrder('DEMO');
+      router.replace('/checkout/confirmation/' + encodeURIComponent(orderId));
+      router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to place order');
+      setError(err.message || 'Unable to submit the demonstration order.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg border shadow-sm">
-      <div>
-        <h3 className="text-lg font-semibold">Payment Method</h3>
-        <div className="mt-4 space-y-2">
-          <label className="flex items-center gap-3 rounded border p-3 cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="card"
-              checked={paymentMethod === 'card'}
-              onChange={() => setPaymentMethodState('card')}
-              className="h-4 w-4 text-indigo-600"
-            />
-            <span className="font-medium">Credit / Debit Card</span>
-          </label>
-          <label className="flex items-center gap-3 rounded border p-3 cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="paypal"
-              checked={paymentMethod === 'paypal'}
-              onChange={() => setPaymentMethodState('paypal')}
-              className="h-4 w-4 text-indigo-600"
-            />
-            <span className="font-medium">PayPal</span>
-          </label>
-        </div>
-      </div>
+    <div className="page-shell">
+      <header className="mb-8 border-b border-[#e5e4dc] pb-6">
+        <p className="editorial-kicker">Checkout · Payment</p>
+        <h1 className="page-title mt-3">Review and submit.</h1>
+        <p className="page-description">A transparent demonstration checkout. No real card details are collected and no real payment is charged.</p>
+      </header>
 
-      {paymentMethod === 'card' && (
-        <div className="rounded-lg border p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium">Card Number</label>
-            <input
-              type="text"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              className="mt-1 block w-full rounded border border-gray-300 px-3 py-2"
-              placeholder="4111 1111 1111 1111"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <form onSubmit={handleSubmit} className="surface-card p-6 sm:p-8">
+          <div className="flex items-start gap-4 border-b border-[#e5e4dc] pb-6">
+            <div className="grid h-11 w-11 shrink-0 place-items-center bg-[#e8eee7] text-[#315b49]"><LockKeyhole size={19} /></div>
             <div>
-              <label className="block text-sm font-medium">Expiry Date</label>
-              <input
-                type="text"
-                value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2"
-                placeholder="MM/YY"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">CVV</label>
-              <input
-                type="text"
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2"
-                placeholder="123"
-              />
+              <h2 className="text-base font-semibold text-[#1c2924]">Demo payment</h2>
+              <p className="mt-1 text-xs leading-5 text-[#788078]">The order service runs the checkout workflow and records a clearly labelled mock payment. This is not a live payment gateway.</p>
             </div>
           </div>
-        </div>
-      )}
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+          <div className="mt-6 border border-[#d9ddd4] bg-[#f7f7f2] p-5">
+            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#668775]">Showcase environment</p>
+            <p className="mt-2 text-sm font-semibold text-[#1c2924]">No card information required</p>
+            <p className="mt-2 text-xs leading-6 text-[#788078]">Selecting Place demo order submits the cart, delivery address and delivery method to the order service. Mock payment must be enabled on the payment service.</p>
+            <div className="mt-4 flex items-center gap-2 text-[10px] font-semibold text-[#55745f]"><ShieldCheck size={14} /> No real charge will be made</div>
+          </div>
 
-      <div className="flex justify-between">
-        <button
-          type="button"
-          onClick={() => router.push('/checkout/shipping')}
-          className="rounded border border-gray-300 px-6 py-2 hover:bg-gray-50"
-        >
-          Back to Shipping
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded bg-indigo-600 px-6 py-2 text-white hover:bg-indigo-700 disabled:opacity-50 font-medium"
-        >
-          {isSubmitting ? 'Processing...' : 'Place Order'}
-        </button>
+          {error && <div role="alert" className="mt-5 flex items-start gap-2 border border-[#edd5d0] bg-[#fbf1ef] px-4 py-3 text-xs leading-5 text-[#9b5147]"><AlertCircle size={15} className="mt-0.5 shrink-0" />{error}</div>}
+
+          <div className="mt-8 flex flex-wrap justify-between gap-3">
+            <Link href="/checkout/shipping" className="secondary-action"><ArrowLeft size={14} /> Back to shipping</Link>
+            <button type="submit" disabled={isSubmitting || itemCount === 0} className="primary-action disabled:cursor-not-allowed disabled:opacity-40">
+              {isSubmitting ? 'Submitting order…' : 'Place demo order'} <ArrowRight size={14} />
+            </button>
+          </div>
+        </form>
+
+        <aside className="surface-card h-fit p-6">
+          <h2 className="text-sm font-semibold">Order summary</h2>
+          <div className="mt-5 space-y-3 text-xs text-[#788078]">
+            <div className="flex justify-between"><span>Items ({itemCount})</span><span>USD {subtotal.toFixed(2)}</span></div>
+            <div className="flex justify-between"><span>Standard delivery</span><span>USD {STANDARD_DELIVERY.toFixed(2)}</span></div>
+          </div>
+          <div className="mt-4 flex justify-between border-t border-[#e5e4dc] pt-4 text-sm font-semibold"><span>Demo total</span><span className="text-[#315b49]">USD {total.toFixed(2)}</span></div>
+          <p className="mt-4 text-[10px] leading-5 text-[#929990]">The order service calculates the final order total. This summary is an estimate for the standard delivery option.</p>
+        </aside>
       </div>
-    </form>
+    </div>
   );
 }

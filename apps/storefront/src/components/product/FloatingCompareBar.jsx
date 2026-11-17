@@ -1,95 +1,19 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Scale, X, ArrowRight, Trash2 } from 'lucide-react';
 import { useCompare } from '@/lib/hooks/useCompare';
 import productsData from '@/lib/mock-data/products.json';
+import { Scale, X, ArrowRight, Trash2 } from 'lucide-react';
 
 export default function FloatingCompareBar() {
   const { ids, remove, clear, maxCount } = useCompare();
-
-  if (!ids || ids.length === 0) return null;
-
-  // Find products matching the compare IDs
-  const comparedProducts = ids
-    .map((id) => productsData.find((p) => p.id === id))
-    .filter(Boolean);
-
-  return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-4xl bg-gray-900/95 backdrop-blur-md text-white rounded-2xl p-4 shadow-2xl border border-gray-800 transition-all animate-in slide-in-from-bottom-5 duration-300">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Left info & thumbnails */}
-        <div className="flex items-center gap-4 w-full sm:w-auto overflow-x-auto">
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="p-2 bg-indigo-600 rounded-xl text-white shadow">
-              <Scale size={20} />
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compare Mode</div>
-              <div className="text-sm font-bold">
-                {ids.length} of {maxCount} Selected
-              </div>
-            </div>
-          </div>
-
-          <div className="h-8 w-px bg-gray-800 hidden sm:block" />
-
-          {/* Thumbnails */}
-          <div className="flex items-center gap-2">
-            {comparedProducts.map((product) => (
-              <div key={product.id} className="relative group flex-shrink-0">
-                <div className="relative h-12 w-12 rounded-lg overflow-hidden border border-gray-700 bg-gray-800">
-                  <Image
-                    src={product.images?.[0] || '/placeholder.jpg'}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    sizes="48px"
-                  />
-                </div>
-                <button
-                  onClick={() => remove(product.id)}
-                  className="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow"
-                  title="Remove from comparison"
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            ))}
-
-            {/* Empty slots placeholders */}
-            {Array.from({ length: maxCount - ids.length }).map((_, idx) => (
-              <div
-                key={idx}
-                className="h-12 w-12 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-600 text-xs font-medium"
-              >
-                +
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Action buttons */}
-        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-          <button
-            onClick={clear}
-            className="flex items-center gap-1 px-3 py-2 text-xs font-medium text-gray-400 hover:text-white transition-colors"
-          >
-            <Trash2 size={14} />
-            Clear
-          </button>
-
-          <Link
-            href={`/compare?ids=${ids.join(',')}`}
-            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-md hover:shadow-indigo-500/20"
-          >
-            Compare Now ({ids.length})
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
+  if (!ids?.length) return null;
+  const comparedProducts=ids.map(id=>productsData.find(product=>product.id===id)).filter(Boolean);
+  return <div className="fixed bottom-4 left-1/2 z-40 w-[calc(100%-24px)] max-w-4xl -translate-x-1/2 border border-[#d9ddd4] bg-[#fffefa]/95 p-3 text-[#1c2924] shadow-[0_18px_55px_rgba(28,41,36,.18)] backdrop-blur-xl sm:p-4">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center bg-[#e8eee7] text-[#315b49]"><Scale size={18}/></span><div className="shrink-0"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-[#829087]">Compare</p><p className="text-xs font-semibold">{ids.length} of {maxCount} selected</p></div><div className="flex min-w-0 items-center gap-2 overflow-x-auto">{comparedProducts.map(product=><div key={product.id} className="group relative h-10 w-10 shrink-0 overflow-hidden bg-[#eeeee8]"><Image src={product.images?.[0]||'/placeholder.jpg'} alt={product.name} fill sizes="40px" className="object-cover"/><button onClick={()=>remove(product.id)} aria-label={'Remove '+product.name} className="absolute inset-0 grid place-items-center bg-[#1c2924]/65 text-white opacity-0 transition group-hover:opacity-100"><X size={14}/></button></div>)}</div></div>
+      <div className="flex shrink-0 items-center justify-end gap-3"><button onClick={clear} className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#879087] hover:text-[#9b5147]"><Trash2 size={13}/> Clear</button><Link href="/compare" className="inline-flex items-center gap-3 bg-[#315b49] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-white hover:bg-[#214635]">Compare now <ArrowRight size={14}/></Link></div>
     </div>
-  );
+  </div>;
 }

@@ -3,8 +3,8 @@ import ProductListingWithFilters from '@/components/product/ProductFilters/Produ
 
 export default function SalePage() {
   return (
-    <Suspense fallback={<div className="container mx-auto px-4 py-12 text-center text-gray-500">Loading sale items...</div>}>
-      <ProductListingWithFilters title="Sale & Special Offers" />
+    <Suspense fallback={<div className="editorial-shell py-20 text-center text-sm text-[#788078]">Loading offers…</div>}>
+      <ProductListingWithFilters collection="sale" title="Selected offers" />
     </Suspense>
   );
 }

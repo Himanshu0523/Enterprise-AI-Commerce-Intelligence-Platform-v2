@@ -1,382 +1,267 @@
 [
   {
     "id": "p1",
-    "name": "Product 1",
-    "description": "Description for product 1",
+    "name": "Everyday Tailored Overshirt",
+    "description": "A versatile layer with a clean, relaxed silhouette.",
     "price": 19.99,
     "images": [
-      "https://picsum.photos/seed/product0/400/400"
+      "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4,
-    "reviewCount": 10,
     "category": "Men",
-    "brand": "BasicWear",
     "stock": 50,
     "isFeatured": true,
-    "isNew": true,
-    "isTrending": true,
-    "flashSalePrice": 9.99,
-    "reviews": []
+    "isNew": true
   },
   {
     "id": "p2",
-    "name": "Product 2",
-    "description": "Description for product 2",
+    "name": "Sculpted Everyday Blazer",
+    "description": "A sharp, versatile layer with a contemporary profile.",
     "price": 24.99,
     "images": [
-      "https://picsum.photos/seed/product1/400/400"
+      "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.2,
-    "reviewCount": 17,
     "category": "Women",
-    "brand": "DenimCo",
     "stock": 10,
     "isFeatured": false,
     "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "flashSalePrice": 21.24
   },
   {
     "id": "p3",
-    "name": "Product 3",
-    "description": "Description for product 3",
+    "name": "Everyday Play Set",
+    "description": "Comfortable everyday pieces made for movement.",
     "price": 29.99,
     "images": [
-      "https://picsum.photos/seed/product2/400/400"
+      "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.4,
-    "reviewCount": 24,
     "category": "Kids",
-    "brand": "Sporty",
     "stock": 50,
     "isFeatured": false,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p4",
-    "name": "Product 4",
-    "description": "Description for product 4",
-    "price": 34.989999999999995,
+    "name": "Classic Steel Watch",
+    "description": "A minimal timepiece with a crisp, modern profile.",
+    "price": 34.99,
     "images": [
-      "https://picsum.photos/seed/product3/400/400"
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.6,
-    "reviewCount": 31,
     "category": "Accessories",
-    "brand": "Luxe",
     "stock": 10,
     "isFeatured": true,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p5",
-    "name": "Product 5",
-    "description": "Description for product 5",
-    "price": 39.989999999999995,
+    "name": "Structured Weekend Jacket",
+    "description": "A refined outer layer designed for everyday wear.",
+    "price": 39.99,
     "images": [
-      "https://picsum.photos/seed/product4/400/400"
+      "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.8,
-    "reviewCount": 38,
     "category": "Men",
-    "brand": "BasicWear",
     "stock": 50,
     "isFeatured": false,
-    "isNew": true,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": true
   },
   {
     "id": "p6",
-    "name": "Product 6",
-    "description": "Description for product 6",
-    "price": 44.989999999999995,
+    "name": "Soft Structure Tote",
+    "description": "A roomy carryall with a clean, understated shape.",
+    "price": 44.99,
     "images": [
-      "https://picsum.photos/seed/product5/400/400"
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4,
-    "reviewCount": 45,
     "category": "Women",
-    "brand": "DenimCo",
     "stock": 10,
     "isFeatured": false,
     "isNew": false,
-    "isTrending": true,
-    "flashSalePrice": null,
-    "reviews": []
+    "flashSalePrice": 38.24
   },
   {
     "id": "p7",
-    "name": "Product 7",
-    "description": "Description for product 7",
-    "price": 49.989999999999995,
+    "name": "Mini Explorer Jacket",
+    "description": "A lightweight layer for little adventures.",
+    "price": 49.99,
     "images": [
-      "https://picsum.photos/seed/product6/400/400"
+      "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.2,
-    "reviewCount": 52,
     "category": "Kids",
-    "brand": "Sporty",
     "stock": 50,
     "isFeatured": true,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": 21.990000000000002,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p8",
-    "name": "Product 8",
-    "description": "Description for product 8",
-    "price": 54.989999999999995,
+    "name": "Everyday Leather Wallet",
+    "description": "A compact essential with a timeless finish.",
+    "price": 54.99,
     "images": [
-      "https://picsum.photos/seed/product7/400/400"
+      "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.4,
-    "reviewCount": 59,
     "category": "Accessories",
-    "brand": "Luxe",
     "stock": 10,
     "isFeatured": false,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p9",
-    "name": "Product 9",
-    "description": "Description for product 9",
-    "price": 59.989999999999995,
+    "name": "Modern Essential Knit",
+    "description": "A considered wardrobe staple with a minimal finish.",
+    "price": 59.99,
     "images": [
-      "https://picsum.photos/seed/product8/400/400"
+      "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.6,
-    "reviewCount": 66,
     "category": "Men",
-    "brand": "BasicWear",
     "stock": 50,
     "isFeatured": false,
-    "isNew": true,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": true
   },
   {
     "id": "p10",
-    "name": "Product 10",
-    "description": "Description for product 10",
+    "name": "The Essential Knit Dress",
+    "description": "A simple silhouette designed for effortless styling.",
     "price": 64.99,
     "images": [
-      "https://picsum.photos/seed/product9/400/400"
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.8,
-    "reviewCount": 73,
     "category": "Women",
-    "brand": "DenimCo",
     "stock": 10,
     "isFeatured": true,
     "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "flashSalePrice": 55.24
   },
   {
     "id": "p11",
-    "name": "Product 11",
-    "description": "Description for product 11",
+    "name": "Weekend Graphic Tee",
+    "description": "A relaxed tee for everyday play.",
     "price": 69.99,
     "images": [
-      "https://picsum.photos/seed/product10/400/400"
+      "https://images.unsplash.com/photo-1503919005314-30d93d07d823?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4,
-    "reviewCount": 80,
     "category": "Kids",
-    "brand": "Sporty",
     "stock": 50,
     "isFeatured": false,
-    "isNew": false,
-    "isTrending": true,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p12",
-    "name": "Product 12",
-    "description": "Description for product 12",
+    "name": "Sculpted Sunglasses",
+    "description": "A clean frame that completes an everyday look.",
     "price": 74.99,
     "images": [
-      "https://picsum.photos/seed/product11/400/400"
+      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.2,
-    "reviewCount": 87,
     "category": "Accessories",
-    "brand": "Luxe",
     "stock": 10,
     "isFeatured": false,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p13",
-    "name": "Product 13",
-    "description": "Description for product 13",
+    "name": "Relaxed Utility Shirt",
+    "description": "An easy everyday shirt with considered details.",
     "price": 79.99,
     "images": [
-      "https://picsum.photos/seed/product12/400/400"
+      "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.4,
-    "reviewCount": 94,
     "category": "Men",
-    "brand": "BasicWear",
     "stock": 50,
     "isFeatured": true,
-    "isNew": true,
-    "isTrending": false,
-    "flashSalePrice": 33.99,
-    "reviews": []
+    "isNew": true
   },
   {
     "id": "p14",
-    "name": "Product 14",
-    "description": "Description for product 14",
+    "name": "Relaxed Denim Edit",
+    "description": "An easy denim staple with a timeless fit.",
     "price": 84.99,
     "images": [
-      "https://picsum.photos/seed/product13/400/400"
+      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.6,
-    "reviewCount": 101,
     "category": "Women",
-    "brand": "DenimCo",
     "stock": 10,
     "isFeatured": false,
     "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "flashSalePrice": 72.24
   },
   {
     "id": "p15",
-    "name": "Product 15",
-    "description": "Description for product 15",
+    "name": "Everyday Mini Sneakers",
+    "description": "A comfortable sneaker for active days.",
     "price": 89.99,
     "images": [
-      "https://picsum.photos/seed/product14/400/400"
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.8,
-    "reviewCount": 108,
     "category": "Kids",
-    "brand": "Sporty",
     "stock": 50,
     "isFeatured": false,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p16",
-    "name": "Product 16",
-    "description": "Description for product 16",
+    "name": "Minimal Crossbody Bag",
+    "description": "A practical carry piece with a refined silhouette.",
     "price": 94.99,
     "images": [
-      "https://picsum.photos/seed/product15/400/400"
+      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4,
-    "reviewCount": 115,
     "category": "Accessories",
-    "brand": "Luxe",
     "stock": 10,
     "isFeatured": true,
-    "isNew": false,
-    "isTrending": true,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p17",
-    "name": "Product 17",
-    "description": "Description for product 17",
+    "name": "Minimal Leather Sneakers",
+    "description": "A clean sneaker silhouette for daily rotation.",
     "price": 99.99,
     "images": [
-      "https://picsum.photos/seed/product16/400/400"
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.2,
-    "reviewCount": 122,
     "category": "Men",
-    "brand": "BasicWear",
     "stock": 50,
     "isFeatured": false,
-    "isNew": true,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": true
   },
   {
     "id": "p18",
-    "name": "Product 18",
-    "description": "Description for product 18",
+    "name": "Weekend Crossbody",
+    "description": "A compact everyday bag with considered detailing.",
     "price": 104.99,
     "images": [
-      "https://picsum.photos/seed/product17/400/400"
+      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.4,
-    "reviewCount": 129,
     "category": "Women",
-    "brand": "DenimCo",
     "stock": 10,
     "isFeatured": false,
     "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "flashSalePrice": 89.24
   },
   {
     "id": "p19",
-    "name": "Product 19",
-    "description": "Description for product 19",
+    "name": "Little Daypack",
+    "description": "A compact backpack for everyday essentials.",
     "price": 109.99,
     "images": [
-      "https://picsum.photos/seed/product18/400/400"
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.6,
-    "reviewCount": 136,
     "category": "Kids",
-    "brand": "Sporty",
     "stock": 50,
     "isFeatured": true,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": 45.99,
-    "reviews": []
+    "isNew": false
   },
   {
     "id": "p20",
-    "name": "Product 20",
-    "description": "Description for product 20",
+    "name": "Leather Strap Watch",
+    "description": "A versatile timepiece with understated detailing.",
     "price": 114.99,
     "images": [
-      "https://picsum.photos/seed/product19/400/400"
+      "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=1000&q=85"
     ],
-    "rating": 4.8,
-    "reviewCount": 143,
     "category": "Accessories",
-    "brand": "Luxe",
     "stock": 10,
     "isFeatured": false,
-    "isNew": false,
-    "isTrending": false,
-    "flashSalePrice": null,
-    "reviews": []
+    "isNew": false
   }
 ]

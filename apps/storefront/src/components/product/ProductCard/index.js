@@ -1,14 +1,12 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Eye, ArrowUpRight } from 'lucide-react';
+import { Star, Eye } from 'lucide-react';
 import WishlistToggle from '@/components/product/WishlistToggle';
 import CompareButton from '@/components/product/CompareButton';
 import AddToCartButton from '@/components/product/ProductDetail/AddToCartButton';
 import { useQuickView } from '@/lib/contexts/QuickViewContext';
-import '@/types/product';
 
 export default function ProductCard({ product, view = 'grid' }) {
   const { id, name, price, flashSalePrice, images, rating, reviewCount, isNew, stock, category } = product;
@@ -44,8 +42,8 @@ export default function ProductCard({ product, view = 'grid' }) {
             {rating > 0 && <p className="mt-2 flex items-center gap-1 text-xs text-[#737c74]"><Star size={13} className="fill-[#c39a55] text-[#c39a55]" /> {Number(rating).toFixed(1)} <span>({reviewCount || 0})</span></p>}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <span className="text-base font-semibold">{formattedPrice}</span>
-            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} /><CompareButton productId={id} /></div>
+            <div className="flex items-baseline gap-2"><span className="text-base font-semibold">{formattedPrice}</span>{flashSalePrice && <del className="text-xs text-[#929990]">{Number(price).toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2})}</del>}</div>
+            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} stock={stock} compact /><CompareButton productId={id} /></div>
           </div>
         </div>
       </article>
@@ -63,7 +61,7 @@ export default function ProductCard({ product, view = 'grid' }) {
           {flashSalePrice && <span className="bg-[#315b49] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.16em] text-white">Special price</span>}
         </div>
         <div className="absolute right-3 top-3"><WishlistToggle productId={id} size={19} /></div>
-        <div className="absolute inset-x-3 bottom-3 flex translate-y-2 items-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+        <div className="absolute inset-x-3 bottom-3 flex translate-y-0 items-center gap-2 opacity-100 transition-all duration-300 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
           <button type="button" onClick={handleQuickViewClick} className="flex flex-1 items-center justify-center gap-2 bg-[#f5f4ef] px-3 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#1c2924] shadow-lg">
             <Eye size={14} /> Quick view
           </button>
@@ -76,11 +74,10 @@ export default function ProductCard({ product, view = 'grid' }) {
           <Link href={`/products/${id}`}><h3 className="mt-1.5 line-clamp-2 text-sm font-semibold leading-5 text-[#27362e] transition-colors hover:text-[#668775]">{name}</h3></Link>
           {rating > 0 && <p className="mt-2 flex items-center gap-1 text-[10px] text-[#7b827b]"><Star size={11} className="fill-[#c39a55] text-[#c39a55]" /> {Number(rating).toFixed(1)} <span>· {reviewCount || 0} reviews</span></p>}
         </div>
-        <span className="shrink-0 pt-4 text-xs font-semibold text-[#315b49]">{formattedPrice}</span>
+        <span className="shrink-0 pt-4 text-right"><span className="block text-xs font-semibold text-[#315b49]">{formattedPrice}</span>{flashSalePrice && <del className="mt-1 block text-[10px] text-[#929990]">{Number(price).toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2})}</del>}</span>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-[#e5e4dc] pt-3">
-        <AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} />
-        <span className="text-[9px] uppercase tracking-[.14em] text-[#929990]">{stock === 0 ? 'Out of stock' : 'Add to bag'}</span>
+        <AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} stock={stock} />
       </div>
     </article>
   );

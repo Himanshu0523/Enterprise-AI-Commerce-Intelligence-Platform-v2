@@ -7,7 +7,7 @@ const adminRoutes = require('./admin');
 
 const router = express.Router();
 
-router.use('/auth', createProxy(config.services.auth));
+router.use('/auth', createProxy(config.services.auth, { pathRewrite: { '^/': '/api/auth/' } }));
 
 // Canary deployment: 5% of pricing traffic routed to v2 for safe rollout.
 // Adjust PRICING_CANARY_WEIGHT env var (0.0 - 1.0) to control traffic split.
@@ -24,7 +24,7 @@ router.use('/storefront', storefrontRoutes);
 router.use('/admin', adminRoutes);
 
 // AI & Agent routes protected by Token-Aware Rate Limiter
-router.use('/support', tokenRateLimiter, createProxy(config.services.rag));
+router.use('/support', tokenRateLimiter, createProxy(config.services.rag, { pathRewrite: { '^/': '/api/support/' } }));
 router.use('/agent', tokenRateLimiter, createProxy(config.services.agent));
 router.use('/ml', tokenRateLimiter, createProxy(config.services.ml));
 router.use('/forecast', tokenRateLimiter, createProxy(config.services.forecast));

@@ -1,6 +1,3 @@
-'use client';
-
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowDownRight, ArrowUpRight, Sparkles } from 'lucide-react';
@@ -21,8 +18,7 @@ export default function HeroBanner() {
             <span className="italic text-[#557563]">next</span> favourite.
           </h1>
           <p className="mt-8 max-w-[440px] text-sm leading-7 text-[#59665e] sm:text-base">
-            A considered storefront where product discovery meets intelligent technology.
-            Explore the collection and experience a more thoughtful way to shop.
+            Browse the sample catalogue, compare product details and explore the connected knowledge assistant.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-5">
             <Link
@@ -37,9 +33,9 @@ export default function HeroBanner() {
             </a>
           </div>
           <div className="mt-16 flex items-center gap-4 border-t border-[#315b49]/15 pt-5">
-            <span className="text-[10px] font-bold tracking-[.2em] text-[#315b49]">01 / 03</span>
+            <span className="text-[10px] font-bold tracking-[.2em] text-[#315b49]">THE COLLECTION</span>
             <span className="h-px w-12 bg-[#315b49]/30" />
-            <span className="text-[10px] uppercase tracking-[.16em] text-[#758078]">Designed for discovery</span>
+            <span className="text-[10px] uppercase tracking-[.16em] text-[#758078]">Explore at your pace</span>
           </div>
         </div>
 

@@ -1,10 +1,1 @@
-export default function SizeGuidePage() {
-  return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Size Guide</h1>
-      <p className="text-gray-600 mb-4">
-        Use our sizing charts to find the perfect fit for apparel and footwear.
-      </p>
-    </div>
-  );
-}
+export default function SizeGuidePage(){return <div className="page-shell max-w-4xl"><p className="editorial-kicker">Product information</p><h1 className="page-title mt-3">Size information.</h1><div className="surface-card mt-10 p-7 sm:p-9"><h2 className="editorial-heading text-3xl">Product-specific sizing is not available yet.</h2><p className="mt-4 text-sm leading-7 text-[#657168]">The current demonstration catalogue does not provide structured measurements or size charts. Product-specific sizing should be displayed only after those attributes are supplied by the catalogue service.</p></div></div>}

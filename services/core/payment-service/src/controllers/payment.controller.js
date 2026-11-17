@@ -14,66 +14,42 @@ if (process.env.STRIPE_SECRET_KEY) {
 exports.processPayment = async (req, res) => {
   try {
     const userId = req.user ? req.user.id : 'usr_guest';
-    const { orderId, amount, currency = 'USD', paymentProvider = 'MOCK', paymentMethodDetails } = req.body;
+    const { orderId, amount, currency = 'USD', paymentProvider = 'MOCK' } = req.body;
 
-    // Strict input validation
+    if (paymentProvider !== 'MOCK') {
+      return createErrorResponse(res, 503, 'PAY_503', 'The real payment-provider confirmation flow is not connected to this storefront.');
+    }
+    if (process.env.ALLOW_MOCK_PAYMENTS !== 'true') {
+      return createErrorResponse(res, 503, 'PAY_503', 'Demo payments are disabled. Enable them explicitly only in a local showcase environment.');
+    }
     if (!orderId || typeof orderId !== 'string') {
       return createErrorResponse(res, 400, ErrorCodes.VALIDATION_FAILED, 'Valid orderId string is required');
     }
-    if (typeof amount !== 'number' || amount <= 0) {
+    if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
       return createErrorResponse(res, 400, ErrorCodes.VALIDATION_FAILED, 'Amount must be a positive number');
     }
 
-    // Idempotency check: verify if payment already exists for this orderId
     const existingPayment = await Payment.findOne({ orderId, status: 'COMPLETED' });
     if (existingPayment) {
-      console.log(`[PAYMENT] Idempotency hit: Returning existing completed payment for orderId ${orderId}`);
       return res.status(200).json({ success: true, data: existingPayment, idempotencyHit: true });
     }
 
-    let transactionId = 'TXN-' + Date.now() + '-' + Math.floor(1000 + Math.random() * 9000);
-    let clientSecret = null;
-
-    // If Stripe provider requested or Stripe configured, create a real Stripe PaymentIntent
-    if (stripe && (paymentProvider === 'STRIPE' || process.env.USE_STRIPE_DEFAULT === 'true')) {
-      try {
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: Math.round(amount * 100), // convert to cents
-          currency: currency.toLowerCase(),
-          metadata: { orderId, userId },
-          automatic_payment_methods: { enabled: true },
-        });
-        transactionId = paymentIntent.id;
-        clientSecret = paymentIntent.client_secret;
-        console.log(`[PAYMENT] Created Stripe PaymentIntent ${transactionId} for order ${orderId}`);
-      } catch (stripeErr) {
-        console.warn('[PAYMENT] Stripe PaymentIntent creation warning:', stripeErr.message);
-      }
-    }
-
+    const transactionId = 'DEMO-' + Date.now() + '-' + Math.floor(1000 + Math.random() * 9000);
     const payment = await Payment.create({
       orderId,
       userId,
       amount,
       currency,
-      paymentProvider: stripe ? 'STRIPE' : paymentProvider,
+      paymentProvider: 'MOCK',
       transactionId,
       status: 'COMPLETED',
-      paymentMethodDetails: paymentMethodDetails || { cardLast4: '4242', brand: 'Visa' },
     });
 
-    res.status(201).json({
-      success: true,
-      data: payment,
-      ...(clientSecret ? { clientSecret } : {}),
-    });
+    return res.status(201).json({ success: true, data: payment, demo: true });
   } catch (error) {
     if (error.code === 11000) {
-      console.log(`[PAYMENT] Duplicate key hit (11000): Returning existing completed payment for orderId`);
       const existing = await Payment.findOne({ orderId: req.body.orderId, status: 'COMPLETED' });
-      if (existing) {
-        return res.status(200).json({ success: true, data: existing, idempotencyHit: true });
-      }
+      if (existing) return res.status(200).json({ success: true, data: existing, idempotencyHit: true });
     }
     return createErrorResponse(res, 500, ErrorCodes.INTERNAL_SERVER_ERROR, 'Payment processing failed', error.message);
   }

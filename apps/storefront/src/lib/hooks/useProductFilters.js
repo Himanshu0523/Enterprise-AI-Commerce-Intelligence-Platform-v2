@@ -9,6 +9,7 @@ import { applyFilters, sortProducts, getUniqueCategories, getUniqueBrands, getPr
  * @typedef {Object} UseProductFiltersOptions
  * @property {string} [initialCategory]
  * @property {string} [initialQuery]
+ * @property {'new'|'sale'} [collection]
  */
 
 /**
@@ -16,7 +17,7 @@ import { applyFilters, sortProducts, getUniqueCategories, getUniqueBrands, getPr
  * @param {UseProductFiltersOptions} [options={}]
  */
 export function useProductFilters(options = {}) {
-  const { initialCategory, initialQuery } = options;
+  const { initialCategory, initialQuery, collection } = options;
 
   // Get all products (static)
   const allProducts = useMemo(() => getAllProducts(), []);
@@ -29,7 +30,7 @@ export function useProductFilters(options = {}) {
     rating: null,
   });
 
-  const [sortBy, setSortBy] = useState('rating');
+  const [sortBy, setSortBy] = useState('name');
 
   // Derived data
   const categories = useMemo(() => getUniqueCategories(allProducts), [allProducts]);
@@ -39,9 +40,11 @@ export function useProductFilters(options = {}) {
   // Apply filters and sorting
   const filteredProducts = useMemo(() => {
     let filtered = applyFilters(allProducts, filters, initialCategory, initialQuery);
+    if (collection === 'new') filtered = filtered.filter((product) => product.isNew);
+    if (collection === 'sale') filtered = filtered.filter((product) => Number(product.flashSalePrice) > 0);
     filtered = sortProducts(filtered, sortBy);
     return filtered;
-  }, [allProducts, filters, sortBy, initialCategory, initialQuery]);
+  }, [allProducts, filters, sortBy, initialCategory, initialQuery, collection]);
 
   // Setters
   const toggleBrand = (brand) => {
@@ -68,7 +71,7 @@ export function useProductFilters(options = {}) {
       priceMax: null,
       rating: null,
     });
-    setSortBy('rating');
+    setSortBy('name');
   };
 
   return {

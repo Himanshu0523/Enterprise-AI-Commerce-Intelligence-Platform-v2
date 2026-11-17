@@ -1,41 +1,12 @@
 'use client';
 
-import React from 'react';
 import { Heart } from 'lucide-react';
 import { useWishlist } from '@/lib/contexts/WishlistContext';
 
-/**
- * @param {Object} props
- * @param {string} props.productId
- * @param {string} [props.className='']
- * @param {number} [props.size=24]
- */
-export default function WishlistToggle({
-  productId,
-  className = '',
-  size = 24,
-}) {
+export default function WishlistToggle({ productId, className = '', size = 24 }) {
   const { isInWishlist, toggleItem } = useWishlist();
-  const inWishlist = isInWishlist(productId);
-
-  return (
-    <button
-      onClick={(e) => {
-        e.preventDefault(); // Prevent navigation if inside a link
-        e.stopPropagation();
-        toggleItem(productId);
-      }}
-      className={`transition-colors ${className}`}
-      aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-    >
-      <Heart
-        size={size}
-        className={
-          inWishlist
-            ? 'fill-red-500 text-red-500'
-            : 'text-gray-400 hover:text-red-500'
-        }
-      />
-    </button>
-  );
+  const active = isInWishlist(productId);
+  return <button type="button" onClick={event=>{event.preventDefault();event.stopPropagation();toggleItem(productId)}} className={'grid h-9 w-9 place-items-center rounded-full bg-[#fffefa]/95 shadow-sm transition hover:bg-white '+className} aria-label={active?'Remove from wishlist':'Add to wishlist'} aria-pressed={active}>
+    <Heart size={size} strokeWidth={1.7} className={active?'fill-[#315b49] text-[#315b49]':'text-[#66736a] transition-colors hover:text-[#315b49]'}/>
+  </button>;
 }

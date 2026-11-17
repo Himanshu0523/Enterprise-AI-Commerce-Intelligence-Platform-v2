@@ -19,6 +19,14 @@ function createServiceProxy(target, options = {}) {
     pathRewrite: options.pathRewrite || {},
     on: {
       proxyReq: (proxyReq, req) => {
+        // express.json() has already consumed JSON request streams before proxying.
+        // Re-serialize parsed bodies so POST/PATCH payloads reach upstream services.
+        if (req.body && Object.keys(req.body).length > 0 && !['GET', 'HEAD'].includes(req.method)) {
+          const body = JSON.stringify(req.body);
+          proxyReq.setHeader('Content-Type', 'application/json');
+          proxyReq.setHeader('Content-Length', Buffer.byteLength(body));
+          proxyReq.write(body);
+        }
         // ── Distributed Tracing Headers 
         if (req.correlationId) {
           proxyReq.setHeader('x-correlation-id', req.correlationId);
@@ -34,10 +42,11 @@ function createServiceProxy(target, options = {}) {
         // ── Authenticated User Context ───────────────────────────────────
         if (req.user) {
           proxyReq.setHeader('x-user-id', req.user.id || '');
-          proxyReq.setHeader('x-user-role', req.user.role || 'guest');
-          if (req.user.email) {
-            proxyReq.setHeader('x-user-email', req.user.email);
-          }
+          const roles = Array.isArray(req.user.roles) ? req.user.roles : [];
+          proxyReq.setHeader('x-user-role', roles[0] || 'customer');
+          proxyReq.setHeader('x-user-roles', JSON.stringify(roles));
+          if (req.user.email) proxyReq.setHeader('x-user-email', req.user.email);
+          if (req.user.name) proxyReq.setHeader('x-user-name', req.user.name);
         }
 
       },

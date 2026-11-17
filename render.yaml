@@ -135,6 +135,16 @@ services:
         value: 20.11.1
       - key: NODE_ENV
         value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        value: https://storefront-ept1.onrender.com
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        value: https://api-gateway-xu2v.onrender.com/api/auth/google/callback
 
   # 2.2 User Profile & Account Service
   - type: web
@@ -180,6 +190,16 @@ services:
         value: 20.11.1
       - key: NODE_ENV
         value: production
+      - key: INVENTORY_SERVICE_URL
+        fromService:
+          type: web
+          name: inventory-service
+          property: hostport
+      - key: PAYMENT_SERVICE_URL
+        fromService:
+          type: web
+          name: payment-service
+          property: hostport
 
   # 2.5 Shopping Cart Service
   - type: web
@@ -225,6 +245,8 @@ services:
         value: 20.11.1
       - key: NODE_ENV
         value: production
+      - key: ALLOW_MOCK_PAYMENTS
+        value: "true"
 
   # 2.8 Shipping & Logistics Service
   - type: web

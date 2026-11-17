@@ -1,10 +1,1 @@
-export default function ShippingReturnsPage() {
-  return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Shipping & Returns</h1>
-      <p className="text-gray-600 mb-4">
-        Find details about our shipping options, delivery times, and hassle-free return process.
-      </p>
-    </div>
-  );
-}
+export default function ShippingReturnsPage(){return <div className="page-shell max-w-4xl"><p className="editorial-kicker">Checkout information</p><h1 className="page-title mt-3">Shipping and returns.</h1><div className="surface-card mt-10 p-7 sm:p-9"><h2 className="editorial-heading text-3xl">Service configuration required.</h2><p className="mt-4 text-sm leading-7 text-[#657168]">This project includes checkout shipping selections and order-service routes, but delivery estimates, carrier tracking and return authorization must come from configured shipping and order services. No delivery promise or return window is stated here because those policies are not currently verified in the storefront.</p></div></div>}

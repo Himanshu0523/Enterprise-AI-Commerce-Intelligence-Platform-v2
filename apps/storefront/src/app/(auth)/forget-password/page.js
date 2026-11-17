@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, ArrowLeft, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Mail, ArrowLeft, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function ForgetPasswordPage() {
   const [email, setEmail] = useState('');
@@ -10,107 +10,39 @@ export default function ForgetPasswordPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError('');
     setIsSubmitting(true);
-
     try {
-      // Simulate API call to send reset email link
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.msg || data.message || 'Unable to request a password reset.');
       setSubmitted(true);
     } catch (err) {
-      setError('Unable to send reset email. Please try again later.');
+      setError(err.message || 'Unable to send reset email. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <>
-      <Link href="/login" className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition mb-2">
-        <ArrowLeft className="h-4 w-4" /> Back to Sign In
-      </Link>
-
-      {!submitted ? (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-extrabold tracking-tight text-white">Reset Password</h2>
-            <p className="text-sm text-zinc-400">
-              Enter your registered email address and we will send you a secure link to reset your account password.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0" />
-                {error}
-              </div>
-            )}
-
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">Registered Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl bg-zinc-900/90 border border-zinc-800 text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition shadow-sm"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                'Sending Link...'
-              ) : (
-                <>
-                  Send Recovery Link <Send className="h-4 w-4" />
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-      ) : (
-        <div className="text-center space-y-6 py-4 animate-in fade-in zoom-in-95 duration-300">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-inner">
-            <CheckCircle2 className="h-8 w-8" />
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold text-white">Recovery Email Sent!</h3>
-            <p className="text-sm text-zinc-400 max-w-sm mx-auto">
-              We have sent password reset instructions to <span className="font-semibold text-zinc-200">{email}</span>.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 text-xs text-zinc-400 space-y-2 text-left">
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold">
-              <ShieldCheck className="h-4 w-4" /> What happens next?
-            </div>
-            <ul className="list-disc list-inside space-y-1 text-zinc-400">
-              <li>Check your inbox and spam folder for the email.</li>
-              <li>Click the secure single-use recovery link inside.</li>
-              <li>The link expires in 15 minutes for your security.</li>
-            </ul>
-          </div>
-
-          <button
-            onClick={() => setSubmitted(false)}
-            className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold underline"
-          >
-            Didn't receive email? Try again
-          </button>
-        </div>
-      )}
-    </>
+    <div>
+      <Link href="/login" className="mb-7 inline-flex items-center gap-2 text-xs font-semibold text-[#788078] hover:text-[#315b49]"><ArrowLeft size={14}/> Back to sign in</Link>
+      {!submitted ? <>
+        <p className="text-[10px] font-bold uppercase tracking-[.22em] text-[#668775]">Account recovery</p>
+        <h1 className="mt-3 font-serif text-4xl tracking-[-.045em] text-[#1c2924]">Reset your password.</h1>
+        <p className="mt-4 text-sm leading-6 text-[#788078]">Enter your account email. If it matches an account, the authentication service will send a reset link.</p>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          {error && <div role="alert" className="flex gap-2 border border-[#edd5d0] bg-[#fbf1ef] px-4 py-3 text-xs text-[#9b5147]"><AlertCircle size={15}/>{error}</div>}
+          <div><label htmlFor="recovery-email" className="mb-2 block text-[11px] font-semibold text-[#43534a]">Email address</label><div className="flex h-12 items-center gap-3 border border-[#dedfd6] bg-white px-4 focus-within:border-[#829b88]"><Mail size={16} className="text-[#8c968d]"/><input id="recovery-email" type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" className="w-full bg-transparent text-sm outline-none"/></div></div>
+          <button disabled={isSubmitting} className="flex h-12 w-full items-center justify-between bg-[#315b49] px-5 text-xs font-semibold text-white hover:bg-[#214635] disabled:opacity-60"><span>{isSubmitting?'Sending request…':'Send recovery link'}</span><Send size={15}/></button>
+        </form>
+      </> : <div className="py-10 text-center"><div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#e8eee7] text-[#315b49]"><CheckCircle2 size={25}/></div><h1 className="mt-5 font-serif text-3xl text-[#1c2924]">Check your inbox.</h1><p className="mt-3 text-sm leading-6 text-[#788078]">If an account exists for <strong>{email}</strong>, password reset instructions will arrive by email.</p><Link href="/login" className="mt-7 inline-flex text-xs font-bold text-[#315b49] hover:underline">Return to sign in</Link></div>}
+    </div>
   );
 }

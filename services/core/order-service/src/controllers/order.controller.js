@@ -4,6 +4,16 @@ const { Tracer } = require('../../../../../packages/shared-utils/tracing');
 
 const tracer = new Tracer('order-service');
 
+function serviceBaseUrl(value, fallback) {
+  let raw = String(value || fallback).trim();
+  while (raw.endsWith('/')) raw = raw.slice(0, -1);
+  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+  return 'http://' + raw;
+}
+
+const INVENTORY_SERVICE_URL = serviceBaseUrl(process.env.INVENTORY_SERVICE_URL, 'http://localhost:3004');
+const PAYMENT_SERVICE_URL = serviceBaseUrl(process.env.PAYMENT_SERVICE_URL, 'http://localhost:3007');
+
 /**
  * Redis-Backed Idempotency Store for order-service.
  * Falls back to in-memory Map if Redis is unavailable.
@@ -98,13 +108,23 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const { items, shippingAddress, paymentMethod, subtotal, tax = 0, shippingFee = 0, discount = 0 } = req.body;
-    if (!items || items.length === 0 || !shippingAddress || !paymentMethod || subtotal === undefined) {
+    const { items, shippingAddress, shippingMethod, paymentMethod } = req.body;
+    const shippingFees = { standard: 5.99, express: 12.99, overnight: 24.99 };
+    const validItems = Array.isArray(items) && items.length > 0 && items.every((item) => item.productId && item.title && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 0);
+    const validAddress = shippingAddress && shippingAddress.fullName && shippingAddress.addressLine1 && shippingAddress.city && shippingAddress.state && shippingAddress.postalCode && shippingAddress.country && shippingAddress.phone;
+    if (!validItems || !validAddress || !paymentMethod || !Object.prototype.hasOwnProperty.call(shippingFees, shippingMethod)) {
       rootSpan.setStatus('ERROR', 'Validation Failed');
       rootSpan.end();
       return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Missing required order fields' } });
     }
 
+    // This showcase only permits explicitly enabled mock payments. Recalculate
+    // the submitted totals server-side; production pricing must be loaded from
+    // the product/pricing services rather than trusting client-supplied prices.
+    const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+    const tax = 0;
+    const shippingFee = shippingFees[shippingMethod];
+    const discount = 0;
     const totalAmount = subtotal + tax + shippingFee - discount;
     const orderNumber = 'ORD-' + Date.now() + '-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -119,6 +139,7 @@ exports.createOrder = async (req, res) => {
         idempotencyKey,
         items,
         shippingAddress,
+        shippingMethod,
         paymentMethod,
         subtotal,
         tax,
@@ -152,7 +173,7 @@ exports.createOrder = async (req, res) => {
     }
 
     //  Execute Saga Steps 
-   let stockReserved = false;
+    const reservedItems = [];
     let paymentCharged = false;
 
     try {
@@ -161,7 +182,7 @@ exports.createOrder = async (req, res) => {
       invSpan.setAttribute('items.count', items.length);
       try {
         for (const item of items) {
-          const invRes = await chaosFetch('http://localhost:3004/api/inventory/reserve', {
+          const invRes = await chaosFetch(INVENTORY_SERVICE_URL + '/api/inventory/reserve', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -174,6 +195,9 @@ exports.createOrder = async (req, res) => {
             const errData = await invRes.json().catch(() => ({}));
             throw new Error(`Stock reservation failed: ${errData.error?.message || invRes.statusText}`);
           }
+          reservedItems.push(item);
+          order.reservedItems = reservedItems;
+          await order.save();
         }
         invSpan.setStatus('OK');
       } catch (err) {
@@ -183,7 +207,6 @@ exports.createOrder = async (req, res) => {
         invSpan.end();
       }
 
-      stockReserved = true;
       order.sagaState = 'STOCK_RESERVED';
       await order.save();
 
@@ -194,7 +217,7 @@ exports.createOrder = async (req, res) => {
       const paySpan = tracer.startSpan('payment.charge_card', { parent: rootSpan });
       paySpan.setAttribute('payment.amount', totalAmount);
       try {
-        const payRes = await chaosFetch('http://localhost:3007/api/payments/process', {
+        const payRes = await chaosFetch(PAYMENT_SERVICE_URL + '/api/payments/process', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -246,28 +269,29 @@ exports.createOrder = async (req, res) => {
       order.sagaState = 'COMPENSATING';
       
       const pendingTasks = [];
-      if (stockReserved) pendingTasks.push('RESTOCK');
+      if (reservedItems.length > 0) pendingTasks.push('RESTOCK');
+      if (paymentCharged) pendingTasks.push('REFUND');
       order.reconciliationTasks = pendingTasks;
+      if (pendingTasks.length === 0) order.sagaState = 'COMPENSATED';
       await order.save();
 
       //  Apply Immediate compensations (best-effort) 
-      if (stockReserved) {
+      if (reservedItems.length > 0) {
         const compSpan = tracer.startSpan('saga.compensate_restock', { parent: rootSpan });
         try {
           console.log(`[SAGA COMPENSATE] Restocking items for order ${orderNumber}`);
-          for (const item of items) {
-            await chaosFetch('http://localhost:3004/api/inventory/release', {
+          for (const item of reservedItems) {
+            const releaseRes = await chaosFetch(INVENTORY_SERVICE_URL + '/api/inventory/release', {
               method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'traceparent': rootSpan.traceparent
-              },
+              headers: { 'Content-Type': 'application/json', 'traceparent': rootSpan.traceparent },
               body: JSON.stringify({ sku: item.productId, quantity: item.quantity }),
             });
+            if (!releaseRes.ok) throw new Error('Inventory release failed for ' + item.productId);
           }
           // Success: remove task
           order.reconciliationTasks = order.reconciliationTasks.filter(t => t !== 'RESTOCK');
-          order.sagaState = 'COMPENSATED';
+          order.reservedItems = [];
+          if (order.reconciliationTasks.length === 0) order.sagaState = 'COMPENSATED';
           await order.save();
           compSpan.setStatus('OK');
         } catch (compensateError) {
@@ -350,8 +374,11 @@ exports.cancelOrder = async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ success: false, error: { code: 'RES_404', message: 'Order not found' } });
 
-    if (order.orderStatus === 'SHIPPED' || order.orderStatus === 'DELIVERED') {
-      return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Cannot cancel a shipped or delivered order' } });
+    if (order.userId !== req.user.id && !req.user.roles?.includes('admin')) {
+      return res.status(403).json({ success: false, error: { code: 'AUTH_003', message: 'Access denied' } });
+    }
+    if (order.orderStatus !== 'PENDING' || order.paymentStatus !== 'PENDING' || order.sagaState !== 'IDLE') {
+      return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Cancellation is unavailable after checkout processing has started' } });
     }
 
     order.orderStatus = 'CANCELLED';
@@ -376,15 +403,17 @@ setInterval(async () => {
       // RESTOCK compensation task
       if (newTasks.includes('RESTOCK')) {
         try {
-          for (const item of order.items) {
-            await chaosFetch('http://localhost:3004/api/inventory/release', {
+          for (const item of (order.reservedItems?.length ? order.reservedItems : order.items)) {
+            const releaseRes = await chaosFetch('http://localhost:3004/api/inventory/release', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ sku: item.productId, quantity: item.quantity }),
             });
+            if (!releaseRes.ok) throw new Error('Inventory release failed for ' + item.productId);
           }
           const idx = newTasks.indexOf('RESTOCK');
           if (idx > -1) newTasks.splice(idx, 1);
+          order.reservedItems = [];
           console.log(`[RECONCILE WORKER] Restock success for order ${order.orderNumber}`);
         } catch (err) {
           console.error(`[RECONCILE WORKER] Restock retry failed for ${order.orderNumber}: ${err.message}`);
@@ -394,16 +423,15 @@ setInterval(async () => {
       // REFUND compensation task
       if (newTasks.includes('REFUND')) {
         try {
-          await chaosFetch('http://localhost:3007/api/payments/refund-by-order', {
+          const refundRes = await chaosFetch(PAYMENT_SERVICE_URL + '/api/payments/refund-by-order', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-user-id': order.userId,
-            },
+            headers: { 'Content-Type': 'application/json', 'x-user-id': order.userId },
             body: JSON.stringify({ orderId: order._id.toString() }),
           });
+          if (!refundRes.ok) throw new Error('Payment refund request failed');
           const idx = newTasks.indexOf('REFUND');
           if (idx > -1) newTasks.splice(idx, 1);
+          order.paymentStatus = 'REFUNDED';
           console.log(`[RECONCILE WORKER] Refund success for order ${order.orderNumber}`);
         } catch (err) {
           console.error(`[RECONCILE WORKER] Refund retry failed for ${order.orderNumber}: ${err.message}`);

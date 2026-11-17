@@ -1,30 +1,9 @@
-const faqs = [
-  {
-    q: 'What is your return policy?',
-    a: 'We offer a 30-day return policy for most items. Please check our shipping & returns page for details.',
-  },
-  {
-    q: 'How long does shipping take?',
-    a: 'Standard shipping usually takes 5–7 business days. Express options are available at checkout.',
-  },
-  {
-    q: 'Do you ship internationally?',
-    a: 'Yes, we ship to over 50 countries. International shipping times and costs vary.',
-  },
+const faqs=[
+ {q:'Is this a live retail store?',a:'No. This is a project showcase. Catalogue entries and product photography are demonstration content, not verified live inventory.'},
+ {q:'How do I find a product?',a:'Use the search field, browse a collection or open the catalogue to refine results by price.'},
+ {q:'Can I compare products?',a:'Use the compare control on product cards where it is available. Comparison data is based on the product fields supplied by the catalogue.'},
+ {q:'Does sign-in use a real authentication service?',a:'The storefront connects to the platform auth service for registration, password login, token refresh, Google OAuth and authenticator-based MFA. The required backend services and environment variables must be running.'},
+ {q:'Can I make a real payment?',a:'Real payment processing is not enabled by default. The checkout only permits mock orders when demo mode is explicitly enabled on both the storefront and payment service.'},
+ {q:'Where are my account details stored?',a:'Account profile and address data are sent to the connected user service. Browser authentication tokens are currently stored in localStorage, which is a development trade-off and should be replaced with secure HttpOnly cookies before production.'},
 ];
-
-export default function FAQPage() {
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="mb-6 text-3xl font-bold">Frequently Asked Questions</h1>
-      <div className="space-y-6">
-        {faqs.map((faq, idx) => (
-          <div key={idx} className="border-b pb-4">
-            <h2 className="text-xl font-semibold">{faq.q}</h2>
-            <p className="mt-2 text-gray-700">{faq.a}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+export default function FAQPage(){return <div className="page-shell max-w-4xl"><p className="editorial-kicker">Help and information</p><h1 className="page-title mt-3">Frequently asked.</h1><p className="page-description">Answers about this storefront showcase and the services it connects to.</p><div className="mt-10 divide-y divide-[#e5e4dc] border-y border-[#e5e4dc]">{faqs.map((faq,i)=><article key={faq.q} className="py-6"><p className="text-[10px] font-bold tracking-[.18em] text-[#829b88]">0{i+1}</p><h2 className="editorial-heading mt-2 text-2xl">{faq.q}</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-[#657168]">{faq.a}</p></article>)}</div></div>}
