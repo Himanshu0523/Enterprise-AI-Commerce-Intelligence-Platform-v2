@@ -132,3 +132,13 @@ exports.getProductReviewSummary = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
+exports.getUserReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ userId: req.user.id }).sort({ createdAt: -1 }).lean();
+    return res.json({ reviews });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
