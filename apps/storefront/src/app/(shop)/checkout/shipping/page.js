@@ -12,7 +12,7 @@ const methods=[
  {id:'express',label:'Express',detail:'Demo shipping option',price:12.99},
  {id:'overnight',label:'Overnight',detail:'Demo shipping option',price:24.99},
 ];
-const empty={firstName:'',lastName:'',address:'',city:'',state:'',zip:'',country:'India',phone:''};
+const empty={firstName:'',lastName:'',address:'',city:'',state:'',zip:'',country:'',phone:''};
 
 export default function ShippingPage(){
  const {state,setShippingAddress,setShippingMethod}=useCheckout();
@@ -35,7 +35,7 @@ export default function ShippingPage(){
 
  const input=(key,label,wide=false)=> <label key={key} className={'block text-xs font-semibold text-[#43534a] '+(wide?'sm:col-span-2':'')}>{label}<input required value={address[key]||''} onChange={e=>setAddress(p=>({...p,[key]:e.target.value}))} className="field-control mt-2"/>{fieldErrors[key]&&<span className="mt-1 block text-[10px] text-[#a34e43]">{fieldErrors[key]}</span>}</label>;
 
- return <div className="page-shell"><header className="mb-8"><p className="editorial-kicker">Checkout · Step 1 of 3</p><h1 className="page-title mt-3">Delivery details.</h1><p className="page-description">Where should this order be sent?</p></header>
+ return <div className="page-shell"><header className="mb-8"><p className="editorial-kicker">Checkout · Delivery</p><h1 className="page-title mt-3">Delivery details.</h1><p className="page-description">Where should this order be sent?</p></header>
   <div className="grid gap-8 lg:grid-cols-[1fr_340px]"><form onSubmit={submit} className="surface-card p-6 sm:p-8">
    <h2 className="text-sm font-semibold">Shipping address</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{input('firstName','First name')}{input('lastName','Last name')}{input('address','Street address',true)}{input('city','City')}{input('state','State / region')}{input('zip','Postal code')}{input('country','Country')}{input('phone','Phone number')}</div>
    <div className="mt-9 border-t border-[#e5e4dc] pt-7"><h2 className="text-sm font-semibold">Delivery method <span className="ml-2 text-[9px] font-normal uppercase tracking-[.12em] text-[#929990]">Demo fees</span></h2><div className="mt-4 space-y-2">{methods.map(option=><label key={option.id} className={'flex cursor-pointer items-center gap-3 border p-4 transition '+(method===option.id?'border-[#829b88] bg-[#f1f4ef]':'border-[#e5e4dc] bg-white hover:border-[#c2ccc0]')}><input type="radio" name="shipping" value={option.id} checked={method===option.id} onChange={()=>setMethod(option.id)} className="accent-[#315b49]"/><span className="grid h-9 w-9 place-items-center bg-[#e8eee7] text-[#315b49]"><Truck size={16}/></span><span className="min-w-0 flex-1"><span className="block text-xs font-semibold">{option.label}</span><span className="mt-1 block text-[10px] text-[#879087]">{option.detail}</span></span><strong className="text-xs">USD {option.price.toFixed(2)}</strong></label>)}</div></div>
