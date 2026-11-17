@@ -18,8 +18,7 @@ export default function HeroBanner() {
             <span className="italic text-[#557563]">next</span> favourite.
           </h1>
           <p className="mt-8 max-w-[440px] text-sm leading-7 text-[#59665e] sm:text-base">
-            A considered storefront where product discovery meets intelligent technology.
-            Explore the collection and experience a more thoughtful way to shop.
+            Browse the sample catalogue, compare product details and explore the connected knowledge assistant.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-5">
             <Link
