@@ -69,11 +69,11 @@ export default function AccountSidebar() {
       </div>
 
       <nav aria-label="Account navigation" className="mt-3 border border-[#e5e4dc] bg-[#fffefa] p-2 sm:p-3">
-        <div className="flex gap-1 overflow-x-auto pb-1 lg:block lg:space-y-4 lg:overflow-visible lg:pb-0">
+        <div className="grid grid-cols-2 gap-3 lg:block lg:space-y-4">
           {NAV_GROUPS.map((group) => (
-            <section key={group.label} className="min-w-max lg:min-w-0">
-              <h2 className="hidden px-3 pb-1.5 text-[9px] font-bold uppercase tracking-[.17em] text-[#929990] lg:block">{group.label}</h2>
-              <div className="flex gap-1 lg:block lg:space-y-0.5">
+            <section key={group.label} className="min-w-0">
+              <h2 className="px-3 pb-1.5 text-[9px] font-bold uppercase tracking-[.17em] text-[#929990]">{group.label}</h2>
+              <div className="space-y-0.5">
                 {group.items.map(({ href, label, icon: Icon, exact }) => {
                   const active = isActive(href, exact);
                   return (
@@ -81,7 +81,7 @@ export default function AccountSidebar() {
                       key={href}
                       href={href}
                       aria-current={active ? 'page' : undefined}
-                      className={'group flex min-h-10 items-center gap-2.5 whitespace-nowrap px-3 py-2.5 text-[11px] font-semibold transition lg:w-full lg:gap-3 lg:text-xs ' + (
+                      className={'group flex min-h-10 w-full items-center gap-2.5 px-3 py-2.5 text-left text-[10px] font-semibold transition sm:text-[11px] lg:gap-3 lg:text-xs ' + (
                         active
                           ? 'bg-[#e8eee7] text-[#315b49]'
                           : 'text-[#66736a] hover:bg-[#f2f2ec] hover:text-[#315b49]'
