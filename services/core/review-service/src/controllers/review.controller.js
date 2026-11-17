@@ -73,7 +73,7 @@ exports.updateReview = async (req, res) => {
 
     const review = await Review.findById(id);
     if (!review) return res.status(404).json({ msg: 'Review not found' });
-    if (review.userId !== userId) return res.status(403).json({ msg: 'Access denied' });
+    if (String(review.userId) !== String(userId)) return res.status(403).json({ msg: 'Access denied' });
 
     const { rating, title, comment, images } = req.body;
     if (rating) review.rating = rating;
@@ -95,7 +95,7 @@ exports.deleteReview = async (req, res) => {
 
     const review = await Review.findById(id);
     if (!review) return res.status(404).json({ msg: 'Review not found' });
-    if (review.userId !== userId && !req.user.roles?.includes('admin')) {
+    if (String(review.userId) !== String(userId) && !req.user.roles?.includes('admin')) {
       return res.status(403).json({ msg: 'Access denied' });
     }
 
