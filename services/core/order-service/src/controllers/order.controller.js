@@ -367,7 +367,7 @@ exports.cancelOrder = async (req, res) => {
     if (order.userId !== req.user.id && !req.user.roles?.includes('admin')) {
       return res.status(403).json({ success: false, error: { code: 'AUTH_003', message: 'Access denied' } });
     }
-    if (order.orderStatus !== 'PENDING' || order.paymentStatus !== 'PENDING') {
+    if (order.orderStatus !== 'PENDING' || order.paymentStatus !== 'PENDING' || order.sagaState !== 'IDLE') {
       return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Cancellation is unavailable after checkout processing has started' } });
     }
 
