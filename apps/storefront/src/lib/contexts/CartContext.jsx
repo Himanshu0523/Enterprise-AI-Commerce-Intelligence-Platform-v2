@@ -9,6 +9,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
  * @property {number} price
  * @property {string} image
  * @property {number} quantity
+ * @property {number} [stock]
  */
 
 /**
@@ -65,15 +66,17 @@ export function CartProvider({ children }) {
 
   const addItem = useCallback((product, quantity = 1) => {
     setItems((prev) => {
+      const stock = Number(product.stock) > 0 ? Number(product.stock) : 99;
+      if (stock < 1) return prev;
       const existing = prev.find((item) => item.productId === product.productId);
       if (existing) {
         return prev.map((item) =>
           item.productId === product.productId
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, stock, quantity: Math.min(stock, item.quantity + quantity) }
             : item
         );
       }
-      return [...prev, { ...product, quantity }];
+      return [...prev, { ...product, stock, quantity: Math.min(stock, quantity) }];
     });
   }, []);
 
@@ -87,9 +90,12 @@ export function CartProvider({ children }) {
       return;
     }
     setItems((prev) =>
-      prev.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => {
+        const stock = Number(item.stock) > 0 ? Number(item.stock) : 99;
+        return item.productId === productId
+          ? { ...item, quantity: Math.min(stock, quantity) }
+          : item;
+      })
     );
   }, [removeItem]);
 
