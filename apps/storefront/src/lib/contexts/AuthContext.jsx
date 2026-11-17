@@ -34,19 +34,37 @@ export function AuthProvider({ children }) {
     const restoreSession = async () => {
       try {
         const storedUser = localStorage.getItem(USER_KEY);
+        const accessToken = localStorage.getItem(ACCESS_KEY);
         const refreshToken = localStorage.getItem(REFRESH_KEY);
-        if (!storedUser || !refreshToken) {
+        if (!storedUser || !accessToken || !refreshToken) {
           localStorage.removeItem(USER_KEY);
           localStorage.removeItem(ACCESS_KEY);
           localStorage.removeItem(REFRESH_KEY);
           return;
         }
-        const parsedUser = JSON.parse(storedUser);
-        const tokens = await authRequest('refresh-token', { refreshToken });
-        if (!tokens.accessToken || !tokens.refreshToken) throw new Error('Session refresh failed.');
-        localStorage.setItem(ACCESS_KEY, tokens.accessToken);
-        localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
-        if (active) setUser(parsedUser);
+
+        let sessionUser = JSON.parse(storedUser);
+        try {
+          const validation = await authRequest('validate', { token: accessToken });
+          if (validation.valid && validation.user) {
+            sessionUser = {
+              ...sessionUser,
+              id: validation.user.id,
+              email: validation.user.email,
+              roles: validation.user.roles || sessionUser.roles || [],
+            };
+            localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
+            if (active) setUser(sessionUser);
+            return;
+          }
+          throw new Error('Access token is no longer valid.');
+        } catch {
+          const refreshed = await authRequest('refresh-token', { refreshToken });
+          if (!refreshed.accessToken || !refreshed.refreshToken) throw new Error('Session refresh failed.');
+          localStorage.setItem(ACCESS_KEY, refreshed.accessToken);
+          localStorage.setItem(REFRESH_KEY, refreshed.refreshToken);
+          if (active) setUser(sessionUser);
+        }
       } catch {
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(ACCESS_KEY);
