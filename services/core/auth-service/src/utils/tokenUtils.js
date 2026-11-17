@@ -1,28 +1,46 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
+const getAccessSecret = () => {
+  const secret = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_ACCESS_SECRET or JWT_SECRET must be configured for auth-service.');
+  }
+  return secret;
+};
+
+const getRefreshSecret = () => {
+  // A dedicated refresh secret is preferred; JWT_SECRET keeps existing Render
+  // deployments compatible until JWT_REFRESH_SECRET is configured.
+  const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_REFRESH_SECRET or JWT_SECRET must be configured for auth-service.');
+  }
+  return secret;
+};
+
 exports.generateAccessToken = (user) => {
   return jwt.sign(
     { id: user._id, email: user.email, name: user.name, roles: user.roles },
-    process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_ACCESS_EXPIRES }
+    getAccessSecret(),
+    { expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m' }
   );
 };
 
 exports.generateRefreshToken = (user) => {
   return jwt.sign(
     { id: user._id },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES }
+    getRefreshSecret(),
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d' }
   );
 };
 
 exports.verifyAccessToken = (token) => {
-  return jwt.verify(token, process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET);
+  return jwt.verify(token, getAccessSecret());
 };
 
 exports.verifyRefreshToken = (token) => {
-  return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  return jwt.verify(token, getRefreshSecret());
 };
 
 exports.generateResetToken = () => {
