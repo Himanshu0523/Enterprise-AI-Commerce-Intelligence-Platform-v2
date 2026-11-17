@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div><Link href="/" className="text-2xl font-semibold tracking-[-.07em]">storefront<span className="text-[#9ab3a0]">.</span></Link><p className="mt-4 max-w-xs text-xs leading-6 text-[#aab5ad]">A product discovery experience with intelligent shopping tools.</p></div>
           <div><h3 className="text-[10px] font-bold uppercase tracking-[.2em] text-[#9ab3a0]">Explore</h3><ul className="mt-5 space-y-3 text-xs text-[#e1e5df]">
-            <li><Link className="hover:text-white" href="/products">All products</Link></li><li><Link className="hover:text-white" href="/new-arrivals">New arrivals</Link></li><li><Link className="hover:text-white" href="/compare">Compare products</Link></li>
+            <li><Link className="hover:text-white" href="/products">All products</Link></li><li><Link className="hover:text-white" href="/new-arrivals">New arrivals</Link></li><li><Link className="hover:text-white" href="/sale">Sale</Link></li><li><Link className="hover:text-white" href="/compare">Compare products</Link></li>
           </ul></div>
           <div><h3 className="text-[10px] font-bold uppercase tracking-[.2em] text-[#9ab3a0]">Account</h3><ul className="mt-5 space-y-3 text-xs text-[#e1e5df]">
             <li><Link className="hover:text-white" href="/account">Overview</Link></li><li><Link className="hover:text-white" href="/account/orders">Orders</Link></li><li><Link className="hover:text-white" href="/account/wishlist">Wishlist</Link></li><li><Link className="hover:text-white" href="/cart">Shopping bag</Link></li>
