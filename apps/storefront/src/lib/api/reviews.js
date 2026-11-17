@@ -71,19 +71,6 @@ export async function markHelpful(reviewId) {
 }
 
 /**
- * Report a review
- * @param {string} reviewId 
- * @param {string} reason 
- * @returns {Promise<Object>}
- */
-export async function reportReview(reviewId, reason) {
-  return apiClient(`/reviews/${reviewId}/report`, {
-    method: 'POST',
-    body: JSON.stringify({ reason }),
-  });
-}
-
-/**
  * Get reviews written by the currently logged-in user
  * @returns {Promise<Array>}
  */
@@ -92,24 +79,3 @@ export async function getUserReviews() {
   return (response.reviews || []).map((review) => ({ ...review, id: review._id || review.id, author: review.userName || 'Account', date: review.createdAt, helpfulCount: review.helpfulVotes || 0, isVerifiedPurchase: Boolean(review.verifiedPurchase) }));
 }
 
-/**
- * Get details of a single review
- * @param {string} reviewId 
- * @returns {Promise<Object>}
- */
-export async function getReviewById(reviewId) {
-  return apiClient(`/reviews/${reviewId}`);
-}
-
-/**
- * Upload media files (photos/videos) for a review
- * @param {string} reviewId 
- * @param {FormData} formData 
- * @returns {Promise<Object>}
- */
-export async function uploadReviewMedia(reviewId, formData) {
-  return apiClient(`/reviews/${reviewId}/media`, {
-    method: 'POST',
-    body: formData,
-  });
-}
