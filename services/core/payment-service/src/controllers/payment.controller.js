@@ -43,7 +43,7 @@ exports.processPayment = async (req, res) => {
     let clientSecret = null;
 
     // If Stripe provider requested or Stripe configured, create a real Stripe PaymentIntent
-    if (stripe && (paymentProvider === 'STRIPE' || process.env.USE_STRIPE_DEFAULT === 'true')) {
+    if (stripe && process.env.ALLOW_MOCK_PAYMENTS !== 'true' && (paymentProvider === 'STRIPE' || process.env.USE_STRIPE_DEFAULT === 'true')) {
       try {
         const paymentIntent = await stripe.paymentIntents.create({
           amount: Math.round(amount * 100), // convert to cents
