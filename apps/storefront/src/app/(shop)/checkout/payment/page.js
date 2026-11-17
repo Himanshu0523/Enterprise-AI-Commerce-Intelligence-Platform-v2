@@ -7,8 +7,6 @@ import { useCheckout } from '@/lib/contexts/CheckoutContext';
 import { useCart } from '@/lib/contexts/CartContext';
 import { LockKeyhole, ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
 
-const DEMO_ENABLED = process.env.NEXT_PUBLIC_PAYMENT_DEMO_MODE === 'true';
-
 export default function PaymentPage() {
   const { placeOrder } = useCheckout();
   const { getTotalPrice, getTotalItems } = useCart();
@@ -18,7 +16,6 @@ export default function PaymentPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!DEMO_ENABLED) return;
     setError('');
     setIsSubmitting(true);
     try {
@@ -40,19 +37,17 @@ export default function PaymentPage() {
             <div className="grid h-11 w-11 shrink-0 place-items-center bg-[#e8eee7] text-[#315b49]"><LockKeyhole size={19}/></div>
             <div><h2 className="text-base font-semibold">Payment processing</h2><p className="mt-1 text-xs leading-5 text-[#788078]">No card number, expiry date or security code is requested on this page.</p></div>
           </div>
-          {DEMO_ENABLED ? (
+          {(
             <div className="mt-6 border border-[#d9ddd4] bg-[#f7f7f2] p-5">
               <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#668775]">Demo environment</p>
               <p className="mt-2 text-sm font-semibold text-[#1c2924]">Place a demonstration order</p>
               <p className="mt-2 text-xs leading-6 text-[#788078]">This uses explicitly enabled mock-payment mode. It does not charge a real payment method.</p>
             </div>
-          ) : (
-            <div className="mt-6 flex gap-3 border border-[#e7d8c8] bg-[#faf5ed] p-4 text-xs leading-6 text-[#7a5b3d]"><AlertCircle size={16} className="mt-1 shrink-0"/>The payment provider is not configured for this environment. Order submission is disabled until a verified payment flow or explicit demo-payment mode is enabled.</div>
-          )}
+
           {error && <p role="alert" className="mt-5 text-xs text-[#a34e43]">{error}</p>}
           <div className="mt-8 flex flex-wrap justify-between gap-3">
             <Link href="/checkout/shipping" className="secondary-action"><ArrowLeft size={14}/> Back to shipping</Link>
-            <button type="submit" disabled={!DEMO_ENABLED || isSubmitting || getTotalItems()===0} className="primary-action disabled:cursor-not-allowed disabled:opacity-40">{isSubmitting?'Submitting…':'Place demo order'} <ArrowRight size={14}/></button>
+            <button type="submit" disabled={isSubmitting || getTotalItems()===0} className="primary-action disabled:cursor-not-allowed disabled:opacity-40">{isSubmitting?'Submitting…':'Place demo order'} <ArrowRight size={14}/></button>
           </div>
         </form>
         <aside className="surface-card h-fit p-6">
