@@ -127,6 +127,12 @@ export default function Header() {
             {items.length > 0 && <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center bg-[#315b49] px-1 text-[9px] font-semibold text-white">{items.length}</span>}
           </Link>
 
+          {!user && (
+            <Link href="/login" aria-label="Sign in to your account" title="Sign in" className="grid h-10 w-10 place-items-center text-[#315b49] transition hover:bg-[#edf1eb] sm:hidden">
+              <UserRound size={19} />
+            </Link>
+          )}
+
           <div className="relative" ref={accountRef}>
             {user ? (
               <>
