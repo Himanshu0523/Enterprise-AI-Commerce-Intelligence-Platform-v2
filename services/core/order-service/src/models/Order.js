@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema(
     idempotencyKey: { type: String, unique: true, index: true, sparse: true },
     items: [orderItemSchema],
     shippingAddress: shippingAddressSchema,
+    shippingMethod: { type: String, enum: ['standard', 'express', 'overnight'] },
     paymentMethod: { type: String, required: true },
     paymentStatus: {
       type: String,
