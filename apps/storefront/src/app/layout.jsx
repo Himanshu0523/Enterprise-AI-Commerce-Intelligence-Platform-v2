@@ -12,31 +12,27 @@ import AiChatWidget from '@/features/ai-assistant/components/AiChatWidget';
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-plus-jakarta',
 });
 
 export const dynamic = 'force-dynamic';
-
 export const metadata = {
-  title: 'Enterprise AI Commerce Platform | Intelligent Storefront',
-  description: 'An editorial storefront experience built around intelligent product discovery, comparison and shopping interactions.',
+  title: 'Storefront | Product Discovery',
+  description: 'Explore products, compare details and discover items through an intelligent commerce experience.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={plusJakartaSans.className}>
-      <body className="min-h-screen bg-[#f5f4ef] text-[#1c2924] antialiased">
+    <html lang="en" className={plusJakartaSans.variable}>
+      <body className="min-h-screen antialiased">
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
               <CheckoutProvider>
                 <QuickViewProvider>
                   {children}
-                  <Suspense fallback={null}>
-                    <FloatingCompareBar />
-                  </Suspense>
-                  <Suspense fallback={null}>
-                    <AiChatWidget />
-                  </Suspense>
+                  <Suspense fallback={null}><FloatingCompareBar /></Suspense>
+                  <Suspense fallback={null}><AiChatWidget /></Suspense>
                 </QuickViewProvider>
               </CheckoutProvider>
             </WishlistProvider>
