@@ -236,7 +236,7 @@ exports.googleCallback = (req, res) => {
   });
 
   // Redirect to frontend with tokens in query (or set cookies)
-  res.redirect(`${process.env.CLIENT_URL}/oauth-success?access=${accessToken}&refresh=${refreshToken}`);
+  res.redirect(`${process.env.CLIENT_URL}/oauth-success#access=${encodeURIComponent(accessToken)}&refresh=${encodeURIComponent(refreshToken)}`);
 };
 
 // ─── MFA ────────────────────────────────────────────
