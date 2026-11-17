@@ -54,7 +54,7 @@ export default function Header() {
       </div>
 
       <div className="editorial-shell flex h-[74px] items-center justify-between gap-5">
-        <button type="button" onClick={() => setMobileOpen((open) => !open)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#dedfd6] lg:hidden" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen}>
+        <button type="button" onClick={() => setMobileOpen((open) => !open)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#dedfd6] xl:hidden" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen}>
           {mobileOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
 
@@ -63,7 +63,7 @@ export default function Header() {
           <span className="mt-2 block text-[8px] font-bold uppercase tracking-[.25em] text-[#879087]">Commerce, considered</span>
         </Link>
 
-        <nav className="hidden h-full items-center gap-5 xl:gap-7 lg:flex" aria-label="Main navigation">
+        <nav className="hidden h-full items-center gap-5 xl:gap-7 xl:flex" aria-label="Main navigation">
           {navItems.map((item) => (
             <Link key={item.label} href={item.href} aria-current={pathname === item.href.split('?')[0] ? 'page' : undefined} className="relative flex h-full items-center text-[11px] font-semibold text-[#526057] transition-colors hover:text-[#315b49] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-[#315b49] after:transition-all hover:after:w-full">
               {item.label}
@@ -72,7 +72,7 @@ export default function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <form onSubmit={submitSearch} className="hidden h-10 w-[clamp(150px,17vw,240px)] lg:flex items-center gap-2 rounded-full border border-[#dedfd6] bg-white/70 px-4 transition focus-within:border-[#829b88] focus-within:bg-white xl:flex">
+          <form onSubmit={submitSearch} className="hidden h-10 w-[clamp(150px,17vw,240px)] xl:flex items-center gap-2 rounded-full border border-[#dedfd6] bg-white/70 px-4 transition focus-within:border-[#829b88] focus-within:bg-white xl:flex">
             <Search size={15} className="shrink-0 text-[#78847b]" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search products" placeholder="Search the collection" className="min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-[#969e96]" />
             <button type="submit" aria-label="Submit search" className="text-[#315b49]"><ArrowUpRight size={15} /></button>
