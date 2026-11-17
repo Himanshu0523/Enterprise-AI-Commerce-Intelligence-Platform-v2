@@ -24,7 +24,7 @@ router.use('/storefront', storefrontRoutes);
 router.use('/admin', adminRoutes);
 
 // AI & Agent routes protected by Token-Aware Rate Limiter
-router.use('/support', tokenRateLimiter, createProxy(config.services.rag));
+router.use('/support', tokenRateLimiter, createProxy(config.services.rag, { pathRewrite: { '^/': '/api/support/' } }));
 router.use('/agent', tokenRateLimiter, createProxy(config.services.agent));
 router.use('/ml', tokenRateLimiter, createProxy(config.services.ml));
 router.use('/forecast', tokenRateLimiter, createProxy(config.services.forecast));
