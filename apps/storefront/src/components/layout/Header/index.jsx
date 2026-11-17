@@ -42,7 +42,7 @@ export default function Header() {
       return pathname === '/products' && activeCategory === new URLSearchParams(item.href.split('?')[1]).get('category');
     }
     if (item.href === '/products') return pathname === '/products' && !activeCategory;
-    return pathname === item.href || (item.href === '/new-arrivals' && pathname.startsWith('/new-arrivals/'));
+    return pathname === item.href || (item.href === '/new-arrivals' && pathname.startsWith('/new-arrivals/')) || (item.href === '/sale' && pathname.startsWith('/sale/'));
   };
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function Header() {
             {items.length > 0 && <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center bg-[#315b49] px-1 text-[9px] font-semibold text-white">{items.length}</span>}
           </Link>
 
-          {!user && (
+          {!user && !isLoading && (
             <Link href="/login" aria-label="Sign in to your account" title="Sign in" className="grid h-10 w-10 place-items-center text-[#315b49] transition hover:bg-[#edf1eb] sm:hidden">
               <UserRound size={19} />
             </Link>
@@ -155,12 +155,12 @@ export default function Header() {
                   </div>
                 )}
               </>
-            ) : (
+            ) : !isLoading ? (
               <div className="hidden items-center gap-2 sm:flex">
                 <Link href="/login" className="inline-flex h-10 items-center justify-center border border-[#315b49] px-4 text-[10px] font-bold text-[#315b49] transition hover:bg-[#edf1eb]">Sign in</Link>
                 <Link href="/register" className="hidden h-10 items-center justify-center gap-2 bg-[#315b49] px-4 text-[10px] font-bold text-white transition hover:bg-[#214635] md:inline-flex">Create account <UserPlus size={13} /></Link>
               </div>
-            )}
+            ) : <span aria-hidden="true" className="hidden h-10 w-20 animate-pulse bg-[#eeeee7] sm:block" />}
           </div>
 
           <Link href="/cart" className="relative ml-1 grid h-10 w-10 place-items-center bg-[#315b49] text-white transition hover:bg-[#214635]" aria-label={'Shopping bag, ' + itemCount + ' items'}>
