@@ -29,7 +29,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:8000'}/api/:path*`,
+        destination: `${(process.env.NEXT_PUBLIC_GATEWAY_URL || (process.env.NODE_ENV === 'production' ? 'https://api-gateway-xu2v.onrender.com' : 'http://localhost:8000')).replace(/\\/+$/, '')}/api/:path*`,
       },
     ];
   },
