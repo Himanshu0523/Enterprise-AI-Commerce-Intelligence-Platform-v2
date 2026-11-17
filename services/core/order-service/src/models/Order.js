@@ -25,6 +25,7 @@ const orderSchema = new mongoose.Schema(
     orderNumber: { type: String, required: true, unique: true },
     idempotencyKey: { type: String, unique: true, index: true, sparse: true },
     items: [orderItemSchema],
+    reservedItems: { type: [orderItemSchema], default: [] },
     shippingAddress: shippingAddressSchema,
     shippingMethod: { type: String, enum: ['standard', 'express', 'overnight'] },
     paymentMethod: { type: String, required: true },
