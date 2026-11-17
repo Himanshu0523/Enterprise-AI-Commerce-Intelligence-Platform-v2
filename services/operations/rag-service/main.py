@@ -38,11 +38,18 @@ PRODUCT_CATALOG = [
 
 # ─── FAQ Knowledge Base ───────────────────────────────────────────────────────
 KNOWLEDGE_BASE = [
-    {"id": "faq_return", "category": "Returns & Refunds", "question": "What is the return policy?", "answer": "We offer a 30-day money-back guarantee for unused items in original packaging. Refunds are processed within 3-5 business days upon receiving the returned product."},
-    {"id": "faq_shipping", "category": "Shipping & Delivery", "question": "How long does shipping take?", "answer": "Standard shipping takes 3-5 business days. Express shipping takes 1-2 business days. Free standard shipping applies to orders over $50."},
-    {"id": "faq_payment", "category": "Payment Options", "question": "What payment methods are accepted?", "answer": "We accept major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, and Google Pay."},
-    {"id": "faq_tracking", "category": "Order Tracking", "question": "How can I track my order?", "answer": "Once your order ships, you will receive a tracking code via email or you can track directly under your Account > Orders dashboard."},
-]
+    {"id": "platform_showcase", "category": "Platform", "question": "Is this a live retail store?", "answer": "This website is a software project showcase. Catalogue products, images and prices are demonstration data, not verified live inventory or a commercial offer."},
+    {"id": "product_discovery", "category": "Product discovery", "question": "How do I find products?", "answer": "Browse the catalogue, use the search field, open a collection, or refine the catalogue by price. Product details come from the storefront's current sample catalogue."},
+    {"id": "product_comparison", "category": "Product comparison", "question": "How does product comparison work?", "answer": "Use the Compare control on product cards to add items to the comparison list. The comparison view shows product fields supplied by the catalogue, such as category, description, price and sample availability."},
+    {"id": "account_auth", "category": "Account", "question": "How does sign-in work?", "answer": "The storefront connects to the authentication service for email and password sign-in, registration, Google OAuth, token refresh and authenticator-based multi-factor authentication. The relevant backend services and environment configuration must be running."},
+    {"id": "account_profile", "category": "Account", "question": "Where can I manage my profile and addresses?", "answer": "After signing in, open Account to manage profile details, saved addresses, preferences, notification settings and security options. These pages use the connected user and authentication services."},
+    {"id": "wishlist_compare", "category": "Saved items", "question": "Where are wishlist and comparison items stored?", "answer": "Wishlist and comparison selections are currently stored in this browser. They are not yet synchronized across devices or accounts."},
+    {"id": "demo_checkout", "category": "Checkout", "question": "Can I make a real payment?", "answer": "No real payment is processed by this showcase. Checkout submission is disabled unless demo mode is explicitly enabled in the storefront and payment service. Demo orders do not charge a payment method."},
+    {"id": "shipping_demo", "category": "Checkout", "question": "What do shipping options mean?", "answer": "The checkout currently displays demonstration shipping choices and fees. Delivery estimates, carrier tracking and fulfillment policies are not connected or guaranteed."},
+    {"id": "order_tracking", "category": "Orders", "question": "How can I track an order?", "answer": "Order history and order details are loaded from the order service. Carrier tracking appears only if the order service returns a tracking number; this showcase does not generate fake tracking events."},
+    {"id": "reviews", "category": "Reviews", "question": "Are product ratings and reviews real?", "answer": "The storefront displays reviews returned by the review service. The sample catalogue does not include fabricated rating totals or verified-purchase badges."},
+    {"id": "assistant_scope", "category": "Assistant", "question": "What can this assistant answer?", "answer": "This assistant retrieves answers from the storefront knowledge base. It can explain the showcase, catalogue navigation, account features and demo checkout. It does not generate product recommendations or access private order details."},
+];
 
 
 # ─── Scoring Utilities ───────────────────────────────────────────────────────
@@ -231,9 +238,9 @@ def support_query(payload: SupportQueryRequest):
     if best:
         answer = f"Based on our knowledge base ({best.category}): {best.answer}"
     else:
-        answer = "I couldn't find an exact match. Please contact support@example.com."
+        answer = "I could not find a supported answer in the current knowledge base. Try asking about product discovery, account settings, comparison or demo checkout."
 
-    return SupportQueryResponse(query=q, answer=answer, relevantContext=top_docs)
+    return SupportQueryResponse(query=q, answer=answer, relevantContext=top_docs if best else [])
 
 
 @app.post("/api/search/multimodal", response_model=MultiModalSearchResponse)
