@@ -10,10 +10,12 @@ import { useWishlist } from '@/lib/contexts/WishlistContext';
 
 const navItems = [
   { label: 'Discover', href: '/products' },
-  { label: 'Kids', href: '/products?category=Kids' },
-  { label: 'Men', href: '/products?category=Men' },
   { label: 'Women', href: '/products?category=Women' },
+  { label: 'Men', href: '/products?category=Men' },
+  { label: 'Kids', href: '/products?category=Kids' },
   { label: 'Accessories', href: '/products?category=Accessories' },
+  { label: 'New arrivals', href: '/new-arrivals' },
+  { label: 'Sale', href: '/sale' },
 ];
 
 export default function Header() {
@@ -49,10 +51,10 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[#e5e4dc] bg-[#f8f7f2]/95 text-[#1c2924] backdrop-blur-xl">
       <div className="border-b border-[#e5e4dc] bg-[#203b30] text-center text-[9px] font-semibold uppercase tracking-[.2em] text-[#f4f2e9]">
-        <p className="px-3 py-2">Intelligent discovery · Thoughtful design · Seamless commerce</p>
+        <p className="px-3 py-2">Explore · Compare · Discover</p>
       </div>
 
-      <div className="editorial-shell flex h-[82px] items-center justify-between gap-5">
+      <div className="editorial-shell flex h-[74px] items-center justify-between gap-5">
         <button type="button" onClick={() => setMobileOpen((open) => !open)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#dedfd6] lg:hidden" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen}>
           {mobileOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
@@ -62,16 +64,16 @@ export default function Header() {
           <span className="mt-2 block text-[8px] font-bold uppercase tracking-[.25em] text-[#879087]">Commerce, considered</span>
         </Link>
 
-        <nav className="hidden h-full items-center gap-7 lg:flex" aria-label="Main navigation">
+        <nav className="hidden h-full items-center gap-5 xl:gap-7 lg:flex" aria-label="Main navigation">
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href} aria-current={pathname === item.href ? 'page' : undefined} className="relative flex h-full items-center text-[11px] font-semibold text-[#526057] transition-colors hover:text-[#315b49] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-[#315b49] after:transition-all hover:after:w-full">
+            <Link key={item.label} href={item.href} aria-current={pathname === item.href.split('?')[0] ? 'page' : undefined} className="relative flex h-full items-center text-[11px] font-semibold text-[#526057] transition-colors hover:text-[#315b49] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-[#315b49] after:transition-all hover:after:w-full">
               {item.label}
             </Link>
           ))}
         </nav>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <form onSubmit={submitSearch} className="hidden h-11 w-[clamp(180px,19vw,270px)] items-center gap-2 rounded-full border border-[#dedfd6] bg-white/70 px-4 transition focus-within:border-[#829b88] focus-within:bg-white xl:flex">
+          <form onSubmit={submitSearch} className="hidden h-10 w-[clamp(150px,17vw,240px)] lg:flex items-center gap-2 rounded-full border border-[#dedfd6] bg-white/70 px-4 transition focus-within:border-[#829b88] focus-within:bg-white xl:flex">
             <Search size={15} className="shrink-0 text-[#78847b]" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search products" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-[#969e96]" />
             <button type="submit" aria-label="Submit search" className="text-[#315b49]"><ArrowUpRight size={15} /></button>
@@ -104,10 +106,12 @@ export default function Header() {
               </>
             ) : (
               <Link href="/login" className="hidden h-10 items-center rounded-full border border-[#315b49] px-4 text-[10px] font-bold text-[#315b49] transition-colors hover:bg-[#315b49] hover:text-white sm:flex">
-                {isLoading ? 'Loading' : 'Sign in'}
+                {isLoading ? '…' : 'Sign in'}
               </Link>
             )}
           </div>
+
+          {!user && <Link href="/register" className="hidden text-[10px] font-bold text-[#315b49] hover:underline xl:inline-flex">Create account</Link>}
 
           <Link href="/cart" className="relative ml-1 grid h-10 w-10 place-items-center rounded-full bg-[#315b49] text-white transition-colors hover:bg-[#214635]" aria-label={`Shopping bag, ${itemCount} items`}>
             <ShoppingBag size={18} strokeWidth={1.6} />
