@@ -31,7 +31,7 @@ export default function HomePage() {
             <div>
               <p className="editorial-kicker">Selected products</p>
               <h2 className="editorial-heading mt-3 max-w-[620px] text-4xl leading-[.98] sm:text-6xl">Explore the collection.</h2>
-              <p className="mt-4 max-w-md text-sm leading-6 text-[#788078]">Open a product to review its details, save it or add it to your bag.</p>
+              <p className="mt-4 max-w-md text-sm leading-6 text-[#788078]">Sample catalogue content for this project showcase. Open a product to inspect its details, compare it or add it to your bag.</p>
             </div>
             <Link href="/products" className="inline-flex items-center gap-2 pb-1 text-xs font-semibold text-[#315b49]">View all products <ArrowUpRight size={15} /></Link>
           </div>
