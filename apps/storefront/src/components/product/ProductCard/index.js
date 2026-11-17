@@ -3,239 +3,85 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Eye } from 'lucide-react';
+import { Star, Eye, ArrowUpRight } from 'lucide-react';
 import WishlistToggle from '@/components/product/WishlistToggle';
 import CompareButton from '@/components/product/CompareButton';
 import AddToCartButton from '@/components/product/ProductDetail/AddToCartButton';
 import { useQuickView } from '@/lib/contexts/QuickViewContext';
 import '@/types/product';
 
-/**
- * @typedef {Object} Product
- * @property {string} id
- * @property {string} name
- * @property {string} [description]
- * @property {number} price
- * @property {string[]} images
- * @property {number} rating
- * @property {number} reviewCount
- * @property {boolean} [isNew]
- * @property {number} [stock]
- */
-
-/**
- * @typedef {Object} ProductCardProps
- * @property {Product} product
- * @property {'grid'|'list'} [view='grid']
- */
-
-/**
- * Product Card Component
- * @param {ProductCardProps} props
- */
 export default function ProductCard({ product, view = 'grid' }) {
-  const { id, name, description, price, flashSalePrice, images, rating, reviewCount, isNew, stock, category } = product;
+  const { id, name, price, flashSalePrice, images, rating, reviewCount, isNew, stock, category } = product;
   const image = images?.[0] || '/placeholder.jpg';
   const displayPrice = flashSalePrice ?? price;
-  
-  // Safely grab quickview context if available
-  let openQuickView;
-  try {
-    const qv = useQuickView();
-    openQuickView = qv?.openQuickView;
-  } catch {
-    openQuickView = null;
-  }
+  const { openQuickView } = useQuickView();
 
-  const handleQuickViewClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (openQuickView) {
-      openQuickView(product);
-    }
+  const handleQuickViewClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openQuickView?.(product);
   };
+
+  const formattedPrice = Number(displayPrice || 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  });
 
   if (view === 'list') {
     return (
-      <div className="group relative flex flex-col gap-4 rounded-xl border border-gray-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 sm:flex-row bg-white">
-        <div className="relative h-48 w-full sm:w-48 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-          <Image
-            src={image}
-            alt={name}
-            fill
-            className="rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, 200px"
-          />
-          {flashSalePrice ? (
-            <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] uppercase font-extrabold px-2 py-0.5 rounded shadow z-10">
-              Sale
-            </span>
-          ) : isNew ? (
-            <span className="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] uppercase font-extrabold px-2 py-0.5 rounded shadow z-10">
-              New
-            </span>
-          ) : null}
-
-          <div className="absolute right-2 top-2 z-10">
-            <WishlistToggle productId={id} size={20} />
-          </div>
-
-          {openQuickView && (
-            <button
-              onClick={handleQuickViewClick}
-              className="absolute inset-x-3 bottom-3 py-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold rounded-lg shadow-md flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-indigo-600 hover:text-white"
-            >
-              <Eye size={14} />
-              Quick View
-            </button>
-          )}
+      <article className="group flex flex-col gap-5 border-b border-[#e5e4dc] py-6 sm:flex-row">
+        <div className="relative aspect-square w-full overflow-hidden bg-[#eeeee8] sm:h-44 sm:w-44 sm:shrink-0">
+          <Link href={`/products/${id}`} className="block h-full">
+            <Image src={image} alt={name} fill sizes="(max-width: 640px) 100vw, 176px" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+          </Link>
+          <div className="absolute right-3 top-3"><WishlistToggle productId={id} size={19} /></div>
         </div>
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-4">
           <div>
-            {category && (
-              <span className="text-[11px] font-semibold text-indigo-600 uppercase tracking-wider">
-                {category}
-              </span>
-            )}
-            <Link href={`/products/${id}`} className="text-lg font-bold text-gray-900 hover:text-indigo-600 transition-colors block mt-0.5">
-              {name}
-            </Link>
-            {description && (
-              <p className="mt-1 text-sm text-gray-600 line-clamp-2">{description}</p>
-            )}
-            <div className="mt-2 flex items-center gap-1.5 text-sm text-gray-600">
-              <div className="flex items-center">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <Star
-                    key={i}
-                    size={15}
-                    className={i < Math.floor(rating || 4) ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}
-                  />
-                ))}
-              </div>
-              <span className="text-xs text-gray-500 font-medium">({reviewCount || 0})</span>
-            </div>
-
-            <div className="mt-3 flex items-baseline gap-2">
-              <p className="text-xl font-extrabold text-gray-900">${displayPrice.toFixed(2)}</p>
-              {flashSalePrice && (
-                <p className="text-xs text-gray-400 line-through">${price.toFixed(2)}</p>
-              )}
-            </div>
+            <p className="editorial-kicker">{category || 'Selected product'}</p>
+            <Link href={`/products/${id}`}><h3 className="mt-2 text-lg font-semibold tracking-tight text-[#1c2924] hover:text-[#557563]">{name}</h3></Link>
+            {rating > 0 && <p className="mt-2 flex items-center gap-1 text-xs text-[#737c74]"><Star size={13} className="fill-[#c39a55] text-[#c39a55]" /> {Number(rating).toFixed(1)} <span>({reviewCount || 0})</span></p>}
           </div>
-
-          <div className="mt-4 flex items-center justify-between gap-4 pt-3 border-t border-gray-100">
-            <AddToCartButton
-              productId={id}
-              name={name}
-              price={displayPrice}
-              image={image}
-              quantity={1}
-              disabled={stock === 0}
-            />
-            <CompareButton productId={id} />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <span className="text-base font-semibold">{formattedPrice}</span>
+            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} /><CompareButton productId={id} /></div>
           </div>
         </div>
-      </div>
+      </article>
     );
   }
 
-  // Grid view
   return (
-    <div className="group relative rounded-2xl border border-gray-200/80 p-3.5 shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 bg-white flex flex-col justify-between">
-      <div>
-        <div className="relative h-52 w-full overflow-hidden rounded-xl bg-gray-50">
-          <Link href={`/products/${id}`} className="block h-full w-full">
-            <Image
-              src={image}
-              alt={name}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          </Link>
-
-          {flashSalePrice ? (
-            <span className="absolute top-2.5 left-2.5 bg-red-600 text-white text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded-full shadow z-10">
-              Sale
-            </span>
-          ) : isNew ? (
-            <span className="absolute top-2.5 left-2.5 bg-indigo-600 text-white text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded-full shadow z-10">
-              New
-            </span>
-          ) : null}
-
-          <div className="absolute right-2.5 top-2.5 z-10">
-            <WishlistToggle productId={id} size={18} />
-          </div>
-
-          {openQuickView && (
-            <button
-              onClick={handleQuickViewClick}
-              className="absolute inset-x-3 bottom-3 py-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold rounded-xl shadow-md flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-indigo-600 hover:text-white"
-            >
-              <Eye size={14} />
-              Quick View
-            </button>
-          )}
+    <article className="group min-w-0">
+      <div className="relative aspect-[.82] overflow-hidden bg-[#eeeee8]">
+        <Link href={`/products/${id}`} className="block h-full" aria-label={`View ${name}`}>
+          <Image src={image} alt={name} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]" />
+        </Link>
+        <div className="absolute left-3 top-3 flex flex-col gap-2">
+          {isNew && <span className="bg-[#f5f4ef] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.16em] text-[#315b49]">New arrival</span>}
+          {flashSalePrice && <span className="bg-[#315b49] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.16em] text-white">Special price</span>}
         </div>
-
-        <div className="mt-3.5">
-          {category && (
-            <span className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider block">
-              {category}
-            </span>
-          )}
-          <Link href={`/products/${id}`}>
-            <h3 className="font-bold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-1 text-sm mt-0.5">
-              {name}
-            </h3>
-          </Link>
-          {description && (
-            <p className="mt-1 text-xs text-gray-500 line-clamp-2">{description}</p>
-          )}
-
-          <div className="mt-2 flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <div className="flex items-center">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <Star
-                    key={i}
-                    size={13}
-                    className={i < Math.floor(rating || 4) ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}
-                  />
-                ))}
-              </div>
-              <span className="text-[11px] text-gray-500 font-medium">({reviewCount || 0})</span>
-            </div>
-            
-            {(stock ?? 10) <= 5 && (stock ?? 10) > 0 && (
-              <span className="text-[10px] text-amber-600 font-semibold bg-amber-50 px-1.5 py-0.5 rounded">
-                Only {stock} left
-              </span>
-            )}
-          </div>
-
-          <div className="mt-2.5 flex items-baseline gap-2">
-            <p className="text-base font-extrabold text-gray-900">${displayPrice.toFixed(2)}</p>
-            {flashSalePrice && (
-              <p className="text-xs text-gray-400 line-through">${price.toFixed(2)}</p>
-            )}
-          </div>
+        <div className="absolute right-3 top-3"><WishlistToggle productId={id} size={19} /></div>
+        <div className="absolute inset-x-3 bottom-3 flex translate-y-2 items-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+          <button type="button" onClick={handleQuickViewClick} className="flex flex-1 items-center justify-center gap-2 bg-[#f5f4ef] px-3 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#1c2924] shadow-lg">
+            <Eye size={14} /> Quick view
+          </button>
+          <div className="bg-[#f5f4ef] p-2.5 shadow-lg"><CompareButton productId={id} /></div>
         </div>
       </div>
-
-      <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
-        <AddToCartButton
-          productId={id}
-          name={name}
-          price={displayPrice}
-          image={image}
-          quantity={1}
-          disabled={stock === 0}
-        />
-        <CompareButton productId={id} />
+      <div className="flex items-start justify-between gap-3 pt-4">
+        <div className="min-w-0">
+          <p className="editorial-kicker text-[9px]">{category || 'Collection'}</p>
+          <Link href={`/products/${id}`}><h3 className="mt-1.5 line-clamp-2 text-sm font-semibold leading-5 text-[#27362e] transition-colors hover:text-[#668775]">{name}</h3></Link>
+          {rating > 0 && <p className="mt-2 flex items-center gap-1 text-[10px] text-[#7b827b]"><Star size={11} className="fill-[#c39a55] text-[#c39a55]" /> {Number(rating).toFixed(1)} <span>· {reviewCount || 0} reviews</span></p>}
+        </div>
+        <span className="shrink-0 pt-4 text-xs font-semibold text-[#315b49]">{formattedPrice}</span>
       </div>
-    </div>
+      <div className="mt-3 flex items-center justify-between border-t border-[#e5e4dc] pt-3">
+        <AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} />
+        <span className="text-[9px] uppercase tracking-[.14em] text-[#929990]">{stock === 0 ? 'Out of stock' : 'Add to bag'}</span>
+      </div>
+    </article>
   );
-}
+}
