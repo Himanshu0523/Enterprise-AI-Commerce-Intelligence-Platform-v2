@@ -36,10 +36,11 @@ export function CheckoutProvider({ children }) {
   const setShippingMethod = useCallback((shippingMethod) => updateState({ shippingMethod }), [updateState]);
   const setPaymentMethod = useCallback((paymentMethod) => updateState({ paymentMethod }), [updateState]);
 
-  const placeOrder = useCallback(async () => {
+  const placeOrder = useCallback(async (paymentMethodOverride) => {
     if (state.isPlacingOrder) throw new Error('An order submission is already in progress.');
     if (!items.length) throw new Error('Your bag is empty.');
-    if (!state.shippingAddress || !state.shippingMethod || !state.paymentMethod) {
+    const selectedPaymentMethod = paymentMethodOverride || state.paymentMethod;
+    if (!state.shippingAddress || !state.shippingMethod || !selectedPaymentMethod) {
       throw new Error('Complete shipping and payment details before placing the order.');
     }
 
@@ -57,7 +58,7 @@ export function CheckoutProvider({ children }) {
         body: JSON.stringify({
           items: items.map(({ productId, name, price, image, quantity }) => ({ productId, name, price, image, quantity })),
           shippingAddress: state.shippingAddress,
-          paymentMethod: state.paymentMethod,
+          paymentMethod: selectedPaymentMethod,
           subtotal,
           tax: 0,
           shippingFee,
