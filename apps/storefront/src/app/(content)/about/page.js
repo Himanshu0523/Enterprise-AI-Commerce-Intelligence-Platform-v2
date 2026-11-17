@@ -1,18 +1,3 @@
-// src/app/(content)/about/page.jsx
 export default function AboutPage() {
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="mb-6 text-3xl font-bold">About Us</h1>
-      <p className="text-lg text-gray-700">
-        Welcome to Storefront, your number one source for all things fashion.
-        We&apos;re dedicated to giving you the very best of quality products,
-        with a focus on dependability, customer service, and uniqueness.
-      </p>
-      <p className="mt-4 text-lg text-gray-700">
-        Founded in 2026, Storefront has come a long way from its beginnings.
-        When we first started out, our passion for providing the best
-        customer experience drove us to start this business.
-      </p>
-    </div>
-  );
+  return <div className="page-shell max-w-5xl"><p className="editorial-kicker">About the platform</p><h1 className="page-title mt-3">Commerce, considered.</h1><div className="mt-10 grid gap-10 md:grid-cols-[1.1fr_.9fr]"><div className="content-prose"><p>This storefront is the customer-facing interface for an AI-enabled commerce platform. It brings catalogue browsing, product comparison, account management and conversational assistance into one application.</p><p>The experience is built around a modular service architecture. Authentication, user profiles, products, orders and payments are handled by separate services behind an API gateway.</p><h2>Built to explore</h2><p>The interface is a project showcase. Product imagery and catalogue entries are demonstration content; they should not be interpreted as verified inventory, customer reviews or a live retail offer.</p></div><div className="surface-card p-6"><p className="editorial-kicker">Platform capabilities</p><ul className="mt-5 space-y-4 text-xs leading-6 text-[#657168]"><li><strong className="block text-[#1c2924]">Product discovery</strong>Browse collections, search and filter the catalogue.</li><li><strong className="block text-[#1c2924]">Account identity</strong>JWT-based sign-in, registration, OAuth and authenticator MFA.</li><li><strong className="block text-[#1c2924]">Commerce workflows</strong>Cart, checkout and order-service integration.</li><li><strong className="block text-[#1c2924]">AI assistance</strong>Conversational product exploration through the connected assistant.</li></ul></div></div></div>;
 }
