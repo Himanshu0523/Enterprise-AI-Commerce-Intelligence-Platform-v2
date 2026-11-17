@@ -36,7 +36,9 @@ exports.generateRefreshToken = (user) => {
 };
 
 exports.verifyAccessToken = (token) => {
-  return jwt.verify(token, getAccessSecret());
+  const decoded = jwt.verify(token, getAccessSecret());
+  if (decoded.purpose) throw new Error('Non-access token cannot be used as an access token.');
+  return decoded;
 };
 
 exports.verifyRefreshToken = (token) => {
