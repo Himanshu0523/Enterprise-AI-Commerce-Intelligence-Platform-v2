@@ -2,8 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { apiClient } from '@/lib/api/client';
 import { ShieldCheck, KeyRound, AlertCircle, CheckCircle2, Copy, ArrowUpRight } from 'lucide-react';
+
+async function authApi(path, body = {}) {
+  const token = localStorage.getItem('auth_access_token');
+  const response = await fetch('/api/auth/' + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) }, body: JSON.stringify(body) });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.msg || data.message || 'Authentication request failed.');
+  return data;
+}
+
+async function getMfaStatus() {
+  const token = localStorage.getItem('auth_access_token');
+  const response = await fetch('/api/auth/mfa/status', { headers: token ? { Authorization: 'Bearer ' + token } : {} });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.msg || 'Unable to read MFA status.');
+  return data;
+}
 
 export default function SecurityPage() {
   const [enabled,setEnabled]=useState(false);
@@ -15,12 +30,12 @@ export default function SecurityPage() {
   const [error,setError]=useState('');
   const [message,setMessage]=useState('');
 
-  const refresh=async()=>{const result=await apiClient('/auth/mfa/status');setEnabled(Boolean(result.enabled));};
-  useEffect(()=>{let active=true;apiClient('/auth/mfa/status').then(r=>{if(active)setEnabled(Boolean(r.enabled))}).catch(e=>{if(active)setError(e.message||'Unable to load security settings.')}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[]);
+  
+  useEffect(()=>{let active=true;getMfaStatus().then(r=>{if(active)setEnabled(Boolean(r.enabled))}).catch(e=>{if(active)setError(e.message||'Unable to load security settings.')}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[]);
 
-  const beginSetup=async()=>{setBusy(true);setError('');setMessage('');try{const result=await apiClient('/auth/mfa/setup',{method:'POST',body:JSON.stringify({})});setQrCode(result.qrCode||'');setSecret(result.secret||'')}catch(e){setError(e.message||'Unable to start authenticator setup.')}finally{setBusy(false)}};
-  const verify=async(event)=>{event.preventDefault();setBusy(true);setError('');setMessage('');try{await apiClient('/auth/mfa/verify-enable',{method:'POST',body:JSON.stringify({token})});setEnabled(true);setQrCode('');setSecret('');setToken('');setMessage('Two-factor authentication is enabled.')}catch(e){setError(e.message||'The verification code was not accepted.')}finally{setBusy(false)}};
-  const disable=async(event)=>{event.preventDefault();setBusy(true);setError('');setMessage('');try{await apiClient('/auth/mfa/disable',{method:'POST',body:JSON.stringify({token})});setEnabled(false);setToken('');setMessage('Two-factor authentication is disabled.')}catch(e){setError(e.message||'Unable to disable two-factor authentication.')}finally{setBusy(false)}};
+  const beginSetup=async()=>{setBusy(true);setError('');setMessage('');try{const result=await authApi('mfa/setup');setQrCode(result.qrCode||'');setSecret(result.secret||'')}catch(e){setError(e.message||'Unable to start authenticator setup.')}finally{setBusy(false)}};
+  const verify=async(event)=>{event.preventDefault();setBusy(true);setError('');setMessage('');try{await authApi('mfa/verify-enable',{token});setEnabled(true);setQrCode('');setSecret('');setToken('');setMessage('Two-factor authentication is enabled.')}catch(e){setError(e.message||'The verification code was not accepted.')}finally{setBusy(false)}};
+  const disable=async(event)=>{event.preventDefault();setBusy(true);setError('');setMessage('');try{await authApi('mfa/disable',{token});setEnabled(false);setToken('');setMessage('Two-factor authentication is disabled.')}catch(e){setError(e.message||'Unable to disable two-factor authentication.')}finally{setBusy(false)}};
 
   return <div className="max-w-2xl space-y-6">
     <header><p className="editorial-kicker">Account</p><h1 className="page-title mt-3">Security.</h1><p className="page-description">Manage two-factor authentication for your sign-in.</p></header>
