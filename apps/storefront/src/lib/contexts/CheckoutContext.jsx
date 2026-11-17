@@ -6,7 +6,6 @@ import { apiClient } from '@/lib/api/client';
 
 const CheckoutContext = createContext(undefined);
 const STORAGE_KEY = 'checkout_state';
-const SHIPPING_FEES = { standard: 5.99, express: 12.99, overnight: 24.99 };
 
 function readSavedState() {
   if (typeof window === 'undefined') return {};
@@ -46,8 +45,6 @@ export function CheckoutProvider({ children }) {
 
     updateState({ isPlacingOrder: true });
     try {
-      const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0);
-      const shippingFee = SHIPPING_FEES[state.shippingMethod] ?? 0;
       const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : 'order-' + Date.now() + '-' + Math.random().toString(36).slice(2);
@@ -69,10 +66,6 @@ export function CheckoutProvider({ children }) {
           },
           shippingMethod: state.shippingMethod,
           paymentMethod: selectedPaymentMethod,
-          subtotal,
-          tax: 0,
-          shippingFee,
-          discount: 0,
         }),
       });
 
