@@ -6,7 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const passport = require('./config/passport');
 const connectDB = require('./config/db');
-const { connectProducer } = require('./events/kafka');
+const { connectProducer, getKafkaStatus } = require('./events/kafka');
 
 const app = express();
 app.use(cors());
@@ -15,10 +15,15 @@ app.use(passport.initialize());
 
 app.get('/health', (req, res) => {
   const dbReady = require('mongoose').connection.readyState === 1;
+  const kafka = getKafkaStatus();
+  // Kafka is an optional integration; only MongoDB determines auth readiness.
   res.status(dbReady ? 200 : 503).json({
     status: dbReady ? 'ok' : 'not_ready',
     service: 'auth-service',
-    dependencies: { mongodb: dbReady ? 'connected' : 'disconnected' },
+    dependencies: {
+      mongodb: dbReady ? 'connected' : 'disconnected',
+      kafka: kafka.circuit,
+    },
   });
 });
 app.get('/', (req, res) => res.status(200).json({ status: 'ok', message: 'Auth Service is active' }));
@@ -29,14 +34,15 @@ const PORT = process.env.PORT || 3001;
 let server;
 
 async function start() {
-  // MongoDB is required for authentication; do not report healthy without it.
+  // MongoDB is required for authentication; fail startup if it is unavailable.
   await connectDB();
 
-  // Kafka is an optional event transport and must not prevent auth startup.
-  await connectProducer();
-
+  // Start HTTP first. Kafka reconnects independently in the background.
   server = app.listen(PORT, () => {
     console.log(`Auth service running on port ${PORT}`);
+    connectProducer().catch((error) => {
+      console.error('[AUTH-KAFKA] Background initialization failed:', error.message);
+    });
   });
 }
 
