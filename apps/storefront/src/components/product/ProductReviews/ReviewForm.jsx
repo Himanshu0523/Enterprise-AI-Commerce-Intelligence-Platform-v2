@@ -1,126 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
+import { useState } from 'react';
+import Link from 'next/link';
+import { Star, AlertCircle, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { createReview } from '@/lib/api/reviews';
 
-/**
- * @param {Object} props
- * @param {string} props.productId
- * @param {(review: any) => void} props.onReviewAdded
- */
 export default function ReviewForm({ productId, onReviewAdded }) {
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [author, setAuthor] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const { user } = useAuth();
+  const [rating,setRating]=useState(0);
+  const [title,setTitle]=useState('');
+  const [comment,setComment]=useState('');
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
+  if(!user)return <div className="border border-[#e5e4dc] bg-[#f7f7f2] p-5"><p className="text-sm font-semibold">Sign in to write a review.</p><p className="mt-2 text-xs text-[#788078]">Reviews are linked to your authenticated account.</p><Link href="/login" className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-[#315b49]">Sign in <ArrowRight size={13}/></Link></div>;
 
-    if (rating === 0) {
-      setError('Please select a rating');
-      return;
-    }
-    if (!comment.trim()) {
-      setError('Please write a comment');
-      return;
-    }
-    if (!author.trim()) {
-      setError('Please enter your name');
-      return;
-    }
+  const submit=async(event)=>{event.preventDefault();setError('');if(!rating)return setError('Select a rating before submitting.');setBusy(true);try{const review=await createReview({productId,rating,title:title.trim(),comment:comment.trim()});setTitle('');setComment('');setRating(0);onReviewAdded?.(review)}catch(e){setError(e.message||'Unable to submit your review.')}finally{setBusy(false)}};
 
-    setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      const newReview = {
-        id: `user-${Date.now()}`,
-        author: author.trim(),
-        date: new Date().toISOString(),
-        rating,
-        comment: comment.trim(),
-      };
-
-      // Reset form
-      setRating(0);
-      setComment('');
-      setAuthor('');
-      setIsSubmitting(false);
-
-      // Notify parent
-      onReviewAdded(newReview);
-    }, 500);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 border-t pt-6">
-      <h3 className="text-lg font-semibold">Write a Review</h3>
-
-      <div>
-        <label className="block text-sm font-medium">Rating</label>
-        <div className="flex items-center gap-1 mt-1">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => setRating(star)}
-              onMouseEnter={() => setHoverRating(star)}
-              onMouseLeave={() => setHoverRating(0)}
-              className="focus:outline-none"
-            >
-              <Star
-                size={24}
-                className={
-                  star <= (hoverRating || rating)
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300'
-                }
-              />
-            </button>
-          ))}
-          <span className="ml-2 text-sm text-gray-500">
-            {rating > 0 && `${rating} star${rating > 1 ? 's' : ''}`}
-          </span>
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="author" className="block text-sm font-medium">Your Name</label>
-        <input
-          type="text"
-          id="author"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm shadow-sm"
-          placeholder="John Doe"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="comment" className="block text-sm font-medium">Comment</label>
-        <textarea
-          id="comment"
-          rows={4}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm shadow-sm"
-          placeholder="Share your experience with this product..."
-        />
-      </div>
-
-      {error && <div className="text-sm text-red-600 font-medium">{error}</div>}
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="rounded bg-indigo-600 px-6 py-2 text-sm text-white hover:bg-indigo-700 disabled:opacity-50 font-medium shadow-sm transition-colors"
-      >
-        {isSubmitting ? 'Submitting...' : 'Submit Review'}
-      </button>
-    </form>
-  );
+  return <form onSubmit={submit} className="space-y-4 border border-[#e5e4dc] bg-[#fffefa] p-5 sm:p-6">
+    <div><p className="editorial-kicker">Your feedback</p><h3 className="editorial-heading mt-2 text-2xl">Write a review.</h3></div>
+    <div><label className="block text-xs font-semibold text-[#43534a]">Your rating</label><div className="mt-2 flex items-center gap-1">{[1,2,3,4,5].map(value=><button key={value} type="button" onClick={()=>setRating(value)} aria-label={value+' stars'} className="p-1"><Star size={21} className={value<=rating?'fill-[#c39a55] text-[#c39a55]':'text-[#cfd3c9]'}/></button>)}</div></div>
+    <label className="block text-xs font-semibold text-[#43534a]">Review title<input required minLength={3} maxLength={100} value={title} onChange={e=>setTitle(e.target.value)} className="field-control mt-2" placeholder="Summarize your experience"/></label>
+    <label className="block text-xs font-semibold text-[#43534a]">Your review<textarea required minLength={5} maxLength={2000} rows={4} value={comment} onChange={e=>setComment(e.target.value)} className="field-control mt-2" placeholder="Share specific product feedback"/></label>
+    {error&&<p role="alert" className="flex gap-2 text-xs text-[#9b5147]"><AlertCircle size={14}/>{error}</p>}
+    <button disabled={busy} className="primary-action">{busy?'Submitting…':'Submit review'} <ArrowRight size={14}/></button>
+  </form>;
 }
