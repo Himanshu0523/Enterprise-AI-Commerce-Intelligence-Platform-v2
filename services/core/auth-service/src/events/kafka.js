@@ -1,6 +1,13 @@
 const { Kafka } = require('kafkajs');
 
-const isPlaceholderBroker = (process.env.KAFKA_BOOTSTRAP_SERVERS || '').includes('pkc-xxxx');
+const configuredBrokerValue =
+  process.env.KAFKA_BOOTSTRAP_SERVERS || process.env.KAFKA_BROKER || '';
+const brokers = configuredBrokerValue
+  .split(',')
+  .map((broker) => broker.trim())
+  .filter(Boolean);
+const hasConfiguredBroker = brokers.length > 0;
+const isPlaceholderBroker = configuredBrokerValue.includes('pkc-xxxx');
 
 const saslConfig = process.env.KAFKA_SASL_USERNAME && !isPlaceholderBroker
   ? {
@@ -13,46 +20,53 @@ const saslConfig = process.env.KAFKA_SASL_USERNAME && !isPlaceholderBroker
     }
   : {};
 
-const kafka = new Kafka({
-    clientId: 'auth-service',
-    brokers: (process.env.KAFKA_BOOTSTRAP_SERVERS || process.env.KAFKA_BROKER || 'localhost:9092').split(','),
-    retry: { retries: 2 },
-    ...saslConfig,
-});
+const kafka = hasConfiguredBroker && !isPlaceholderBroker
+  ? new Kafka({
+      clientId: 'auth-service',
+      brokers,
+      retry: { retries: 2 },
+      ...saslConfig,
+    })
+  : null;
 
-
-const producer = kafka.producer();
-
+const producer = kafka ? kafka.producer() : null;
 let isConnected = false;
 
 const connectProducer = async () => {
-    if (isPlaceholderBroker) {
-        console.warn('⚠️ KAFKA_BOOTSTRAP_SERVERS contains placeholder (pkc-xxxx). Skipping Kafka connection.');
-        return;
-    }
-    try {
-        await producer.connect();
-        isConnected = true;
-        console.log('Kafka producer connected');
-    } catch (err) {
-        console.warn('Kafka connection failed - running service without Kafka event streaming:', err.message);
-    }
+  if (!hasConfiguredBroker) {
+    console.info('[AUTH-KAFKA] No broker configured; event streaming is disabled.');
+    return;
+  }
+
+  if (isPlaceholderBroker) {
+    console.warn('[AUTH-KAFKA] Placeholder broker detected; event streaming is disabled.');
+    return;
+  }
+
+  try {
+    await producer.connect();
+    isConnected = true;
+    console.log('[AUTH-KAFKA] Producer connected.');
+  } catch (err) {
+    console.warn('[AUTH-KAFKA] Kafka unavailable; continuing without event streaming:', err.message);
+  }
 };
 
 const publishEvent = async (topic, event) => {
-    if (!isConnected) {
-        console.log(`[Offline Event Log] ${topic}:`, event);
-        return;
-    }
-    try {
-        await producer.send({
-            topic,
-            messages: [{ value: JSON.stringify(event) }],
-        });
-        console.log(`Event published to ${topic}`);
-    } catch (err) {
-        console.error('Kafka publish error:', err.message);
-    }
+  if (!isConnected || !producer) {
+    console.log(`[AUTH-KAFKA-OFFLINE] ${topic}:`, event);
+    return;
+  }
+
+  try {
+    await producer.send({
+      topic,
+      messages: [{ value: JSON.stringify(event) }],
+    });
+  } catch (err) {
+    // Analytics/event delivery must never fail a registration or login request.
+    console.error('[AUTH-KAFKA] Publish failed:', err.message);
+  }
 };
 
-module.exports = { connectProducer , publishEvent };
+module.exports = { connectProducer, publishEvent };
