@@ -11,7 +11,7 @@ import Breadcrumbs from '@/components/common/Breadcrumbs';
 export default function ProductListingWithFilters({ initialCategory, initialQuery, collection, title = 'Products' }) {
   const [viewMode, setViewMode] = useState('grid');
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const { filteredProducts, totalResults, brands, priceRange, filters, sortBy, toggleBrand, setPriceRange, setRating, setSortBy, clearFilters } = useProductFilters({ initialCategory, initialQuery, collection });
+  const { filteredProducts, totalResults, priceRange, filters, sortBy, setPriceRange, setSortBy, clearFilters } = useProductFilters({ initialCategory, initialQuery, collection });
   const breadcrumbItems = [{ label: 'Products', href: '/products' }, ...(initialCategory ? [{ label: initialCategory }] : []), ...(initialQuery ? [{ label: 'Search: ' + initialQuery }] : [])];
 
   return (
