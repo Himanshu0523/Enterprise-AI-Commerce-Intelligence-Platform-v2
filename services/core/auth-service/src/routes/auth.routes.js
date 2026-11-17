@@ -40,7 +40,6 @@ router.post('/mfa/verify-enable', authMiddleware, authController.verifyAndEnable
 router.post('/mfa/disable', authMiddleware, authController.disableMFA);
 router.get('/mfa/status', authMiddleware, authController.getMFAStatus);
 router.post('/mfa/verify-login', authController.verifyMFA);   // no auth middleware needed
-router.post('/mfa/disable', authMiddleware, authController.disableMFA);
 
 // ─── Token validation (for other services) ──────────
 router.post('/validate', authController.validateToken);
