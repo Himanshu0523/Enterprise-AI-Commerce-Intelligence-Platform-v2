@@ -1,7 +1,12 @@
 const rawUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || '/api';
-const API_BASE_URL = (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('/'))
-  ? rawUrl
-  : `http://${rawUrl}`;
+const normalizedUrl = rawUrl.replace(/\/+$/, '');
+const apiRoot = normalizedUrl.endsWith('/api/storefront')
+  ? normalizedUrl.slice(0, -'/storefront'.length)
+  : normalizedUrl.endsWith('/api')
+    ? normalizedUrl
+    : `${normalizedUrl}/api`;
+const API_BASE_URL = `${apiRoot}/storefront`;
+const AUTH_BASE_URL = `${apiRoot}/auth`;
 
 async function readResponse(response) {
   const contentType = response.headers.get('content-type') || '';
@@ -13,7 +18,7 @@ async function refreshAccessToken() {
   const refreshToken = localStorage.getItem('auth_refresh_token');
   if (!refreshToken) return null;
 
-  const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+  const response = await fetch(`${AUTH_BASE_URL}/refresh-token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
@@ -42,14 +47,14 @@ export async function apiClient(endpoint, options = {}) {
   let token = typeof window !== 'undefined' ? localStorage.getItem('auth_access_token') : null;
   let response = await fetch(url, { ...options, headers: makeHeaders(token) });
 
-  if (response.status === 401 && typeof window !== 'undefined' && !endpoint.includes('/auth/')) {
+  if (response.status === 401 && typeof window !== 'undefined') {
     token = await refreshAccessToken();
     if (token) response = await fetch(url, { ...options, headers: makeHeaders(token) });
   }
 
   const data = await readResponse(response);
   if (!response.ok) {
-    const message = typeof data === 'string' ? data : data.msg || data.message || data.error;
+    const message = typeof data === 'string' ? data : data.error?.message || data.msg || data.message || data.error;
     throw new Error(message || `API request failed with status ${response.status}`);
   }
   return data;
