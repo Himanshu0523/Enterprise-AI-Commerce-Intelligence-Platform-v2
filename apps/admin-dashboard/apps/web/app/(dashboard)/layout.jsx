@@ -113,9 +113,13 @@ export default function DashboardLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
 
-  const handleLogout = () => {
-    document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/session/logout', { method: 'POST', credentials: 'same-origin' });
+    } finally {
+      router.replace('/login');
+      router.refresh();
+    }
   };
 
   const Sidebar = ({ mobile = false }) => (
