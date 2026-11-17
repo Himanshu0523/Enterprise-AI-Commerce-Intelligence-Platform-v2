@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getOrderById } from '@/lib/api/orders';
-import { ArrowLeft, Package, MapPin, CreditCard, Truck, AlertCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, CreditCard, Truck, AlertCircle } from 'lucide-react';
 
 export default function OrderDetailPage() {
   const params = useParams();
