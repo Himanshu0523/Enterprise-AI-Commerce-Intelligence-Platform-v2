@@ -37,6 +37,8 @@ router.get('/google/callback',
 // ─── MFA ────────────────────────────────────────────
 router.post('/mfa/setup', authMiddleware, authController.setupMFA);
 router.post('/mfa/verify-enable', authMiddleware, authController.verifyAndEnableMFA);
+router.post('/mfa/disable', authMiddleware, authController.disableMFA);
+router.get('/mfa/status', authMiddleware, authController.getMFAStatus);
 router.post('/mfa/verify-login', authController.verifyMFA);   // no auth middleware needed
 router.post('/mfa/disable', authMiddleware, authController.disableMFA);
 
