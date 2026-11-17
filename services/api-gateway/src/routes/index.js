@@ -7,7 +7,7 @@ const adminRoutes = require('./admin');
 
 const router = express.Router();
 
-router.use('/auth', createProxy(config.services.auth));
+router.use('/auth', createProxy(config.services.auth, { pathRewrite: { '^/': '/api/auth/' } }));
 
 // Canary deployment: 5% of pricing traffic routed to v2 for safe rollout.
 // Adjust PRICING_CANARY_WEIGHT env var (0.0 - 1.0) to control traffic split.
