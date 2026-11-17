@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth/options';
+import { getAuthenticatedUser } from '@/lib/auth/server';
 import { addReview } from '@/lib/db/reviews';
 
 export async function POST(request) {
   try {
-    const session = await getServerSession(authOptions);
+    const user = await getAuthenticatedUser(request);
+    if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await request.json();
     const { productId, rating, comment, author } = body;
 
@@ -22,8 +22,8 @@ export async function POST(request) {
       productId,
       rating: numericRating,
       comment: comment.trim(),
-      author: (author || session?.user?.name || 'Anonymous').trim(),
-      userId: session?.user?.id || null,
+      author: (author || user.name || user.email || 'Account').trim(),
+      userId: user.id,
     };
 
     const newReview = addReview(reviewData);
