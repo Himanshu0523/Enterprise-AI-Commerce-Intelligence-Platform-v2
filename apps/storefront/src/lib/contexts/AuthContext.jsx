@@ -54,6 +54,7 @@ export function AuthProvider({ children }) {
               name: validation.user.name || sessionUser.name,
               roles: validation.user.roles || sessionUser.roles || [],
             };
+            sessionUser = await loadProfileName(accessToken, sessionUser);
             localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
             if (active) setUser(sessionUser);
             return;
@@ -64,6 +65,8 @@ export function AuthProvider({ children }) {
           if (!refreshed.accessToken || !refreshed.refreshToken) throw new Error('Session refresh failed.');
           localStorage.setItem(ACCESS_KEY, refreshed.accessToken);
           localStorage.setItem(REFRESH_KEY, refreshed.refreshToken);
+          sessionUser = await loadProfileName(refreshed.accessToken, sessionUser);
+          localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
           if (active) setUser(sessionUser);
         }
       } catch {
@@ -143,6 +146,15 @@ export function AuthProvider({ children }) {
     });
   }, [persistSession]);
 
+  const updateLocalUser = useCallback((updates) => {
+    setUser((current) => {
+      if (!current) return current;
+      const nextUser = { ...current, ...updates };
+      localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+      return nextUser;
+    });
+  }, []);
+
   const logout = useCallback(async () => {
     const refreshToken = localStorage.getItem(REFRESH_KEY);
     const accessToken = localStorage.getItem(ACCESS_KEY);
@@ -160,7 +172,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, verifyMfa, pendingMfa, completeOAuthSession }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, verifyMfa, pendingMfa, completeOAuthSession, updateLocalUser }}>
       {children}
     </AuthContext.Provider>
   );
