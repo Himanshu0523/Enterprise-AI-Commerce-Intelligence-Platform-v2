@@ -24,7 +24,7 @@ export default function AddressesPage() {
     finally{setSaving(false)}
   };
   const remove=async(id)=>{setError('');try{const result=await apiClient('/users/me/addresses/'+encodeURIComponent(id),{method:'DELETE'});setAddresses(result.addresses||[])}catch(e){setError(e.message||'Unable to delete address.')}};
-  const setDefault=async(address)=>{try{const result=await apiClient('/users/me/addresses/'+encodeURIComponent(address.id),{method:'PUT',body:JSON.stringify({...address,isDefault:true})});setAddresses(result.addresses||[])}catch(e){setError(e.message||'Unable to update address.')}};
+  const setDefault=async(address)=>{try{const result=await apiClient('/users/me/addresses/'+encodeURIComponent(address.id),{method:'PUT',body:JSON.stringify({addressLine1:address.addressLine1,addressLine2:address.addressLine2,city:address.city,state:address.state,country:address.country,postalCode:address.postalCode,type:address.type,isDefault:true})});setAddresses(result.addresses||[])}catch(e){setError(e.message||'Unable to update address.')}};
 
   return <div className="space-y-6">
     <header className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e5e4dc] pb-6"><div><p className="editorial-kicker">Account</p><h1 className="page-title mt-3">Address book.</h1><p className="page-description">Manage delivery addresses saved to your account.</p></div><button onClick={()=>setShowForm(v=>!v)} className="primary-action"><Plus size={15}/>{showForm?'Close form':'Add address'}</button></header>
