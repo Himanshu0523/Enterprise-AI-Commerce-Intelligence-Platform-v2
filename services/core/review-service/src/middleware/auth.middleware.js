@@ -5,7 +5,9 @@ module.exports = (req, res, next) => {
   const userHeader = req.headers['x-user-id'];
 
   if (userHeader) {
-    req.user = { id: userHeader, email: req.headers['x-user-email'], name: req.headers['x-user-name'] };
+    let roles = [];
+    try { roles = JSON.parse(req.headers['x-user-roles'] || '[]'); } catch { roles = []; }
+    req.user = { id: userHeader, email: req.headers['x-user-email'], name: req.headers['x-user-name'], roles, role: roles[0] || 'customer' };
     return next();
   }
 
