@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 import { UserRound, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateLocalUser } = useAuth();
   const [name,setName]=useState(user?.name||'');
   const [email,setEmail]=useState(user?.email||'');
   const [loading,setLoading]=useState(true);
