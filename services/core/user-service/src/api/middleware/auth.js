@@ -4,5 +4,6 @@ module.exports = (req, res, next) => {
     return res.status(401).json({ error: 'Missing user ID' });
   }
   req.userId = userId;
+  req.user = { id: userId, email: req.headers['x-user-email'], name: req.headers['x-user-name'] };
   next();
 };
