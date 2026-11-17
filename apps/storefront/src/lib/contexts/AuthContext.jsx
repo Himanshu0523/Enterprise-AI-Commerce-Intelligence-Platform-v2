@@ -104,6 +104,17 @@ export function AuthProvider({ children }) {
     }
   }, [persistSession]);
 
+  const completeOAuthSession = useCallback(async (accessToken, refreshToken) => {
+    if (!accessToken || !refreshToken) throw new Error('OAuth did not return a complete token pair.');
+    const data = await authRequest('validate', { token: accessToken });
+    if (!data.valid || !data.user) throw new Error('The OAuth session could not be validated.');
+    return persistSession({
+      accessToken,
+      refreshToken,
+      user: { id: data.user.id, email: data.user.email, name: data.user.name || data.user.email?.split('@')[0] || 'Account', roles: data.user.roles || [] },
+    });
+  }, [persistSession]);
+
   const logout = useCallback(async () => {
     const refreshToken = localStorage.getItem(REFRESH_KEY);
     const accessToken = localStorage.getItem(ACCESS_KEY);
@@ -121,7 +132,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, verifyMfa, pendingMfa }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, verifyMfa, pendingMfa, completeOAuthSession }}>
       {children}
     </AuthContext.Provider>
   );
