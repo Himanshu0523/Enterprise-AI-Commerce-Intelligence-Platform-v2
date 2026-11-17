@@ -29,7 +29,7 @@ export default function ReviewList({ productId }) {
 
   useEffect(()=>{load()},[load]);
 
-  const afterSubmit=()=>{setShowForm(false);setPage(1);load()};
+  const afterSubmit=()=>{setShowForm(false);if(page===1)load();else setPage(1)};
 
   return <section className="mt-14 border-t border-[#e5e4dc] pt-9">
     <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="editorial-kicker">Customer feedback</p><h2 className="editorial-heading mt-2 text-3xl">Product reviews.</h2></div><button onClick={()=>setShowForm(v=>!v)} className="secondary-action">{showForm?'Close':'Write a review'}</button></div>
