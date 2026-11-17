@@ -94,7 +94,7 @@ export default function AccountSidebar() {
       {/* Logout */}
       <div className="pt-2 border-t border-[#e5e4dc]">
         <button
-          onClick={async () => { try { await logout(); } finally { router.replace('/login'); router.refresh(); } }}
+          onClick={async () => { try { await logout(); } catch (error) { console.error('Sign-out request failed; local session was cleared.', error); } finally { router.replace('/login'); router.refresh(); } }}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#9b5147] hover:bg-[#fbf0ed] transition-colors"
         >
           <LogOut size={17} />
