@@ -3,59 +3,18 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/contexts/CartContext';
-import CartItem from '@/components/cart/CartItem';
-import CartSummary from '@/components/cart/CartSummary';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Minus, Plus, ArrowRight, ShoppingBag } from 'lucide-react';
 
 export default function CartPage() {
-  const { items, clearCart, getTotalItems, getTotalPrice } = useCart();
+  const { items, clearCart, removeItem, updateQuantity, getTotalItems, getTotalPrice } = useCart();
+  const total=getTotalPrice();
+  if (!items.length) return <div className="page-shell"><div className="surface-card mx-auto max-w-xl px-6 py-16 text-center"><span className="mx-auto grid h-14 w-14 place-items-center bg-[#e8eee7] text-[#315b49]"><ShoppingBag size={23}/></span><p className="editorial-kicker mt-6">Your bag</p><h1 className="editorial-heading mt-3 text-4xl">Nothing here yet.</h1><p className="mt-3 text-xs leading-6 text-[#788078]">Explore the catalogue and add products you would like to keep.</p><Link href="/products" className="primary-action mt-7">Browse products <ArrowRight size={14}/></Link></div></div>;
 
-  if (items.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold">Your Cart is Empty</h1>
-        <p className="mt-2 text-gray-600">Start shopping to add items.</p>
-        <Link
-          href="/products"
-          className="mt-4 inline-block rounded bg-indigo-600 px-6 py-2 text-white hover:bg-indigo-700"
-        >
-          Browse Products
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Shopping Cart</h1>
-      <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Cart Items */}
-        <div className="flex-1">
-          <div className="rounded-lg border shadow-sm">
-            <div className="border-b p-4">
-              <div className="flex justify-between">
-                <span className="font-semibold">{getTotalItems()} items</span>
-                <button
-                  onClick={clearCart}
-                  className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700"
-                >
-                  <Trash2 size={16} />
-                  Clear Cart
-                </button>
-              </div>
-            </div>
-            <ul className="divide-y">
-              {items.map((item) => (
-                <CartItem key={item.productId} item={item} />
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className="lg:w-80">
-          <CartSummary totalItems={getTotalItems()} totalPrice={getTotalPrice()} />
-        </div>
-      </div>
-    </div>
-  );
+  return <div className="page-shell"><header className="mb-8 border-b border-[#e5e4dc] pb-6"><p className="editorial-kicker">Your selection</p><h1 className="page-title mt-3">Shopping bag.</h1><p className="page-description">{getTotalItems()} items in your bag.</p></header>
+    <div className="grid gap-8 lg:grid-cols-[1fr_340px]"><section className="surface-card">
+      <div className="flex items-center justify-between border-b border-[#e5e4dc] px-5 py-4"><span className="text-xs font-semibold">Items ({getTotalItems()})</span><button onClick={clearCart} className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#9b5147]"><Trash2 size={13}/> Clear bag</button></div>
+      <ul className="divide-y divide-[#e5e4dc]">{items.map(item=><li key={item.productId} className="flex flex-wrap items-center gap-4 p-5"><div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[#eeeee8]">{item.image&&<Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover"/>}</div><div className="min-w-0 flex-1"><Link href={'/products/'+item.productId} className="text-sm font-semibold hover:text-[#668775]">{item.name}</Link><p className="mt-1 text-xs text-[#788078]">USD {Number(item.price).toFixed(2)}</p><button onClick={()=>removeItem(item.productId)} className="mt-3 text-[10px] font-semibold text-[#9b5147]">Remove</button></div><div className="flex items-center border border-[#dedfd6] bg-white"><button onClick={()=>updateQuantity(item.productId,item.quantity-1)} disabled={item.quantity<=1} aria-label="Decrease quantity" className="grid h-9 w-9 place-items-center text-[#59665e] disabled:opacity-30"><Minus size={13}/></button><span className="w-8 text-center text-xs">{item.quantity}</span><button onClick={()=>updateQuantity(item.productId,item.quantity+1)} aria-label="Increase quantity" className="grid h-9 w-9 place-items-center text-[#59665e]"><Plus size={13}/></button></div><strong className="w-24 text-right text-xs">USD {(item.price*item.quantity).toFixed(2)}</strong></li>)}</ul>
+    </section>
+    <aside className="surface-card h-fit p-6"><h2 className="text-sm font-semibold">Order summary</h2><div className="mt-6 space-y-3 text-xs text-[#788078]"><div className="flex justify-between"><span>Subtotal</span><span>USD {total.toFixed(2)}</span></div><div className="flex justify-between"><span>Shipping</span><span>Calculated next</span></div></div><div className="mt-5 flex justify-between border-t border-[#e5e4dc] pt-5 text-sm font-semibold"><span>Subtotal</span><span className="text-[#315b49]">USD {total.toFixed(2)}</span></div><p className="mt-3 text-[10px] leading-5 text-[#929990]">Final charges are calculated by the checkout service.</p><Link href="/checkout/shipping" className="primary-action mt-6 w-full">Continue to checkout <ArrowRight size={14}/></Link><Link href="/products" className="mt-4 block text-center text-[10px] font-semibold text-[#668775]">Continue browsing</Link></aside></div>
+  </div>;
 }
