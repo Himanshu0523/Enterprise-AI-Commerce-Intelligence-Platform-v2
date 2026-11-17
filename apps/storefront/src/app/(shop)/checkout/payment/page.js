@@ -1,131 +1,68 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useCheckout } from '@/lib/contexts/CheckoutContext';
+import { useCart } from '@/lib/contexts/CartContext';
+import { LockKeyhole, ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
 
+const DEMO_ENABLED = process.env.NEXT_PUBLIC_PAYMENT_DEMO_MODE === 'true';
 
 export default function PaymentPage() {
-  const { state, setPaymentMethod, placeOrder } = useCheckout();
+  const { setPaymentMethod, placeOrder } = useCheckout();
+  const { getTotalPrice, getTotalItems } = useCart();
   const router = useRouter();
-
-  const [paymentMethod, setPaymentMethodState] = useState(
-    state.paymentMethod || 'card'
-  );
-  const [cardNumber, setCardNumber] = useState('4111 1111 1111 1111');
-  const [expiry, setExpiry] = useState('12/25');
-  const [cvv, setCvv] = useState('123');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!DEMO_ENABLED) return;
     setError('');
-
-    if (!paymentMethod) {
-      setError('Please select a payment method');
-      return;
-    }
-
-    // Save payment method
-    setPaymentMethod(paymentMethod);
-
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
+      setPaymentMethod('DEMO');
       const orderId = await placeOrder();
-      router.push(`/checkout/confirmation/${orderId}`);
+      router.replace('/checkout/confirmation/' + encodeURIComponent(orderId));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to place order');
+      setError(err.message || 'Unable to submit this order.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg border shadow-sm">
-      <div>
-        <h3 className="text-lg font-semibold">Payment Method</h3>
-        <div className="mt-4 space-y-2">
-          <label className="flex items-center gap-3 rounded border p-3 cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="card"
-              checked={paymentMethod === 'card'}
-              onChange={() => setPaymentMethodState('card')}
-              className="h-4 w-4 text-indigo-600"
-            />
-            <span className="font-medium">Credit / Debit Card</span>
-          </label>
-          <label className="flex items-center gap-3 rounded border p-3 cursor-pointer hover:bg-gray-50">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="paypal"
-              checked={paymentMethod === 'paypal'}
-              onChange={() => setPaymentMethodState('paypal')}
-              className="h-4 w-4 text-indigo-600"
-            />
-            <span className="font-medium">PayPal</span>
-          </label>
-        </div>
-      </div>
-
-      {paymentMethod === 'card' && (
-        <div className="rounded-lg border p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium">Card Number</label>
-            <input
-              type="text"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              className="mt-1 block w-full rounded border border-gray-300 px-3 py-2"
-              placeholder="4111 1111 1111 1111"
-            />
+    <div className="page-shell">
+      <div className="mb-8"><p className="editorial-kicker">Checkout · Step 3 of 3</p><h1 className="page-title mt-3">Review and submit.</h1><p className="page-description">Payment details are handled by the configured payment service. This storefront does not collect raw card numbers.</p></div>
+      <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+        <form onSubmit={handleSubmit} className="surface-card p-6 sm:p-8">
+          <div className="flex items-start gap-4 border-b border-[#e5e4dc] pb-6">
+            <div className="grid h-11 w-11 shrink-0 place-items-center bg-[#e8eee7] text-[#315b49]"><LockKeyhole size={19}/></div>
+            <div><h2 className="text-base font-semibold">Payment processing</h2><p className="mt-1 text-xs leading-5 text-[#788078]">No card number, expiry date or security code is requested on this page.</p></div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium">Expiry Date</label>
-              <input
-                type="text"
-                value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2"
-                placeholder="MM/YY"
-              />
+          {DEMO_ENABLED ? (
+            <div className="mt-6 border border-[#d9ddd4] bg-[#f7f7f2] p-5">
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#668775]">Demo environment</p>
+              <p className="mt-2 text-sm font-semibold text-[#1c2924]">Place a demonstration order</p>
+              <p className="mt-2 text-xs leading-6 text-[#788078]">This uses explicitly enabled mock-payment mode. It does not charge a real payment method.</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium">CVV</label>
-              <input
-                type="text"
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2"
-                placeholder="123"
-              />
-            </div>
+          ) : (
+            <div className="mt-6 flex gap-3 border border-[#e7d8c8] bg-[#faf5ed] p-4 text-xs leading-6 text-[#7a5b3d]"><AlertCircle size={16} className="mt-1 shrink-0"/>The payment provider is not configured for this environment. Order submission is disabled until a verified payment flow or explicit demo-payment mode is enabled.</div>
+          )}
+          {error && <p role="alert" className="mt-5 text-xs text-[#a34e43]">{error}</p>}
+          <div className="mt-8 flex flex-wrap justify-between gap-3">
+            <Link href="/checkout/shipping" className="secondary-action"><ArrowLeft size={14}/> Back to shipping</Link>
+            <button type="submit" disabled={!DEMO_ENABLED || isSubmitting || getTotalItems()===0} className="primary-action disabled:cursor-not-allowed disabled:opacity-40">{isSubmitting?'Submitting…':'Place demo order'} <ArrowRight size={14}/></button>
           </div>
-        </div>
-      )}
-
-      {error && <div className="text-sm text-red-600">{error}</div>}
-
-      <div className="flex justify-between">
-        <button
-          type="button"
-          onClick={() => router.push('/checkout/shipping')}
-          className="rounded border border-gray-300 px-6 py-2 hover:bg-gray-50"
-        >
-          Back to Shipping
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="rounded bg-indigo-600 px-6 py-2 text-white hover:bg-indigo-700 disabled:opacity-50 font-medium"
-        >
-          {isSubmitting ? 'Processing...' : 'Place Order'}
-        </button>
+        </form>
+        <aside className="surface-card h-fit p-6">
+          <h2 className="text-sm font-semibold">Order summary</h2>
+          <div className="mt-5 flex justify-between text-xs text-[#788078]"><span>Items ({getTotalItems()})</span><span>${getTotalPrice().toFixed(2)}</span></div>
+          <div className="mt-4 flex justify-between border-t border-[#e5e4dc] pt-4 text-sm font-semibold"><span>Subtotal</span><span>${getTotalPrice().toFixed(2)}</span></div>
+          <p className="mt-4 text-[10px] leading-5 text-[#929990]">Shipping and final charges are calculated by the order service.</p>
+        </aside>
       </div>
-    </form>
+    </div>
   );
 }
