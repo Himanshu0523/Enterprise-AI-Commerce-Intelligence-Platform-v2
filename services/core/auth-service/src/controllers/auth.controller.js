@@ -365,7 +365,7 @@ exports.validateToken = async (req, res) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ msg: 'User not found' });
 
-    res.json({ valid: true, user: { id: user._id, email: user.email, roles: user.roles } });
+    res.json({ valid: true, user: { id: user._id, email: user.email, name: user.name, roles: user.roles } });
   } catch (err) {
     res.status(401).json({ valid: false, msg: 'Invalid or expired token' });
   }
