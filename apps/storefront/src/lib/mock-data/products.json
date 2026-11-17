@@ -51,7 +51,7 @@
     "id": "p4",
     "name": "Classic Steel Watch",
     "description": "A minimal timepiece with a crisp, modern profile.",
-    "price": 34.989999999999995,
+    "price": 34.99,
     "images": [
       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=85"
     ],
@@ -67,7 +67,7 @@
     "id": "p5",
     "name": "Structured Weekend Jacket",
     "description": "A refined outer layer designed for everyday wear.",
-    "price": 39.989999999999995,
+    "price": 39.99,
     "images": [
       "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=1000&q=85"
     ],
@@ -83,7 +83,7 @@
     "id": "p6",
     "name": "Soft Structure Tote",
     "description": "A roomy carryall with a clean, understated shape.",
-    "price": 44.989999999999995,
+    "price": 44.99,
     "images": [
       "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1000&q=85"
     ],
@@ -99,7 +99,7 @@
     "id": "p7",
     "name": "Mini Explorer Jacket",
     "description": "A lightweight layer for little adventures.",
-    "price": 49.989999999999995,
+    "price": 49.99,
     "images": [
       "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=85"
     ],
@@ -115,7 +115,7 @@
     "id": "p8",
     "name": "Everyday Leather Wallet",
     "description": "A compact essential with a timeless finish.",
-    "price": 54.989999999999995,
+    "price": 54.99,
     "images": [
       "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1000&q=85"
     ],
@@ -131,7 +131,7 @@
     "id": "p9",
     "name": "Modern Essential Knit",
     "description": "A considered wardrobe staple with a minimal finish.",
-    "price": 59.989999999999995,
+    "price": 59.99,
     "images": [
       "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1000&q=85"
     ],
