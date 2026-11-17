@@ -102,7 +102,7 @@ export default function AdminLogin() {
                 <h2 className="text-xl font-bold text-white">Two-factor verification</h2>
                 <p className="text-xs text-zinc-400">Enter the current six-digit code from your authenticator app.</p>
               </div>
-              <input aria-label="Authenticator code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={otp} onChange={(e) => setOtp(e.target.value.replace(/\\D/g, "").slice(0, 6))} placeholder="000000" className="w-full rounded-xl border border-zinc-700 bg-zinc-950 py-4 text-center text-2xl tracking-[0.5em] text-white outline-none focus:border-indigo-500" />
+              <input aria-label="Authenticator code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="000000" className="w-full rounded-xl border border-zinc-700 bg-zinc-950 py-4 text-center text-2xl tracking-[0.5em] text-white outline-none focus:border-indigo-500" />
               <div className="flex gap-3">
                 <button type="button" onClick={() => { setStep2FA(false); setMfaToken(""); setOtp(""); setError(""); }} className="w-1/3 py-3 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-semibold">Back</button>
                 <button type="submit" disabled={isLoading || otp.length !== 6} className="w-2/3 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold disabled:opacity-50">
