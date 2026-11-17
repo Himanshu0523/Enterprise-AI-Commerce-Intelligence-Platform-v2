@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import OtpModal from '@/components/auth/OtpModal';
@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const { login, isLoading } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const getRedirectPath = () => new URLSearchParams(window.location.search).get('redirect') || '/';
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -26,7 +26,7 @@ export default function LoginPage() {
         setShowOtpModal(true);
         return;
       }
-      router.replace(searchParams.get('redirect') || '/');
+      router.replace(getRedirectPath());
       router.refresh();
     } catch (err) {
       setError(err.message || 'Unable to sign in. Check your credentials and try again.');
