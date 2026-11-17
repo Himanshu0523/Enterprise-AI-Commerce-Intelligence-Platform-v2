@@ -43,9 +43,8 @@ function createServiceProxy(target, options = {}) {
         if (req.user) {
           proxyReq.setHeader('x-user-id', req.user.id || '');
           proxyReq.setHeader('x-user-role', req.user.role || 'guest');
-          if (req.user.email) {
-            proxyReq.setHeader('x-user-email', req.user.email);
-          }
+          if (req.user.email) proxyReq.setHeader('x-user-email', req.user.email);
+          if (req.user.name) proxyReq.setHeader('x-user-name', req.user.name);
         }
 
       },
