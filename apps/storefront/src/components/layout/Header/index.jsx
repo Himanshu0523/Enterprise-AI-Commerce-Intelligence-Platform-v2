@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Search, ShoppingBag, UserRound, Heart, Menu, X, ArrowUpRight, ChevronDown, LogOut } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, X, ArrowUpRight, ChevronDown, LogOut } from 'lucide-react';
 import { useCart } from '@/lib/contexts/CartContext';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { useWishlist } from '@/lib/contexts/WishlistContext';
