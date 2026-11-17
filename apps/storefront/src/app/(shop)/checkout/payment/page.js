@@ -33,7 +33,7 @@ export default function PaymentPage() {
 
   return (
     <div className="page-shell">
-      <div className="mb-8"><p className="editorial-kicker">Checkout · Step 3 of 3</p><h1 className="page-title mt-3">Review and submit.</h1><p className="page-description">Payment details are handled by the configured payment service. This storefront does not collect raw card numbers.</p></div>
+      <div className="mb-8"><p className="editorial-kicker">Checkout · Payment</p><h1 className="page-title mt-3">Review and submit.</h1><p className="page-description">Payment details are handled by the configured payment service. This storefront does not collect raw card numbers.</p></div>
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <form onSubmit={handleSubmit} className="surface-card p-6 sm:p-8">
           <div className="flex items-start gap-4 border-b border-[#e5e4dc] pb-6">
