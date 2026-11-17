@@ -147,14 +147,18 @@ exports.logout = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) return res.status(400).json({ msg: 'Refresh token required' });
 
-await publishEvent('UserLoggedOut', {
-  userId: req.user.id,
-  timestamp: new Date(),
-});
-
   try {
-    // Revoke the token
-    await RefreshToken.updateOne({ token: refreshToken }, { revoked: true });
+    // Revoke the refresh token before publishing the analytics event.
+    await RefreshToken.updateOne({ token: refreshToken, user: req.user.id }, { revoked: true });
+    try {
+      await publishEvent('UserLoggedOut', {
+        userId: req.user.id,
+        timestamp: new Date(),
+      });
+    } catch (eventError) {
+      // A Kafka outage must not prevent the refresh token from being revoked.
+      console.warn('Logout event could not be published:', eventError.message);
+    }
     res.json({ msg: 'Logged out successfully' });
   } catch (err) {
     console.error(err.message);
