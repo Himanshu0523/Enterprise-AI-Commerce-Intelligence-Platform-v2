@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   const handleOtpSuccess = () => {
     setShowOtpModal(false);
-    router.replace(searchParams.get('redirect') || '/');
+    router.replace(getRedirectPath());
     router.refresh();
   };
 
