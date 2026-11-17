@@ -27,22 +27,29 @@ exports.getMe = async (req, res) => {
 // PUT /users/me
 exports.updateMe = async (req, res) => {
   try {
-    const allowed = ['displayName', 'avatarUrl', 'preferences'];
+    const { displayName, avatarUrl, preferences } = req.body;
     const updates = {};
-    allowed.forEach(field => {
-      if (req.body[field] !== undefined) updates[field] = req.body[field];
-    });
+    if (displayName !== undefined) updates.displayName = displayName;
+    if (avatarUrl !== undefined) updates.avatarUrl = avatarUrl;
+    if (preferences) {
+      Object.entries(preferences).forEach(([key, value]) => {
+        updates[`preferences.${key}`] = value;
+      });
+    }
+
     let profile = await UserProfile.findOneAndUpdate(
       { userId: req.userId },
       { $set: updates },
       { new: true, runValidators: true }
     );
+
     if (!profile) {
       profile = await UserProfile.create({
         userId: req.userId,
         email: req.user?.email || `user_${req.userId}@example.com`,
-        displayName: updates.displayName || 'Customer',
-        ...updates
+        displayName: displayName || req.user?.name || 'Customer',
+        avatarUrl: avatarUrl || '',
+        preferences: preferences || {},
       });
     }
     res.json({ profile });
