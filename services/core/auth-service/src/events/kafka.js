@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { Kafka, Partitioners } = require('kafkajs');
 
 const configuredBrokerValue =
@@ -22,16 +23,25 @@ if (saslEnabled && !supportedSaslMechanisms.includes(saslMechanism)) {
   );
 }
 
+// Aiven's project CA must be supplied as a Render Secret File or PEM env var.
+// Never disable TLS certificate verification to work around a trust error.
+const caPath = process.env.KAFKA_CA_PATH || '/etc/secrets/ca.pem';
+const caPem = process.env.KAFKA_CA || (
+  fs.existsSync(caPath) ? fs.readFileSync(caPath, 'utf8') : ''
+);
+const hasCaCertificate = Boolean(caPem.trim());
+
 const canInitializeKafka =
   hasConfiguredBroker &&
   !isPlaceholderBroker &&
-  (!saslEnabled || hasSaslCredentials);
+  (!saslEnabled || hasSaslCredentials) &&
+  hasCaCertificate;
 
 const kafka = canInitializeKafka
   ? new Kafka({
       clientId: process.env.KAFKA_CLIENT_ID || 'auth-service',
       brokers,
-      ssl: saslEnabled,
+      ssl: { ca: [caPem] },
       ...(saslEnabled
         ? {
             sasl: {
@@ -41,11 +51,11 @@ const kafka = canInitializeKafka
             },
           }
         : {}),
-      retry: { retries: 2 },
+      retry: { retries: 5 },
     })
   : null;
 
-// KafkaJS v2 accepts createPartitioner on producer(), not on the Kafka constructor.
+// KafkaJS v2 accepts createPartitioner on producer(), not on Kafka().
 const producer = kafka
   ? kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner })
   : null;
@@ -63,8 +73,13 @@ const connectProducer = async () => {
   }
 
   if (saslEnabled && !hasSaslCredentials) {
+    console.warn('[AUTH-KAFKA] SASL credentials are missing; event streaming is disabled.');
+    return;
+  }
+
+  if (!hasCaCertificate) {
     console.warn(
-      '[AUTH-KAFKA] SASL is enabled but KAFKA_SASL_USERNAME or KAFKA_SASL_PASSWORD is missing; event streaming is disabled.',
+      `[AUTH-KAFKA] CA certificate not found. Set KAFKA_CA or mount the Aiven CA at ${caPath}; event streaming is disabled.`,
     );
     return;
   }
@@ -72,7 +87,7 @@ const connectProducer = async () => {
   try {
     await producer.connect();
     isConnected = true;
-    console.log(`[AUTH-KAFKA] Producer connected to ${brokers.join(', ')}.`);
+    console.log(`[AUTH-KAFKA] Producer connected to ${brokers.join(', ')} using verified TLS.`);
   } catch (err) {
     console.warn('[AUTH-KAFKA] Kafka unavailable; continuing without event streaming:', err.message);
   }
