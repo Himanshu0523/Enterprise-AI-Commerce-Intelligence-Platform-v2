@@ -1,240 +1,77 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React from 'react';
 import Image from 'next/image';
-import { ArrowRight, Sparkles, ShoppingBag, ShieldCheck, Search, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
-
-const HERO_SLIDES = [
-  {
-    id: 1,
-    tag: '⚡ SUMMER COLLECTION 2026',
-    title: 'Discover Next-Gen Fashion & Tech Hybrids',
-    subtitle: 'Upgrade your daily lifestyle with curated luxury accessories, intelligent wearables, and eco-crafted apparel up to 40% OFF.',
-    primaryCta: 'Explore Collection',
-    primaryHref: '/products',
-    secondaryCta: 'View Deals',
-    secondaryHref: '/products?onSale=true',
-    badge: 'Trending Now',
-    bgGradient: 'from-indigo-900 via-purple-900 to-slate-900',
-    accentColor: 'indigo-500',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80',
-    stats: { discount: '40% OFF', rating: '4.9★', happyCustomers: '50k+' }
-  },
-  {
-    id: 2,
-    tag: '🎧 PREMIUM AUDIO & ACCESSORIES',
-    title: 'Immersive Sound & Wireless Innovation',
-    subtitle: 'Experience studio-grade acoustics, active noise cancellation, and ergonomic design engineered for audiophiles.',
-    primaryCta: 'Shop Electronics',
-    primaryHref: '/products?category=Electronics',
-    secondaryCta: 'Learn More',
-    secondaryHref: '/product/aurora-headphones-1',
-    badge: 'Editor’s Choice',
-    bgGradient: 'from-slate-950 via-blue-950 to-indigo-950',
-    accentColor: 'blue-500',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&q=80',
-    stats: { discount: 'FREE SHIPPING', rating: '4.8★', happyCustomers: '12k+' }
-  },
-  {
-    id: 3,
-    tag: '✨ LIMITED TIME FLASH SALE',
-    title: 'Exclusive Deals on Best Sellers',
-    subtitle: 'Grab top-tier products before stock runs out. Verified authentic quality with 2-year warranty guaranteed.',
-    primaryCta: 'Claim Deals Now',
-    primaryHref: '/products?sort=popular',
-    secondaryCta: 'Flash Sale Grid',
-    secondaryHref: '/products',
-    badge: 'Limited Stock',
-    bgGradient: 'from-purple-950 via-pink-950 to-slate-950',
-    accentColor: 'pink-500',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&q=80',
-    stats: { discount: 'SAVE $120', rating: '5.0★', happyCustomers: '85k+' }
-  }
-];
+import Link from 'next/link';
+import { ArrowDownRight, ArrowUpRight, Sparkles } from 'lucide-react';
 
 export default function HeroBanner() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const slide = HERO_SLIDES[currentSlide];
-
   return (
-    <section className="relative min-h-[560px] lg:min-h-[620px] w-full overflow-hidden bg-slate-950 text-white flex items-center">
-      {/* Background Image Overlay with Gradient */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={slide.image}
-          alt={slide.title}
-          fill
-          priority
-          className="object-cover object-center opacity-30 blur-[2px] transition-all duration-1000 scale-105"
-        />
-        <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgGradient} opacity-90 transition-all duration-700`} />
-        {/* Glow Spheres */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container relative z-10 mx-auto px-4 py-12 lg:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Main Content */}
-          <div className="lg:col-span-7 space-y-6">
-            
-            {/* Tag Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold tracking-wider text-indigo-300 shadow-lg">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              <span>{slide.tag}</span>
-            </div>
-
-            {/* Title */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
-              {slide.title}
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed font-normal">
-              {slide.subtitle}
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link
-                href={slide.primaryHref}
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-sm shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] transition-all duration-200"
-              >
-                <span>{slide.primaryCta}</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              
-              <Link
-                href={slide.secondaryHref}
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-semibold text-sm transition-all duration-200"
-              >
-                <span>{slide.secondaryCta}</span>
-              </Link>
-            </div>
-
-            {/* Trust Highlights */}
-            <div className="pt-6 border-t border-white/10 flex flex-wrap items-center gap-6 text-xs text-slate-300">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>100% Authentic Products</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
-                <span>Over 50,000+ Happy Customers</span>
-              </div>
-            </div>
-
+    <section className="relative overflow-hidden bg-[#e9e9df] text-[#1c2924]">
+      <div className="editorial-shell relative grid min-h-[650px] items-center gap-12 py-16 lg:min-h-[720px] lg:grid-cols-[.92fr_1.08fr] lg:py-20">
+        <div className="relative z-10 max-w-[650px]">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#315b49]/20 bg-white/50 px-4 py-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#315b49]">
+            <Sparkles size={13} />
+            Intelligent commerce, thoughtfully designed
           </div>
-
-          {/* Featured Visual Card */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl space-y-4 transform hover:scale-[1.01] transition-transform duration-300">
-              
-              {/* Top Card Badge */}
-              <div className="flex items-center justify-between">
-                <span className="px-3 py-1 bg-indigo-500/80 backdrop-blur-md rounded-full text-xs font-bold text-white tracking-wide">
-                  {slide.badge}
-                </span>
-                <span className="text-xs font-semibold text-slate-300">
-                  Updated Live
-                </span>
-              </div>
-
-              {/* Main Preview Image */}
-              <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-white/10 shadow-inner group">
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
-                  <span className="text-xs font-bold bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
-                    {slide.stats.discount}
-                  </span>
-                  <span className="text-xs font-bold bg-amber-500/90 text-slate-950 px-2.5 py-1 rounded-full flex items-center gap-1">
-                    ★ {slide.stats.rating}
-                  </span>
-                </div>
-              </div>
-
-              {/* Quick Search Overlay Widget */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (searchQuery.trim()) {
-                    window.location.href = `/products?query=${encodeURIComponent(searchQuery.trim())}`;
-                  }
-                }}
-                className="relative"
-              >
-                <input
-                  type="text"
-                  placeholder="Quick search products, brands, categories..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-900/80 text-white placeholder-slate-400 text-xs rounded-xl pl-10 pr-24 py-3 border border-white/20 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                <button
-                  type="submit"
-                  className="absolute right-1.5 top-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  Search
-                </button>
-              </form>
-
-            </div>
-          </div>
-
-        </div>
-
-        {/* Carousel Slider Controls */}
-        <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-4">
-          <div className="flex items-center gap-2">
-            {HERO_SLIDES.map((s, idx) => (
-              <button
-                key={s.id}
-                onClick={() => setCurrentSlide(idx)}
-                className={`h-2.5 rounded-full transition-all ${
-                  currentSlide === idx ? 'w-8 bg-indigo-500' : 'w-2.5 bg-white/30 hover:bg-white/50'
-                }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1))}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-              aria-label="Previous slide"
+          <p className="editorial-kicker mb-5">A new perspective on discovery</p>
+          <h1 className="editorial-heading max-w-[760px] text-[clamp(3.6rem,7.5vw,7.4rem)] leading-[.91]">
+            Find your
+            <br />
+            <span className="italic text-[#557563]">next</span> favourite.
+          </h1>
+          <p className="mt-8 max-w-[440px] text-sm leading-7 text-[#59665e] sm:text-base">
+            A considered storefront where product discovery meets intelligent technology.
+            Explore the collection and experience a more thoughtful way to shop.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-5">
+            <Link
+              href="/products"
+              className="group inline-flex items-center gap-8 rounded-full bg-[#315b49] px-6 py-4 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-[#214635]"
             >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length)}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+              Explore collection
+              <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Link>
+            <a href="#featured" className="inline-flex items-center gap-2 text-xs font-semibold text-[#315b49]">
+              Discover the edit <ArrowDownRight size={15} />
+            </a>
+          </div>
+          <div className="mt-16 flex items-center gap-4 border-t border-[#315b49]/15 pt-5">
+            <span className="text-[10px] font-bold tracking-[.2em] text-[#315b49]">01 / 03</span>
+            <span className="h-px w-12 bg-[#315b49]/30" />
+            <span className="text-[10px] uppercase tracking-[.16em] text-[#758078]">Designed for discovery</span>
           </div>
         </div>
 
+        <div className="relative mx-auto w-full max-w-[680px] lg:ml-auto">
+          <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full border border-[#315b49]/15" />
+          <div className="relative aspect-[.88] overflow-hidden bg-[#d4d8ce] sm:aspect-[1.02]">
+            <Image
+              src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1400&q=90"
+              alt="Editorial fashion collection"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 55vw"
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#14251d]/35 via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between text-white sm:bottom-8 sm:left-8 sm:right-8">
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-[.22em] text-white/75">The considered edit</p>
+                <p className="editorial-heading mt-2 text-3xl sm:text-4xl">Less, but better.</p>
+              </div>
+              <span className="grid h-11 w-11 place-items-center rounded-full border border-white/60">
+                <ArrowUpRight size={18} />
+              </span>
+            </div>
+          </div>
+          <div className="absolute -bottom-5 -left-5 hidden bg-[#f5f4ef] px-5 py-4 shadow-[0_12px_40px_rgba(28,41,36,.08)] sm:block">
+            <p className="text-[9px] font-bold uppercase tracking-[.2em] text-[#7a827b]">The experience</p>
+            <p className="mt-1 text-sm font-semibold text-[#315b49]">Explore. Compare. Discover.</p>
+          </div>
+        </div>
       </div>
+      <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full border border-[#315b49]/10" />
     </section>
   );
 }
