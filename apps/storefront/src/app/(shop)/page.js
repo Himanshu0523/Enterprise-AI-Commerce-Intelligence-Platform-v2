@@ -21,7 +21,7 @@ export default function HomePage() {
   const products = getFeaturedProducts(8);
 
   return (
-    <main className="min-h-screen bg-[#f5f4ef] text-[#1c2924]">
+    <div className="min-h-screen bg-[#f5f4ef] text-[#1c2924]">
       <HeroBanner />
       <CategoryGrid />
 
@@ -76,6 +76,6 @@ export default function HomePage() {
           <div className="mt-8"><RecentlyViewed /></div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
