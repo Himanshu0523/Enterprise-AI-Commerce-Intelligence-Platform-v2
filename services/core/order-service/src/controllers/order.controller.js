@@ -163,7 +163,7 @@ exports.createOrder = async (req, res) => {
     }
 
     //  Execute Saga Steps 
-   let stockReserved = false;
+    const reservedItems = [];
     let paymentCharged = false;
 
     try {
@@ -185,6 +185,9 @@ exports.createOrder = async (req, res) => {
             const errData = await invRes.json().catch(() => ({}));
             throw new Error(`Stock reservation failed: ${errData.error?.message || invRes.statusText}`);
           }
+          reservedItems.push(item);
+          order.reservedItems = reservedItems;
+          await order.save();
         }
         invSpan.setStatus('OK');
       } catch (err) {
@@ -194,7 +197,6 @@ exports.createOrder = async (req, res) => {
         invSpan.end();
       }
 
-      stockReserved = true;
       order.sagaState = 'STOCK_RESERVED';
       await order.save();
 
@@ -257,16 +259,18 @@ exports.createOrder = async (req, res) => {
       order.sagaState = 'COMPENSATING';
       
       const pendingTasks = [];
-      if (stockReserved) pendingTasks.push('RESTOCK');
+      if (reservedItems.length > 0) pendingTasks.push('RESTOCK');
+      if (paymentCharged) pendingTasks.push('REFUND');
       order.reconciliationTasks = pendingTasks;
+      if (pendingTasks.length === 0) order.sagaState = 'COMPENSATED';
       await order.save();
 
       //  Apply Immediate compensations (best-effort) 
-      if (stockReserved) {
+      if (reservedItems.length > 0) {
         const compSpan = tracer.startSpan('saga.compensate_restock', { parent: rootSpan });
         try {
           console.log(`[SAGA COMPENSATE] Restocking items for order ${orderNumber}`);
-          for (const item of items) {
+          for (const item of reservedItems) {
             await chaosFetch('http://localhost:3004/api/inventory/release', {
               method: 'POST',
               headers: { 
@@ -278,7 +282,8 @@ exports.createOrder = async (req, res) => {
           }
           // Success: remove task
           order.reconciliationTasks = order.reconciliationTasks.filter(t => t !== 'RESTOCK');
-          order.sagaState = 'COMPENSATED';
+          order.reservedItems = [];
+          if (order.reconciliationTasks.length === 0) order.sagaState = 'COMPENSATED';
           await order.save();
           compSpan.setStatus('OK');
         } catch (compensateError) {
@@ -387,7 +392,7 @@ setInterval(async () => {
       // RESTOCK compensation task
       if (newTasks.includes('RESTOCK')) {
         try {
-          for (const item of order.items) {
+          for (const item of (order.reservedItems?.length ? order.reservedItems : order.items)) {
             await chaosFetch('http://localhost:3004/api/inventory/release', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -396,6 +401,7 @@ setInterval(async () => {
           }
           const idx = newTasks.indexOf('RESTOCK');
           if (idx > -1) newTasks.splice(idx, 1);
+          order.reservedItems = [];
           console.log(`[RECONCILE WORKER] Restock success for order ${order.orderNumber}`);
         } catch (err) {
           console.error(`[RECONCILE WORKER] Restock retry failed for ${order.orderNumber}: ${err.message}`);
@@ -415,6 +421,7 @@ setInterval(async () => {
           });
           const idx = newTasks.indexOf('REFUND');
           if (idx > -1) newTasks.splice(idx, 1);
+          order.paymentStatus = 'REFUNDED';
           console.log(`[RECONCILE WORKER] Refund success for order ${order.orderNumber}`);
         } catch (err) {
           console.error(`[RECONCILE WORKER] Refund retry failed for ${order.orderNumber}: ${err.message}`);
