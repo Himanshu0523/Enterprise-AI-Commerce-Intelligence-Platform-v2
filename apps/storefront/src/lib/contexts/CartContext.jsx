@@ -95,7 +95,7 @@ export function CartProvider({ children }) {
         return item.productId === productId
           ? { ...item, quantity: Math.min(stock, quantity) }
           : item;
-      })
+      }).filter((item) => item.quantity > 0)
     );
   }, [removeItem]);
 
