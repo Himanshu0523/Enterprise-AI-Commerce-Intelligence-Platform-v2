@@ -129,10 +129,10 @@ export default function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-[#e5e4dc] bg-[#f8f7f2] px-5 pb-6 pt-4 lg:hidden">
+        <div className="border-t border-[#e5e4dc] bg-[#f8f7f2] px-5 pb-6 pt-4 xl:hidden">
           <form onSubmit={submitSearch} className="mb-4 flex h-11 items-center gap-3 rounded-full border border-[#dedfd6] bg-white px-4">
             <Search size={16} className="text-[#78847b]" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products..." aria-label="Search products" className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the collection" aria-label="Search products" className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
             <button type="submit" aria-label="Submit search"><ArrowUpRight size={16} /></button>
           </form>
           <nav className="grid grid-cols-2 gap-x-5" aria-label="Mobile navigation">
