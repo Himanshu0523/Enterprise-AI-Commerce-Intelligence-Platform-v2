@@ -46,3 +46,19 @@ exports.verifyRefreshToken = (token) => {
 exports.generateResetToken = () => {
   return crypto.randomBytes(32).toString('hex');
 };
+
+
+// Short-lived proof that the password step succeeded; never grants API access.
+exports.generateMfaChallenge = (user) => jwt.sign(
+  { id: user._id.toString(), purpose: 'mfa_challenge' },
+  getAccessSecret(),
+  { expiresIn: '5m', issuer: 'commerce-auth' }
+);
+
+exports.verifyMfaChallenge = (token) => {
+  const decoded = jwt.verify(token, getAccessSecret(), { issuer: 'commerce-auth' });
+  if (decoded.purpose !== 'mfa_challenge' || !decoded.id) {
+    throw new Error('Invalid MFA challenge');
+  }
+  return decoded;
+};
