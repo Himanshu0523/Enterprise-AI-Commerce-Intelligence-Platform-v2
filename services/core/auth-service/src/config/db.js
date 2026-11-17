@@ -1,12 +1,26 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+  if (!uri) {
+    throw new Error('[AUTH-DB] MONGO_URI is missing. Set the real MongoDB Atlas connection string in Render.');
+  }
+
+  if (uri.includes('cluster.net') || uri.includes('<') || uri.includes('>')) {
+    throw new Error('[AUTH-DB] MONGO_URI still contains a placeholder hostname/value. Copy the real URI from MongoDB Atlas → Connect → Drivers.');
+  }
+
   try {
-    const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/auth-service';
-    const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (err) {
-    console.warn(`[AUTH-DB] MongoDB Connection Warning: ${err.message}. Running service without blocking.`);
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 15000,
+      connectTimeoutMS: 15000,
+    });
+    console.log(`[AUTH-DB] Connected to MongoDB host: ${conn.connection.host}`);
+    return conn;
+  } catch (error) {
+    console.error('[AUTH-DB] MongoDB connection failed:', error.message);
+    throw error;
   }
 };
 
