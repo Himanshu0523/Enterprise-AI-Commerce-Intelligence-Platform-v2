@@ -3,7 +3,8 @@ import { apiClient } from '@/lib/api/client';
 function normalizeOrder(order = {}) {
   return {
     ...order,
-    id: order.orderNumber || order._id || order.id,
+    id: order._id || order.id,
+    orderNumber: order.orderNumber || order._id || order.id,
     date: order.createdAt || order.date,
     total: Number(order.totalAmount ?? order.total ?? 0),
     status: String(order.orderStatus || order.status || 'pending').toLowerCase(),
