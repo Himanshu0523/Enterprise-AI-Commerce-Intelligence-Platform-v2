@@ -14,7 +14,7 @@ export default function Footer() {
             <h3 className="text-[10px] font-bold uppercase tracking-[.2em] text-[#9ab3a0]">Explore</h3>
             <ul className="mt-5 space-y-3 text-xs text-[#e1e5df]">
               <li><Link className="hover:text-white" href="/products">All products</Link></li>
-              <li><Link className="hover:text-white" href="/products?sort=popular">Popular</Link></li>
+              <li><Link className="hover:text-white" href="/products">Popular</Link></li>
               <li><Link className="hover:text-white" href="/account/wishlist">Wishlist</Link></li>
             </ul>
           </div>
