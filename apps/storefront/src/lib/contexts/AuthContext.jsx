@@ -54,7 +54,6 @@ export function AuthProvider({ children }) {
               name: validation.user.name || sessionUser.name,
               roles: validation.user.roles || sessionUser.roles || [],
             };
-            sessionUser = await loadProfileName(accessToken, sessionUser);
             localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
             if (active) setUser(sessionUser);
             return;
@@ -65,7 +64,7 @@ export function AuthProvider({ children }) {
           if (!refreshed.accessToken || !refreshed.refreshToken) throw new Error('Session refresh failed.');
           localStorage.setItem(ACCESS_KEY, refreshed.accessToken);
           localStorage.setItem(REFRESH_KEY, refreshed.refreshToken);
-          sessionUser = await loadProfileName(refreshed.accessToken, sessionUser);
+          if (refreshed.user) sessionUser = { ...sessionUser, ...refreshed.user };
           localStorage.setItem(USER_KEY, JSON.stringify(sessionUser));
           if (active) setUser(sessionUser);
         }
