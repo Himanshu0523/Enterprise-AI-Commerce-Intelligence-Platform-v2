@@ -10,7 +10,7 @@ import { useWishlist } from '@/lib/contexts/WishlistContext';
 
 const navItems = [
   { label: 'Discover', href: '/products' },
-  { label: 'New arrivals', href: '/products?sort=newest' },
+  { label: 'Kids', href: '/products?category=Kids' },
   { label: 'Men', href: '/products?category=Men' },
   { label: 'Women', href: '/products?category=Women' },
   { label: 'Accessories', href: '/products?category=Accessories' },
