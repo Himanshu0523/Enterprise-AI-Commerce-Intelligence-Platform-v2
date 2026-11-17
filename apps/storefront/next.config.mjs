@@ -5,37 +5,29 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: false, // or true if you want React Compiler
-
+  reactCompiler: false,
   turbopack: {
-    root: path.join(__dirname, '../../'), // adjust if needed
+    root: path.join(__dirname, '../../'),
   },
-
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
+      { protocol: 'https', hostname: 'picsum.photos' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
-
-  // Proxy API requests to central API Gateway
   async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${(process.env.NEXT_PUBLIC_GATEWAY_URL || (process.env.NODE_ENV === 'production' ? 'https://api-gateway-xu2v.onrender.com' : 'http://localhost:8000')).replace(/\\/+$/, '')}/api/:path*`,
-      },
-    ];
+    const configuredGateway = process.env.NEXT_PUBLIC_GATEWAY_URL;
+    const gateway = configuredGateway || (
+      process.env.NODE_ENV === 'production'
+        ? 'https://api-gateway-xu2v.onrender.com'
+        : 'http://localhost:8000'
+    );
+    const gatewayBase = new URL(gateway);
+    return [{
+      source: '/api/:path*',
+      destination: gatewayBase.origin + '/api/:path*',
+    }];
   },
-
-  // If you have other experimental features, put them here
-  experimental: {},
 };
 
 export default nextConfig;
