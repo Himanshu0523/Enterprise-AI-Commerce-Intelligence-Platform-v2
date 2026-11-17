@@ -101,7 +101,8 @@ exports.createOrder = async (req, res) => {
     const { items, shippingAddress, shippingMethod, paymentMethod } = req.body;
     const shippingFees = { standard: 5.99, express: 12.99, overnight: 24.99 };
     const validItems = Array.isArray(items) && items.length > 0 && items.every((item) => item.productId && item.title && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 0);
-    if (!validItems || !shippingAddress || !paymentMethod || !Object.prototype.hasOwnProperty.call(shippingFees, shippingMethod)) {
+    const validAddress = shippingAddress && shippingAddress.fullName && shippingAddress.addressLine1 && shippingAddress.city && shippingAddress.state && shippingAddress.postalCode && shippingAddress.country && shippingAddress.phone;
+    if (!validItems || !validAddress || !paymentMethod || !Object.prototype.hasOwnProperty.call(shippingFees, shippingMethod)) {
       rootSpan.setStatus('ERROR', 'Validation Failed');
       rootSpan.end();
       return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Missing required order fields' } });
