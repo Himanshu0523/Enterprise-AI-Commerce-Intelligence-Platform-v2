@@ -130,7 +130,7 @@ export default function Header() {
           <nav className="grid grid-cols-2 gap-x-5" aria-label="Mobile navigation">
             {navItems.map((item) => <Link key={item.label} onClick={() => setMobileOpen(false)} href={item.href} className="border-b border-[#e5e4dc] py-4 text-sm font-medium text-[#43534a]">{item.label}</Link>)}
           </nav>
-          {!user && <Link onClick={() => setMobileOpen(false)} href="/login" className="mt-5 flex h-11 items-center justify-center rounded-full bg-[#315b49] text-xs font-semibold text-white">Sign in to your account</Link>}
+          {!user && <div className="mt-5 grid grid-cols-2 gap-2"><Link onClick={() => setMobileOpen(false)} href="/login" className="flex h-11 items-center justify-center border border-[#315b49] text-xs font-semibold text-[#315b49]">Sign in</Link><Link onClick={() => setMobileOpen(false)} href="/register" className="flex h-11 items-center justify-center bg-[#315b49] text-xs font-semibold text-white">Create account</Link></div>}
           {user && <Link onClick={() => setMobileOpen(false)} href="/account" className="mt-5 block py-3 text-sm font-semibold text-[#315b49]">My account <ArrowUpRight className="inline" size={14} /></Link>}
         </div>
       )}
