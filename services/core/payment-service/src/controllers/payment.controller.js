@@ -16,6 +16,10 @@ exports.processPayment = async (req, res) => {
     const userId = req.user ? req.user.id : 'usr_guest';
     const { orderId, amount, currency = 'USD', paymentProvider = 'MOCK', paymentMethodDetails } = req.body;
 
+    if (process.env.ALLOW_MOCK_PAYMENTS !== 'true') {
+      return createErrorResponse(res, 503, ErrorCodes.SERVICE_UNAVAILABLE, 'Payment processing is not enabled. Configure a verified payment provider or explicitly enable demo payments.');
+    }
+
     // Strict input validation
     if (!orderId || typeof orderId !== 'string') {
       return createErrorResponse(res, 400, ErrorCodes.VALIDATION_FAILED, 'Valid orderId string is required');
@@ -56,7 +60,7 @@ exports.processPayment = async (req, res) => {
       userId,
       amount,
       currency,
-      paymentProvider: stripe ? 'STRIPE' : paymentProvider,
+      paymentProvider: 'MOCK',
       transactionId,
       status: 'COMPLETED',
       paymentMethodDetails: paymentMethodDetails || { cardLast4: '4242', brand: 'Visa' },
