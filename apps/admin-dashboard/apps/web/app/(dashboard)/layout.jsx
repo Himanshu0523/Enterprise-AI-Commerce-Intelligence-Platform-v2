@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   LayoutDashboard, ShoppingCart, Package, Users, Tag, Truck,
   BarChart2, Settings, Brain, ChevronDown, ChevronRight,
@@ -112,6 +112,32 @@ export default function DashboardLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    let active = true;
+    const refreshSession = async () => {
+      try {
+        const response = await fetch('/api/session/refresh', {
+          method: 'POST',
+          credentials: 'same-origin',
+          cache: 'no-store',
+        });
+        if (active && (response.status === 401 || response.status === 403)) {
+          router.replace('/login');
+          router.refresh();
+        }
+      } catch (error) {
+        console.error('[ADMIN] Session refresh request failed:', error);
+      }
+    };
+
+    refreshSession();
+    const interval = setInterval(refreshSession, 10 * 60 * 1000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [router]);
 
   const handleLogout = async () => {
     try {
