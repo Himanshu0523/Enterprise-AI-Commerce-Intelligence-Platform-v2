@@ -6,7 +6,7 @@ const { authenticate, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
 // All admin routes require authentication and admin role
-router.use(authenticate, requireRole('admin'));
+router.use(authenticate, requireRole('admin', 'super_admin'));
 
 // Proxy to admin-specific endpoints
 router.use('/products', createProxy(config.services.product));
