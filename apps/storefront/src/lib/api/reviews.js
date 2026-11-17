@@ -10,7 +10,8 @@ import { apiClient } from './client';
 export async function getProductReviews(productId, params = {}) {
   const query = new URLSearchParams(params).toString();
   const endpoint = `/reviews/product/${productId}${query ? `?${query}` : ''}`;
-  return apiClient(endpoint);
+  const response = await apiClient(endpoint);
+  return { ...response, reviews: (response.reviews || []).map((review) => ({ ...review, id: review._id || review.id, author: review.userName || 'Account', date: review.createdAt, helpfulCount: review.helpfulVotes || 0, isVerifiedPurchase: Boolean(review.verifiedPurchase), media: review.images || [] })), pagination: { page: response.page || 1, limit: Number(params.limit || 5), total: response.total || 0, totalPages: response.pages || 1 } };
 }
 
 /**
