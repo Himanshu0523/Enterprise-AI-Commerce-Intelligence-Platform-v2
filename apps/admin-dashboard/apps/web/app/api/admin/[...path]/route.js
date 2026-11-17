@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\\/+$/, '').replace(/\\/api$/, '') + '/api';
+const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '').replace(/\/api$/, '') + '/api';
 
 async function proxy(request, context) {
   const cookieStore = await cookies();
