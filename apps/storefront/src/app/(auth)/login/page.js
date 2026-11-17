@@ -15,7 +15,10 @@ export default function LoginPage() {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const { login, isLoading } = useAuth();
   const router = useRouter();
-  const getRedirectPath = () => new URLSearchParams(window.location.search).get('redirect') || '/';
+  const getRedirectPath = () => {
+    const target = new URLSearchParams(window.location.search).get('redirect');
+    return target && target.startsWith('/') && !target.startsWith('//') ? target : '/';
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
