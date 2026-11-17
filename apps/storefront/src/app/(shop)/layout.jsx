@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { Suspense } from 'react';
 import FloatingCompareBar from '@/components/product/FloatingCompareBar';
 import AiChatWidget from '@/features/ai-assistant/components/AiChatWidget';
 
