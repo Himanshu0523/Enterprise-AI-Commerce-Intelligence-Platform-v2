@@ -7,7 +7,7 @@ import { getFeaturedProducts } from '@/lib/api/products';
 import { ArrowUpRight, ScanSearch, GitCompareArrows, MessageCircle } from 'lucide-react';
 
 export const metadata = {
-  title: 'Storefront | Product Discovery',
+  title: 'Product discovery',
   description: 'Explore the catalogue, compare products and use intelligent discovery tools.',
 };
 
