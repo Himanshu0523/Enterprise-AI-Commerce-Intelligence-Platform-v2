@@ -223,24 +223,25 @@ exports.resetPassword = async (req, res) => {
 
 // ─── GOOGLE OAUTH ───────────────────────────────────
 // (handled by Passport, so just the callback controller)
-exports.googleCallback = (req, res) => {
-  // After Passport authenticates, req.user is set
+exports.googleCallback = async (req, res) => {
+  const clientUrl = process.env.CLIENT_URL;
+  if (!clientUrl) return res.status(500).json({ msg: 'CLIENT_URL is not configured on the auth service.' });
   const user = req.user;
-  if (!user) return res.redirect(`${process.env.CLIENT_URL}/login?error=auth_failed`);
+  if (!user) return res.redirect(clientUrl + '/login?error=auth_failed');
 
-  // Generate tokens
-  const accessToken = tokenUtils.generateAccessToken(user);
-  const refreshToken = tokenUtils.generateRefreshToken(user);
-
-  // Save refresh token
-  RefreshToken.create({
-    token: refreshToken,
-    user: user._id,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
-
-  // Redirect to frontend with tokens in query (or set cookies)
-  res.redirect(`${process.env.CLIENT_URL}/oauth-success#access=${encodeURIComponent(accessToken)}&refresh=${encodeURIComponent(refreshToken)}`);
+  try {
+    const accessToken = tokenUtils.generateAccessToken(user);
+    const refreshToken = tokenUtils.generateRefreshToken(user);
+    await RefreshToken.create({
+      token: refreshToken,
+      user: user._id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+    return res.redirect(clientUrl + '/oauth-success#access=' + encodeURIComponent(accessToken) + '&refresh=' + encodeURIComponent(refreshToken));
+  } catch (error) {
+    console.error('[AUTH] Google OAuth callback failed:', error.message);
+    return res.redirect(clientUrl + '/login?error=oauth_callback_failed');
+  }
 };
 
 // ─── MFA ────────────────────────────────────────────
