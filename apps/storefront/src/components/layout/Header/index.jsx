@@ -15,7 +15,6 @@ const navItems = [
   { label: 'Kids', href: '/products?category=Kids' },
   { label: 'Accessories', href: '/products?category=Accessories' },
   { label: 'New arrivals', href: '/new-arrivals' },
-  { label: 'Sale', href: '/sale' },
 ];
 
 export default function Header() {
@@ -75,7 +74,7 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <form onSubmit={submitSearch} className="hidden h-10 w-[clamp(150px,17vw,240px)] lg:flex items-center gap-2 rounded-full border border-[#dedfd6] bg-white/70 px-4 transition focus-within:border-[#829b88] focus-within:bg-white xl:flex">
             <Search size={15} className="shrink-0 text-[#78847b]" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search products" placeholder="Search products..." className="min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-[#969e96]" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search products" placeholder="Search the collection" className="min-w-0 flex-1 bg-transparent text-[11px] outline-none placeholder:text-[#969e96]" />
             <button type="submit" aria-label="Submit search" className="text-[#315b49]"><ArrowUpRight size={15} /></button>
           </form>
 
