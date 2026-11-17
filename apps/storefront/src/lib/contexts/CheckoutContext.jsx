@@ -70,7 +70,7 @@ export function CheckoutProvider({ children }) {
       const orderId = order.orderNumber || order._id || order.id;
       if (!orderId) throw new Error('The order service did not return an order reference.');
 
-      updateState({ orderId, isPlacingOrder: false, orderStatus: order.orderStatus || 'PENDING' });
+      updateState({ orderId, paymentMethod: selectedPaymentMethod, isPlacingOrder: false, orderStatus: order.orderStatus || 'PENDING' });
       clearCart();
       return orderId;
     } catch (error) {
