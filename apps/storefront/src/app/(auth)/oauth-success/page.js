@@ -14,9 +14,10 @@ export default function OAuthSuccessPage() {
 
   useEffect(() => {
     let active = true;
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     const accessToken = params.get('access');
     const refreshToken = params.get('refresh');
+    window.history.replaceState({}, document.title, '/oauth-success');
     if (!accessToken || !refreshToken) {
       setError('The identity provider did not return a complete session.');
       return () => { active = false; };
@@ -24,7 +25,6 @@ export default function OAuthSuccessPage() {
     completeOAuthSession(accessToken, refreshToken)
       .then(() => {
         if (active) {
-          window.history.replaceState({}, document.title, '/oauth-success');
           router.replace('/');
           router.refresh();
         }
