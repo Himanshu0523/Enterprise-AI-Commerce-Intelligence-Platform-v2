@@ -19,6 +19,6 @@ router.use('/shipping', authenticate, createProxy(config.services.shipping, { pa
 router.use('/coupons', authenticate, createProxy(config.services.coupon, { pathRewrite: { '^/': '/api/coupons/' } }));
 
 // User profile routes require authentication
-router.use('/users', authenticate, createProxy(config.services.user, { pathRewrite: { '^/': '/api/users/' } }));
+router.use('/users', authenticate, createProxy(config.services.user, { pathRewrite: { '^/': '/v1/users/' } }));
 
 module.exports = router;
