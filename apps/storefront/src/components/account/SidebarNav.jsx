@@ -47,7 +47,7 @@ export default function AccountSidebar() {
   };
 
   return (
-    <nav className="space-y-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
+    <nav className="space-y-5 border border-[#e5e4dc] bg-[#fffefa] p-4">
       {/* User info */}
       <div className="flex items-center gap-3 px-2 pb-4 border-b border-gray-100 dark:border-gray-800">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-sm shadow-sm">
@@ -75,13 +75,13 @@ export default function AccountSidebar() {
                     href={href}
                     className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                       active
-                        ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                        ? 'bg-[#e8eee7] text-[#315b49]'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
-                    <Icon size={17} className={active ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 dark:text-gray-500'} />
+                    <Icon size={17} className={active ? 'text-[#315b49]' : 'text-gray-400 dark:text-gray-500'} />
                     {label}
-                    {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-500" />}
+                    {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#315b49]" />}
                   </Link>
                 );
               })}
