@@ -38,7 +38,7 @@ async function createSession(data) {
   });
   result.cookies.set('admin_access', data.accessToken, { ...COOKIE_OPTIONS, maxAge: 15 * 60 });
   result.cookies.set('admin_refresh', data.refreshToken, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 });
-  result.cookies.set('admin_role', roles.join(','), { ...COOKIE_OPTIONS, maxAge: 15 * 60 });
+  result.cookies.set('admin_role', roles.join(','), { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 });
   return result;
 }
 
