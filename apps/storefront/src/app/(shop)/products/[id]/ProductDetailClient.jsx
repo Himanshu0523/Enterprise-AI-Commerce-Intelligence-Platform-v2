@@ -15,8 +15,8 @@ export default function ProductDetailClient({ product }) {
 
   return <>
     <div className="mt-7 flex flex-wrap items-center gap-3">
-      <QuantitySelector quantity={quantity} onQuantityChange={setQuantity}/>
-      <AddToCartButton productId={product.id} name={product.name} price={product.flashSalePrice??product.price} image={product.images?.[0]||'/placeholder.jpg'} quantity={quantity} disabled={product.stock===0}/>
+      <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} max={Math.max(1,Number(product.stock)||1)}/>
+      <AddToCartButton productId={product.id} name={product.name} price={product.flashSalePrice??product.price} image={product.images?.[0]||'/placeholder.jpg'} quantity={quantity} disabled={product.stock===0} stock={product.stock}/>
       <WishlistToggle productId={product.id} size={23}/>
       <CompareButton productId={product.id}/>
     </div>
