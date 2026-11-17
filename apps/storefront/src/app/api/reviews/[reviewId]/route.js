@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth/options';
+import { getAuthenticatedUser } from '@/lib/auth/server';
 import { getReviewById, updateReview, deleteReview } from '@/lib/db/reviews';
 
 export async function GET(request, { params }) {
@@ -20,8 +19,8 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     const { reviewId } = params;
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const user = await getAuthenticatedUser(request);
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -31,7 +30,7 @@ export async function PUT(request, { params }) {
     }
 
     // Check if the current user owns this review
-    if (existingReview.userId !== session.user.id) {
+    if (existingReview.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
