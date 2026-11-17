@@ -37,9 +37,9 @@ export default function HeroBanner() {
             </a>
           </div>
           <div className="mt-16 flex items-center gap-4 border-t border-[#315b49]/15 pt-5">
-            <span className="text-[10px] font-bold tracking-[.2em] text-[#315b49]">01 / 03</span>
+            <span className="text-[10px] font-bold tracking-[.2em] text-[#315b49]">THE COLLECTION</span>
             <span className="h-px w-12 bg-[#315b49]/30" />
-            <span className="text-[10px] uppercase tracking-[.16em] text-[#758078]">Designed for discovery</span>
+            <span className="text-[10px] uppercase tracking-[.16em] text-[#758078]">Explore at your pace</span>
           </div>
         </div>
 
