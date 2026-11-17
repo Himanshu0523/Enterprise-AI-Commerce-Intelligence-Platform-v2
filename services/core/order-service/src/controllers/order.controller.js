@@ -98,13 +98,22 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const { items, shippingAddress, shippingMethod, paymentMethod, subtotal, tax = 0, shippingFee = 0, discount = 0 } = req.body;
-    if (!items || items.length === 0 || !shippingAddress || !paymentMethod || subtotal === undefined) {
+    const { items, shippingAddress, shippingMethod, paymentMethod } = req.body;
+    const shippingFees = { standard: 5.99, express: 12.99, overnight: 24.99 };
+    const validItems = Array.isArray(items) && items.length > 0 && items.every((item) => item.productId && item.title && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 0);
+    if (!validItems || !shippingAddress || !paymentMethod || !Object.prototype.hasOwnProperty.call(shippingFees, shippingMethod)) {
       rootSpan.setStatus('ERROR', 'Validation Failed');
       rootSpan.end();
       return res.status(400).json({ success: false, error: { code: 'VAL_001', message: 'Missing required order fields' } });
     }
 
+    // This showcase only permits explicitly enabled mock payments. Recalculate
+    // the submitted totals server-side; production pricing must be loaded from
+    // the product/pricing services rather than trusting client-supplied prices.
+    const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+    const tax = 0;
+    const shippingFee = shippingFees[shippingMethod];
+    const discount = 0;
     const totalAmount = subtotal + tax + shippingFee - discount;
     const orderNumber = 'ORD-' + Date.now() + '-' + Math.floor(1000 + Math.random() * 9000);
 
