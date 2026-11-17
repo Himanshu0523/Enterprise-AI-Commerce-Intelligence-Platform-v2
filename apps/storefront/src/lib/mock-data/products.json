@@ -13,7 +13,6 @@
     "isFeatured": true,
     "isNew": true,
     "isTrending": true,
-    "flashSalePrice": 9.99,
     "reviews": []
   },
   {
@@ -30,7 +29,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -47,7 +45,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -64,7 +61,6 @@
     "isFeatured": true,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -81,7 +77,6 @@
     "isFeatured": false,
     "isNew": true,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -98,7 +93,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": true,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -115,7 +109,6 @@
     "isFeatured": true,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": 21.990000000000002,
     "reviews": []
   },
   {
@@ -132,7 +125,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -149,7 +141,6 @@
     "isFeatured": false,
     "isNew": true,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -166,7 +157,6 @@
     "isFeatured": true,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -183,7 +173,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": true,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -200,7 +189,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -217,7 +205,6 @@
     "isFeatured": true,
     "isNew": true,
     "isTrending": false,
-    "flashSalePrice": 33.99,
     "reviews": []
   },
   {
@@ -234,7 +221,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -251,7 +237,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -268,7 +253,6 @@
     "isFeatured": true,
     "isNew": false,
     "isTrending": true,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -285,7 +269,6 @@
     "isFeatured": false,
     "isNew": true,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -302,7 +285,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   },
   {
@@ -319,7 +301,6 @@
     "isFeatured": true,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": 45.99,
     "reviews": []
   },
   {
@@ -336,7 +317,6 @@
     "isFeatured": false,
     "isNew": false,
     "isTrending": false,
-    "flashSalePrice": null,
     "reviews": []
   }
 ]
