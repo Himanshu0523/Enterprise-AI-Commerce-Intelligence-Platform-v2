@@ -36,8 +36,7 @@ module.exports = {
   },
   
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-super-secret-key',
-    issuer: process.env.JWT_ISSUER || 'ecommerce-platform',
+    secret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
   },
   
   cors: {
