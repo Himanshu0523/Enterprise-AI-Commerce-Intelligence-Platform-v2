@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 import ProductListingWithFilters from '@/components/product/ProductFilters/ProductListingWithFilters';
 
 /**
@@ -12,7 +13,8 @@ import ProductListingWithFilters from '@/components/product/ProductFilters/Produ
  */
 export default async function SearchPage({ searchParams }) {
   const resolvedSearchParams = await searchParams;
-  const query = resolvedSearchParams?.q || '';
+  const query = String(resolvedSearchParams?.q || '').trim();
+  if (!query) redirect('/products');
 
   return (
     <Suspense fallback={<div className="container mx-auto px-4 py-12 text-center text-gray-500">Searching...</div>}>
