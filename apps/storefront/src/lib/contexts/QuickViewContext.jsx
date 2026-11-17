@@ -31,7 +31,7 @@ export function QuickViewProvider({ children }) {
   const handleAddToCart = () => {
     if (!product || Number(product.stock) <= 0) return;
     addItem({
-      id: product.id,
+      productId: product.id,
       name: product.name,
       price: product.flashSalePrice ?? product.price,
       image: product.images?.[0] || '/placeholder.jpg',
