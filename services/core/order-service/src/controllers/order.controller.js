@@ -5,8 +5,10 @@ const { Tracer } = require('../../../../../packages/shared-utils/tracing');
 const tracer = new Tracer('order-service');
 
 function serviceBaseUrl(value, fallback) {
-  const raw = (value || fallback).replace(/\\/+$/, '');
-  return /^https?:\\/\\//i.test(raw) ? raw : 'http://' + raw;
+  let raw = String(value || fallback).trim();
+  while (raw.endsWith('/')) raw = raw.slice(0, -1);
+  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+  return 'http://' + raw;
 }
 
 const INVENTORY_SERVICE_URL = serviceBaseUrl(process.env.INVENTORY_SERVICE_URL, 'http://localhost:3004');
