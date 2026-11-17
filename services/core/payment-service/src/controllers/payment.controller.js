@@ -17,7 +17,11 @@ exports.processPayment = async (req, res) => {
     const { orderId, amount, currency = 'USD', paymentProvider = 'MOCK', paymentMethodDetails } = req.body;
 
     if (process.env.ALLOW_MOCK_PAYMENTS !== 'true') {
-      return createErrorResponse(res, 503, ErrorCodes.SERVICE_UNAVAILABLE, 'Payment processing is not enabled. Configure a verified payment provider or explicitly enable demo payments.');
+      return createErrorResponse(res, 503, 'PAY_503', 'Payment processing is not enabled. Configure a verified payment provider or explicitly enable demo payments.');
+    }
+
+    if (stripe && process.env.ALLOW_MOCK_PAYMENTS !== 'true') {
+      return createErrorResponse(res, 503, 'PAY_503', 'The Stripe payment-intent confirmation flow is not wired to the storefront yet.');
     }
 
     // Strict input validation
