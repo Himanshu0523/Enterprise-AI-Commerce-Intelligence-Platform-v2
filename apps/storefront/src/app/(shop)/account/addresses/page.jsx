@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api/client';
 import { MapPin, Plus, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
 
-const emptyAddress = { addressLine1:'', addressLine2:'', city:'', state:'', country:'India', postalCode:'', type:'shipping', isDefault:false };
+const emptyAddress = { addressLine1:'', addressLine2:'', city:'', state:'', country:'', postalCode:'', type:'shipping', isDefault:false };
 
 export default function AddressesPage() {
   const [addresses,setAddresses]=useState([]);
