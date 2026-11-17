@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
@@ -6,8 +5,6 @@ import { CartProvider } from '@/lib/contexts/CartContext';
 import { WishlistProvider } from '@/lib/contexts/WishlistContext';
 import { CheckoutProvider } from '@/lib/contexts/CheckoutContext';
 import { QuickViewProvider } from '@/lib/contexts/QuickViewContext';
-import FloatingCompareBar from '@/components/product/FloatingCompareBar';
-import AiChatWidget from '@/features/ai-assistant/components/AiChatWidget';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -17,8 +14,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const dynamic = 'force-dynamic';
 export const metadata = {
-  title: 'Storefront | Product Discovery',
-  description: 'Explore products, compare details and discover items through an intelligent commerce experience.',
+  title: {
+    default: 'Enterprise AI Commerce',
+    template: '%s | Enterprise AI Commerce',
+  },
+  description: 'An AI-enabled commerce platform for product discovery, comparison and connected shopping workflows.',
 };
 
 export default function RootLayout({ children }) {
@@ -29,11 +29,7 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <WishlistProvider>
               <CheckoutProvider>
-                <QuickViewProvider>
-                  {children}
-                  <Suspense fallback={null}><FloatingCompareBar /></Suspense>
-                  <Suspense fallback={null}><AiChatWidget /></Suspense>
-                </QuickViewProvider>
+                <QuickViewProvider>{children}</QuickViewProvider>
               </CheckoutProvider>
             </WishlistProvider>
           </CartProvider>
