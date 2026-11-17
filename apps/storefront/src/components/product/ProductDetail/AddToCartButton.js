@@ -4,12 +4,12 @@ import { useCart } from '@/lib/contexts/CartContext';
 import { ShoppingBag, Check } from 'lucide-react';
 import { useState } from 'react';
 
-export default function AddToCartButton({ productId, name, price, image, quantity = 1, disabled = false, compact = false }) {
+export default function AddToCartButton({ productId, name, price, image, quantity = 1, disabled = false, compact = false, stock = 99 }) {
   const { addItem } = useCart();
   const [added,setAdded]=useState(false);
   const handleAddToCart=()=>{
     if(disabled)return;
-    addItem({productId,name,price:Number(price),image},quantity);
+    addItem({productId,name,price:Number(price),image,stock:Number(stock)},quantity);
     setAdded(true);
     window.setTimeout(()=>setAdded(false),1400);
   };
