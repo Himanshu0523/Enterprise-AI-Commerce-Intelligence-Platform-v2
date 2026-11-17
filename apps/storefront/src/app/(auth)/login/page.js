@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/contexts/AuthContext';
+import { useAuth, AUTH_API_BASE_URL } from '@/lib/contexts/AuthContext';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import OtpModal from '@/components/auth/OtpModal';
 
@@ -37,7 +37,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.assign('/api/auth/google');
+    window.location.assign(`${AUTH_API_BASE_URL}/google`);
   };
 
   const handleOtpSuccess = () => {
