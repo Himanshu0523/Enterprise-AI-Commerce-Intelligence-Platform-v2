@@ -16,23 +16,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const dynamic = 'force-dynamic';
 
-/**
- * @type {import('next').Metadata}
- */
 export const metadata = {
-  title: 'Enterprise AI Commerce Platform | Premium Storefront',
-  description: 'Next-generation AI-powered e-commerce shopping experience with real-time recommendations and instant checkout.',
+  title: 'Enterprise AI Commerce Platform | Intelligent Storefront',
+  description: 'An editorial storefront experience built around intelligent product discovery, comparison and shopping interactions.',
 };
 
-/**
- * Root Layout Component
- * @param {Object} props
- * @param {React.ReactNode} props.children
- */
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={plusJakartaSans.className}>
-      <body className="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased font-sans">
+      <body className="min-h-screen bg-[#f5f4ef] text-[#1c2924] antialiased">
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
