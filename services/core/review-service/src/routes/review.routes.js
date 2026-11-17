@@ -4,6 +4,7 @@ const reviewController = require('../controllers/review.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
 router.get('/product/:productId', reviewController.getProductReviews);
+router.get('/product/:productId/summary', reviewController.getProductReviewSummary);
 router.post('/:id/helpful', reviewController.markHelpful);
 
 router.use(authMiddleware);
