@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth/options';
+import { getAuthenticatedUser } from '@/lib/auth/server';
 import { getReviewsByUser } from '@/lib/db/reviews';
 
 export async function GET(request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const user = await getAuthenticatedUser(request);
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const reviews = getReviewsByUser(session.user.id);
+    const reviews = getReviewsByUser(user.id);
     return NextResponse.json(reviews);
   } catch (error) {
     console.error('Error fetching user reviews:', error);
