@@ -37,7 +37,11 @@ export default function Header() {
 
   const handleLogout = async () => {
     setAccountOpen(false);
-    await logout();
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Sign-out request failed; local session was cleared.', error);
+    }
     router.push('/');
     router.refresh();
   };
