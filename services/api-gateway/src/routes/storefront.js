@@ -7,9 +7,9 @@ const router = express.Router();
 
 // Public routes (no auth required)
 router.use('/products', createProxy(config.services.product, { pathRewrite: { '^/': '/api/products/' } }));
-router.get('/reviews/product/:productId', createProxy(config.services.review, { pathRewrite: { '^/': '/api/reviews/' } }));
-router.get('/reviews/product/:productId/summary', createProxy(config.services.review, { pathRewrite: { '^/': '/api/reviews/' } }));
-router.post('/reviews/:id/helpful', createProxy(config.services.review, { pathRewrite: { '^/': '/api/reviews/' } }));
+router.get('/reviews/product/:productId', createProxy(config.services.review, { pathRewrite: { '^/reviews/': '/api/reviews/' } }));
+router.get('/reviews/product/:productId/summary', createProxy(config.services.review, { pathRewrite: { '^/reviews/': '/api/reviews/' } }));
+router.post('/reviews/:id/helpful', createProxy(config.services.review, { pathRewrite: { '^/reviews/': '/api/reviews/' } }));
 router.use('/reviews', authenticate, createProxy(config.services.review, { pathRewrite: { '^/': '/api/reviews/' } }));
 
 // Cart routes require authentication
