@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import {
   LayoutDashboard, ShoppingBag, MapPin, User, Heart, CreditCard,
@@ -39,6 +39,7 @@ const NAV_GROUPS = [
 
 export default function AccountSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
 
   const isActive = (href, exact) => {
@@ -93,7 +94,7 @@ export default function AccountSidebar() {
       {/* Logout */}
       <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
         <button
-          onClick={logout}
+          onClick={async () => { await logout(); router.replace('/login'); router.refresh(); }}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
         >
           <LogOut size={17} />
