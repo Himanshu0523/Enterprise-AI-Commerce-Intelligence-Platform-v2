@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
 
     // If MFA enabled, require second factor (don't issue tokens yet)
     if (user.mfaEnabled) {
-      return res.json({ requireMFA: true, userId: user._id, msg: 'MFA required' });
+      return res.json({ requireMFA: true, mfaToken: tokenUtils.generateMfaChallenge(user), msg: 'MFA required' });
     }
 
     const accessToken = tokenUtils.generateAccessToken(user);
@@ -293,38 +293,49 @@ exports.verifyAndEnableMFA = async (req, res) => {
 
 // Verify MFA during login (after password is correct)
 exports.verifyMFA = async (req, res) => {
-  const { userId, token } = req.body;
-  if (!userId || !token) return res.status(400).json({ msg: 'User ID and OTP token required' });
+  const { mfaToken, token } = req.body;
+  if (!mfaToken || !/^\\d{6}$/.test(String(token || ''))) {
+    return res.status(400).json({ msg: 'A valid MFA challenge and six-digit OTP are required.' });
+  }
 
   try {
-    const user = await User.findById(userId).select('+mfaSecret +mfaEnabled');
-    if (!user) return res.status(400).json({ msg: 'User not found' });
-
-    if (!user.mfaEnabled) return res.status(400).json({ msg: 'MFA is not enabled for this account' });
+    const challenge = tokenUtils.verifyMfaChallenge(mfaToken);
+    const user = await User.findById(challenge.id).select('+mfaSecret +mfaEnabled');
+    if (!user || !user.mfaEnabled || !user.mfaSecret) {
+      return res.status(401).json({ msg: 'MFA challenge is no longer valid. Please sign in again.' });
+    }
 
     const verified = speakeasy.totp.verify({
       secret: user.mfaSecret,
       encoding: 'base32',
-      token,
+      token: String(token),
       window: 1,
     });
+    if (!verified) return res.status(401).json({ msg: 'Invalid authenticator code.' });
 
-    if (!verified) return res.status(400).json({ msg: 'Invalid OTP' });
-
-    // Now issue tokens
     const accessToken = tokenUtils.generateAccessToken(user);
     const refreshToken = tokenUtils.generateRefreshToken(user);
-
     await RefreshToken.create({
       token: refreshToken,
       user: user._id,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
-    res.json({ accessToken, refreshToken });
+    await publishEvent('UserLoggedIn', {
+      userId: user._id,
+      email: user.email,
+      timestamp: new Date(),
+      ip: req.ip,
+      mfa: true,
+    }).catch((eventError) => console.warn('[AUTH] Login event failed:', eventError.message));
+
+    return res.json({
+      accessToken,
+      refreshToken,
+      user: { id: user._id, name: user.name, email: user.email, roles: user.roles },
+    });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    return res.status(401).json({ msg: 'MFA challenge expired or invalid. Please sign in again.' });
   }
 };
 
