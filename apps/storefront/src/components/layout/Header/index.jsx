@@ -15,6 +15,7 @@ const navItems = [
   { label: 'Kids', href: '/products?category=Kids' },
   { label: 'Accessories', href: '/products?category=Accessories' },
   { label: 'New arrivals', href: '/new-arrivals' },
+  { label: 'Sale', href: '/sale' },
 ];
 
 export default function Header() {
