@@ -4,6 +4,14 @@ const { Tracer } = require('../../../../../packages/shared-utils/tracing');
 
 const tracer = new Tracer('order-service');
 
+function serviceBaseUrl(value, fallback) {
+  const raw = (value || fallback).replace(/\\/+$/, '');
+  return /^https?:\\/\\//i.test(raw) ? raw : 'http://' + raw;
+}
+
+const INVENTORY_SERVICE_URL = serviceBaseUrl(process.env.INVENTORY_SERVICE_URL, 'http://localhost:3004');
+const PAYMENT_SERVICE_URL = serviceBaseUrl(process.env.PAYMENT_SERVICE_URL, 'http://localhost:3007');
+
 /**
  * Redis-Backed Idempotency Store for order-service.
  * Falls back to in-memory Map if Redis is unavailable.
@@ -172,7 +180,7 @@ exports.createOrder = async (req, res) => {
       invSpan.setAttribute('items.count', items.length);
       try {
         for (const item of items) {
-          const invRes = await chaosFetch('http://localhost:3004/api/inventory/reserve', {
+          const invRes = await chaosFetch(INVENTORY_SERVICE_URL + '/api/inventory/reserve', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -207,7 +215,7 @@ exports.createOrder = async (req, res) => {
       const paySpan = tracer.startSpan('payment.charge_card', { parent: rootSpan });
       paySpan.setAttribute('payment.amount', totalAmount);
       try {
-        const payRes = await chaosFetch('http://localhost:3007/api/payments/process', {
+        const payRes = await chaosFetch(PAYMENT_SERVICE_URL + '/api/payments/process', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -271,7 +279,7 @@ exports.createOrder = async (req, res) => {
         try {
           console.log(`[SAGA COMPENSATE] Restocking items for order ${orderNumber}`);
           for (const item of reservedItems) {
-            const releaseRes = await chaosFetch('http://localhost:3004/api/inventory/release', {
+            const releaseRes = await chaosFetch(INVENTORY_SERVICE_URL + '/api/inventory/release', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'traceparent': rootSpan.traceparent },
               body: JSON.stringify({ sku: item.productId, quantity: item.quantity }),
@@ -413,7 +421,7 @@ setInterval(async () => {
       // REFUND compensation task
       if (newTasks.includes('REFUND')) {
         try {
-          const refundRes = await chaosFetch('http://localhost:3007/api/payments/refund-by-order', {
+          const refundRes = await chaosFetch(PAYMENT_SERVICE_URL + '/api/payments/refund-by-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-user-id': order.userId },
             body: JSON.stringify({ orderId: order._id.toString() }),
