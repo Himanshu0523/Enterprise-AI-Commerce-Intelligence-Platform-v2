@@ -44,7 +44,7 @@ export default function ProductCard({ product, view = 'grid' }) {
           </div>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="text-base font-semibold">{formattedPrice}</span>
-            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} compact /><CompareButton productId={id} /></div>
+            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} stock={stock} compact /><CompareButton productId={id} /></div>
           </div>
         </div>
       </article>
@@ -78,7 +78,7 @@ export default function ProductCard({ product, view = 'grid' }) {
         <span className="shrink-0 pt-4 text-xs font-semibold text-[#315b49]">{formattedPrice}</span>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-[#e5e4dc] pt-3">
-        <AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} />
+        <AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} stock={stock} />
       </div>
     </article>
   );
