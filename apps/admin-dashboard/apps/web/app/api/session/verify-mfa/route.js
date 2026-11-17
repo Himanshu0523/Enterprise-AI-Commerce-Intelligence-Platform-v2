@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
-const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\\/+$/, '').replace(/\\/api$/, '') + '/api';
+const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '').replace(/\/api$/, '') + '/api';
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
@@ -13,7 +13,7 @@ const COOKIE_OPTIONS = {
 export async function POST(request) {
   try {
     const { mfaToken, token } = await request.json();
-    if (typeof mfaToken !== 'string' || typeof token !== 'string' || !/^\\d{6}$/.test(token)) {
+    if (typeof mfaToken !== 'string' || typeof token !== 'string' || !/^\d{6}$/.test(token)) {
       return NextResponse.json({ message: 'Enter the six-digit authenticator code.' }, { status: 400 });
     }
 
