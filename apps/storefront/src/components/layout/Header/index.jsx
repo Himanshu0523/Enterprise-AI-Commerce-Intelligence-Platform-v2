@@ -30,6 +30,7 @@ export default function Header() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [query, setQuery] = useState('');
   const accountRef = useRef(null);
   const itemCount = getTotalItems();
@@ -77,6 +78,8 @@ export default function Header() {
   };
 
   const handleLogout = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
     setAccountOpen(false);
     setMobileOpen(false);
     try {
@@ -87,6 +90,7 @@ export default function Header() {
     } finally {
       router.replace('/');
       router.refresh();
+      setSigningOut(false);
     }
   };
 
@@ -151,7 +155,7 @@ export default function Header() {
                     <Link role="menuitem" onClick={() => setAccountOpen(false)} href="/account/orders" className="flex items-center gap-3 px-3 py-3 text-xs text-[#43534a] transition hover:bg-[#f2f2ec] hover:text-[#315b49]"><Package size={15} /> Order history</Link>
                     <Link role="menuitem" onClick={() => setAccountOpen(false)} href="/account/profile" className="flex items-center gap-3 px-3 py-3 text-xs text-[#43534a] transition hover:bg-[#f2f2ec] hover:text-[#315b49]"><UserRound size={15} /> Profile settings</Link>
                     <div className="my-1 border-t border-[#e5e4dc]" />
-                    <button role="menuitem" type="button" onClick={handleLogout} className="flex w-full items-center gap-3 px-3 py-3 text-left text-xs font-semibold text-[#9b5147] transition hover:bg-[#fbf0ed]"><LogOut size={15} /> Sign out</button>
+                    <button role="menuitem" type="button" onClick={handleLogout} disabled={signingOut} className="flex w-full items-center gap-3 px-3 py-3 text-left text-xs font-semibold text-[#9b5147] transition hover:bg-[#fbf0ed] disabled:cursor-wait disabled:opacity-60"><LogOut size={15} /> {signingOut ? "Signing out…" : "Sign out"}</button>
                   </div>
                 )}
               </>
@@ -198,7 +202,7 @@ export default function Header() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <Link onClick={() => setMobileOpen(false)} href="/account" className="flex h-10 items-center justify-center gap-2 border border-[#dedfd6] text-[11px] font-semibold text-[#315b49]"><UserRound size={14} /> My account</Link>
-                <button type="button" onClick={handleLogout} className="flex h-10 items-center justify-center gap-2 border border-[#edd5d0] text-[11px] font-semibold text-[#9b5147]"><LogOut size={14} /> Sign out</button>
+                <button type="button" onClick={handleLogout} disabled={signingOut} className="flex h-10 items-center justify-center gap-2 border border-[#edd5d0] text-[11px] font-semibold text-[#9b5147] disabled:opacity-60"><LogOut size={14} /> {signingOut ? "Signing out…" : "Sign out"}</button>
               </div>
             </div>
           ) : (
