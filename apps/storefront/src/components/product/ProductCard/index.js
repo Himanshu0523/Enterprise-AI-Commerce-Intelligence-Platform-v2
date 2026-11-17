@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Eye, ArrowUpRight } from 'lucide-react';
+import { Star, Eye } from 'lucide-react';
 import WishlistToggle from '@/components/product/WishlistToggle';
 import CompareButton from '@/components/product/CompareButton';
 import AddToCartButton from '@/components/product/ProductDetail/AddToCartButton';
@@ -45,7 +44,7 @@ export default function ProductCard({ product, view = 'grid' }) {
           </div>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="text-base font-semibold">{formattedPrice}</span>
-            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} /><CompareButton productId={id} /></div>
+            <div className="flex items-center gap-3"><AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} compact /><CompareButton productId={id} /></div>
           </div>
         </div>
       </article>
@@ -80,7 +79,6 @@ export default function ProductCard({ product, view = 'grid' }) {
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-[#e5e4dc] pt-3">
         <AddToCartButton productId={id} name={name} price={displayPrice} image={image} quantity={1} disabled={stock === 0} />
-        <span className="text-[9px] uppercase tracking-[.14em] text-[#929990]">{stock === 0 ? 'Out of stock' : 'Add to bag'}</span>
       </div>
     </article>
   );
