@@ -7,8 +7,16 @@ const ACCESS_KEY = 'auth_access_token';
 const REFRESH_KEY = 'auth_refresh_token';
 const USER_KEY = 'auth_user';
 
+// The custom identity API is served by the API Gateway. The storefront's
+// /api/auth namespace belongs to NextAuth, so custom auth must not use it.
+const configuredApiUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\\/+$/, '');
+const apiRoot = configuredApiUrl
+  ? (configuredApiUrl.endsWith('/api') ? configuredApiUrl : `${configuredApiUrl}/api`)
+  : '/api';
+export const AUTH_API_BASE_URL = `${apiRoot}/auth`;
+
 async function authRequest(path, payload, accessToken) {
-  const response = await fetch(`/api/auth/${path}`, {
+  const response = await fetch(`${AUTH_API_BASE_URL}/${path}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,9 +25,17 @@ async function authRequest(path, payload, accessToken) {
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json().catch(() => ({}));
+  const rawBody = await response.text();
+  let data = {};
+  if (rawBody) {
+    try { data = JSON.parse(rawBody); }
+    catch { data = { message: rawBody }; }
+  }
   if (!response.ok) {
-    throw new Error(data.msg || data.message || data.error || 'Authentication request failed.');
+    const validationMessage = Array.isArray(data.errors)
+      ? data.errors.map((item) => item.msg).filter(Boolean).join(', ')
+      : '';
+    throw new Error(data.msg || data.message || data.error || validationMessage || `Authentication request failed (HTTP ${response.status}).`);
   }
   return data;
 }

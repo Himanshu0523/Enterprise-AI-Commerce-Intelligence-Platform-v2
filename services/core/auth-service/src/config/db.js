@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error('MONGO_URI is required. Configure the auth-service MongoDB connection in Render.');
+  }
+
   try {
-    const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/auth-service';
-    const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
+    console.log(`[AUTH-DB] MongoDB connected: ${conn.connection.host}`);
+    return conn;
   } catch (err) {
-    console.warn(`[AUTH-DB] MongoDB Connection Warning: ${err.message}. Running service without blocking.`);
+    console.error('[AUTH-DB] MongoDB connection failed:', err.message);
+    throw err;
   }
 };
 
