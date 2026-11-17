@@ -98,7 +98,7 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const { items, shippingAddress, paymentMethod, subtotal, tax = 0, shippingFee = 0, discount = 0 } = req.body;
+    const { items, shippingAddress, shippingMethod, paymentMethod, subtotal, tax = 0, shippingFee = 0, discount = 0 } = req.body;
     if (!items || items.length === 0 || !shippingAddress || !paymentMethod || subtotal === undefined) {
       rootSpan.setStatus('ERROR', 'Validation Failed');
       rootSpan.end();
@@ -119,6 +119,7 @@ exports.createOrder = async (req, res) => {
         idempotencyKey,
         items,
         shippingAddress,
+        shippingMethod,
         paymentMethod,
         subtotal,
         tax,
