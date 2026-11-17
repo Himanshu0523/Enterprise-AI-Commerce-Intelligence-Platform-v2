@@ -8,7 +8,7 @@ function normalizeOrder(order = {}) {
     date: order.createdAt || order.date,
     total: Number(order.totalAmount ?? order.total ?? 0),
     status: String(order.orderStatus || order.status || 'pending').toLowerCase(),
-    items: Array.isArray(order.items) ? order.items : [],
+    items: Array.isArray(order.items) ? order.items.map((item) => ({ ...item, name: item.title || item.name })) : [],
   };
 }
 
