@@ -4,160 +4,129 @@ import ProductCard from '@/components/product/ProductCard';
 import RecentlyViewed from '@/components/product/RecentlyViewed';
 import HeroBanner from '@/components/home/HeroBanner';
 import CategoryGrid from '@/components/home/CategoryGrid';
-import FlashSaleBanner from '@/components/home/FlashSaleBanner';
-import TrustBadges from '@/components/home/TrustBadges';
-import Testimonials from '@/components/home/Testimonials';
-import Newsletter from '@/components/home/Newsletter';
 import { getFeaturedProducts } from '@/lib/api/products';
-import { Sparkles, ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, ScanSearch, GitCompareArrows, MessageCircle, Sparkles } from 'lucide-react';
 
 export const metadata = {
-  title: 'Enterprise AI Commerce Platform | Modern Storefront 2026',
-  description: 'Explore next-generation luxury apparel, intelligent wearables, high-tech audio, and curated best-sellers with AI recommendations.',
+  title: 'Enterprise AI Commerce Platform | Intelligent Storefront',
+  description: 'An editorial storefront experience built around intelligent product discovery, comparison and shopping interactions.',
 };
 
-// Fallback high quality products if API returns empty
-const fallbackProducts = [
+const demoProducts = [
   {
     id: 'aurora-headphones-1',
     name: 'Aurora Wireless ANC Headphones',
-    description: 'Immersive studio sound with 40-hour battery life and active noise cancellation.',
+    description: 'Immersive studio sound with active noise cancellation.',
     price: 199.99,
-    images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80'],
-    rating: 4.8,
-    reviewCount: 128,
+    images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=900&q=85'],
     isNew: true,
-    stock: 15,
   },
   {
     id: 'chrono-classic-watch',
     name: 'Chrono Classic Minimalist Watch',
-    description: 'Precision sapphire crystal timepiece with genuine Italian leather strap.',
+    description: 'A clean, understated timepiece for everyday wear.',
     price: 149.99,
-    images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80'],
-    rating: 4.9,
-    reviewCount: 94,
-    isNew: false,
-    stock: 8,
+    images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=900&q=85'],
   },
   {
     id: 'leather-jacket-mens',
     name: 'Urban Crafted Leather Jacket',
-    description: 'Handcrafted genuine leather coat engineered for style and weather resistance.',
+    description: 'A structured outer layer with a timeless silhouette.',
     price: 179.99,
-    images: ['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80'],
-    rating: 4.7,
-    reviewCount: 64,
+    images: ['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=900&q=85'],
     isNew: true,
-    stock: 12,
   },
   {
     id: 'smart-fitness-tracker',
-    name: 'Pulse Pro Fitness & Health Tracker',
-    description: 'Real-time heart rate, sleep monitoring, and GPS tracking with AMOLED display.',
+    name: 'Pulse Pro Fitness Tracker',
+    description: 'A streamlined wearable for everyday activity tracking.',
     price: 89.99,
-    images: ['https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=600&q=80'],
-    rating: 4.6,
-    reviewCount: 210,
-    isNew: false,
-    stock: 25,
+    images: ['https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=900&q=85'],
   },
+];
+
+const INTELLIGENCE_PILLARS = [
+  { number: '01', icon: ScanSearch, title: 'Discover', description: 'Explore a product catalogue through a focused, low-friction discovery experience.' },
+  { number: '02', icon: GitCompareArrows, title: 'Evaluate', description: 'Bring product details together and make comparison part of the shopping flow.' },
+  { number: '03', icon: MessageCircle, title: 'Ask', description: 'Use the integrated AI assistant as a conversational entry point to product discovery.' },
 ];
 
 export default async function HomePage() {
   let featuredProducts = [];
   try {
-    featuredProducts = await getFeaturedProducts(8);
-  } catch (err) {
-    console.error('Failed to fetch featured products:', err);
+    const response = await getFeaturedProducts(8);
+    featuredProducts = Array.isArray(response) ? response : [];
+  } catch (error) {
+    console.error('Failed to fetch featured products:', error);
   }
 
-  const productsToDisplay = featuredProducts && featuredProducts.length > 0 ? featuredProducts : fallbackProducts;
+  const products = featuredProducts.length ? featuredProducts : demoProducts;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      {/* 1. Dynamic Hero Banner */}
+    <main className="min-h-screen bg-[#f5f4ef] text-[#1c2924]">
       <HeroBanner />
-
-      {/* 2. Trust Badges & Value Propositions */}
-      <TrustBadges />
-
-      {/* 3. Shop By Category */}
       <CategoryGrid />
 
-      {/* 4. Limited Time Flash Sale Widget */}
-      <FlashSaleBanner />
-
-      {/* 5. Featured & Trending Products */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2">
-              <Sparkles className="w-4 h-4" /> Curated Selections
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Featured & Trending Arrivals
-            </h2>
-          </div>
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-          >
-            <span>Explore All Products</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {productsToDisplay.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* 6. Best Sellers Highlight */}
-      <section className="py-16 bg-slate-100 dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+      <section id="featured" className="editorial-section border-y border-[#e5e4dc] bg-[#fffefa]">
+        <div className="editorial-shell">
+          <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-500 mb-2">
-                <TrendingUp className="w-4 h-4" /> Community Favorites
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-                Top Rated Best Sellers
-              </h2>
+              <p className="editorial-kicker">A closer look</p>
+              <h2 className="editorial-heading mt-3 max-w-[620px] text-4xl leading-[.98] sm:text-6xl">Objects worth discovering.</h2>
+              <p className="mt-4 max-w-md text-sm leading-6 text-[#788078]">A selection from the catalogue. Open a product to explore its details and shopping interactions.</p>
             </div>
-            <Link
-              href="/products?sort=popular"
-              className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-            >
-              <span>View Leaderboard</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <Link href="/products" className="inline-flex items-center gap-2 pb-1 text-xs font-semibold text-[#315b49]">Explore all products <ArrowUpRight size={15} /></Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {fallbackProducts.map((product) => (
-              <ProductCard key={`bs-${product.id}`} product={{ ...product, isNew: false }} />
-            ))}
+          {products.length ? (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4">
+              {products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} />)}
+            </div>
+          ) : (
+            <div className="border border-dashed border-[#d9dbd2] px-6 py-16 text-center">
+              <p className="text-sm text-[#788078]">The catalogue is currently empty.</p>
+              <Link href="/products" className="mt-3 inline-flex text-xs font-semibold text-[#315b49]">Open catalogue <ArrowUpRight size={14} /></Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="editorial-section bg-[#e9e9df]">
+        <div className="editorial-shell">
+          <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="editorial-kicker">Beyond the product grid</p>
+              <h2 className="editorial-heading mt-3 text-4xl leading-[.98] sm:text-6xl">Commerce with a layer of intelligence.</h2>
+              <p className="mt-5 max-w-md text-sm leading-7 text-[#657168]">The experience is designed around three useful moments: finding an item, evaluating it and asking better questions.</p>
+            </div>
+            <div className="grid gap-0 border-t border-[#cfd3c9] sm:grid-cols-3 sm:border-l">
+              {INTELLIGENCE_PILLARS.map(({ number, icon: Icon, title, description }) => (
+                <div key={number} className="border-b border-[#cfd3c9] py-6 sm:border-b-0 sm:border-r sm:px-5 sm:first:pl-6">
+                  <div className="flex items-center justify-between text-[#315b49]"><span className="text-[10px] font-bold tracking-[.18em]">{number}</span><Icon size={18} strokeWidth={1.5} /></div>
+                  <h3 className="editorial-heading mt-8 text-3xl">{title}</h3>
+                  <p className="mt-3 text-xs leading-6 text-[#657168]">{description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[#cfd3c9] pt-6">
+            <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.16em] text-[#315b49]"><Sparkles size={13} /> Explore the integrated assistant</span>
+            <span className="text-xs text-[#788078]">Open the assistant from the chat control on this page.</span>
           </div>
         </div>
       </section>
 
-      {/* 7. Customer Reviews & Social Proof */}
-      <Testimonials />
-
-      {/* 8. Recently Viewed */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight">Recently Viewed Products</h2>
-          <p className="text-sm text-slate-500">Pick up right where you left off.</p>
+      <section className="editorial-section bg-[#fffefa]">
+        <div className="editorial-shell">
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="editorial-kicker">Your browsing trail</p>
+              <h2 className="editorial-heading mt-2 text-4xl sm:text-5xl">Pick up where you left off.</h2>
+            </div>
+          </div>
+          <RecentlyViewed />
         </div>
-        <RecentlyViewed />
       </section>
-
-      {/* 9. VIP Newsletter Callout */}
-      <Newsletter />
-    </div>
+    </main>
   );
 }
