@@ -370,3 +370,13 @@ exports.validateToken = async (req, res) => {
     res.status(401).json({ valid: false, msg: 'Invalid or expired token' });
   }
 };
+
+exports.getMFAStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('+mfaEnabled');
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    return res.json({ enabled: Boolean(user.mfaEnabled) });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Unable to read MFA status' });
+  }
+};
