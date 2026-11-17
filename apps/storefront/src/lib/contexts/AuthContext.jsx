@@ -116,7 +116,8 @@ export function AuthProvider({ children }) {
     try {
       const data = await authRequest('login', { email: email.trim().toLowerCase(), password });
       if (data.requireMFA) {
-        setPendingMfa({ userId: data.userId, email: email.trim().toLowerCase() });
+        if (!data.mfaToken) throw new Error('The authentication service did not create an MFA challenge.');
+        setPendingMfa({ mfaToken: data.mfaToken, email: email.trim().toLowerCase() });
         return { requiresMfa: true };
       }
       persistSession(data);
@@ -127,13 +128,12 @@ export function AuthProvider({ children }) {
   }, [persistSession]);
 
   const verifyMfa = useCallback(async (token) => {
-    if (!pendingMfa?.userId) throw new Error('Your verification session has expired. Please sign in again.');
+    if (!pendingMfa?.mfaToken) throw new Error('Your verification session has expired. Please sign in again.');
     setIsLoading(true);
     try {
-      const data = await authRequest('mfa/verify-login', { userId: pendingMfa.userId, token });
-      const validation = await authRequest('validate', { token: data.accessToken });
-      if (!validation.valid || !validation.user) throw new Error('The verified session could not be validated.');
-      return persistSession({ ...data, user: validation.user });
+      const data = await authRequest('mfa/verify-login', { mfaToken: pendingMfa.mfaToken, token });
+      if (!data.accessToken || !data.refreshToken || !data.user) throw new Error('The authentication service did not return a complete verified session.');
+      return persistSession(data);
     } finally {
       setIsLoading(false);
     }

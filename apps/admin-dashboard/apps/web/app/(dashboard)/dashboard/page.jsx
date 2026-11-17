@@ -87,7 +87,7 @@ export default function DashboardOverviewPage() {
   const fetchLiveOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/orders', { method: 'GET' });
+      const res = await fetch('/api/admin/orders', { method: 'GET' });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
