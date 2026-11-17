@@ -1,6 +1,12 @@
 const UserProfile = require('../../models/UserProfile');
 const { getMergedProfile } = require('../../utils/mergeProfile');
 
+const getOrCreateProfile = (req) => UserProfile.findOneAndUpdate(
+  { userId: req.userId },
+  { $setOnInsert: { email: req.user?.email || `user_${req.userId}@example.com`, displayName: req.user?.name || '' } },
+  { new: true, upsert: true, setDefaultsOnInsert: true }
+);
+
 // GET /users/me
 exports.getMe = async (req, res) => {
   try {
@@ -132,8 +138,8 @@ exports.getSecurityProfile = async (req, res) => {
 // Addresses CRUD (base addresses)
 exports.getAddresses = async (req, res) => {
   try {
-    const profile = await UserProfile.findOne({ userId: req.userId }, 'addresses').lean();
-    res.json({ addresses: profile?.addresses || [] });
+    const profile = await getOrCreateProfile(req);
+    res.json({ addresses: profile.addresses || [] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -141,7 +147,8 @@ exports.getAddresses = async (req, res) => {
 
 exports.addAddress = async (req, res) => {
   try {
-    const profile = await UserProfile.findOne({ userId: req.userId });
+    const profile = await getOrCreateProfile(req);
+    if (req.body.isDefault) profile.addresses.forEach((address) => { address.isDefault = false; });
     profile.addresses.push(req.body);
     await profile.save();
     res.status(201).json({ addresses: profile.addresses });
@@ -153,9 +160,10 @@ exports.addAddress = async (req, res) => {
 exports.updateAddress = async (req, res) => {
   try {
     const { id } = req.params;
-    const profile = await UserProfile.findOne({ userId: req.userId });
-    const address = profile.addresses.id(id);
+    const profile = await getOrCreateProfile(req);
+    const address = profile.addresses.find((item) => item.id === id);
     if (!address) return res.status(404).json({ error: 'Address not found' });
+    if (req.body.isDefault) profile.addresses.forEach((item) => { item.isDefault = false; });
     Object.assign(address, req.body);
     await profile.save();
     res.json({ addresses: profile.addresses });
@@ -167,8 +175,8 @@ exports.updateAddress = async (req, res) => {
 exports.deleteAddress = async (req, res) => {
   try {
     const { id } = req.params;
-    const profile = await UserProfile.findOne({ userId: req.userId });
-    profile.addresses.pull({ _id: id });
+    const profile = await getOrCreateProfile(req);
+    profile.addresses = profile.addresses.filter((item) => item.id !== id);
     await profile.save();
     res.json({ addresses: profile.addresses });
   } catch (err) {
