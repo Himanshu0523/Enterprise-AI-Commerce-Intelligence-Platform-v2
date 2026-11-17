@@ -153,6 +153,17 @@ services:
         sync: false
       - key: GOOGLE_CALLBACK_URL
         value: https://api-gateway-xu2v.onrender.com/api/auth/google/callback
+      # SMTP credentials must be configured in the Render auth-service environment.
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
       - key: KAFKA_BOOTSTRAP_SERVERS
         value: kafka-3dc1425e-himanshusatpute7-56f8.e.aivencloud.com:13193
       - key: KAFKA_SASL_ENABLED
