@@ -21,7 +21,7 @@ const loginValidation = [
 router.post('/register', registerValidation, authController.register);
 router.post('/login', loginValidation, authController.login);
 router.post('/refresh-token', authController.refreshToken);
-router.post('/logout', authController.logout);
+router.post('/logout', authMiddleware, authController.logout);
 
 // ─── Password reset ─────────────────────────────────
 router.post('/forgot-password', authController.forgotPassword);
