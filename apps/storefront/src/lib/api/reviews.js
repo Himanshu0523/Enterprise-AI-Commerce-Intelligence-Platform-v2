@@ -88,7 +88,8 @@ export async function reportReview(reviewId, reason) {
  * @returns {Promise<Array>}
  */
 export async function getUserReviews() {
-  return apiClient('/reviews/user');
+  const response = await apiClient('/reviews/user');
+  return (response.reviews || []).map((review) => ({ ...review, id: review._id || review.id, author: review.userName || 'Account', date: review.createdAt, helpfulCount: review.helpfulVotes || 0, isVerifiedPurchase: Boolean(review.verifiedPurchase) }));
 }
 
 /**
