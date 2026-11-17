@@ -137,6 +137,8 @@ services:
         value: production
       - key: JWT_SECRET
         sync: false
+      - key: MONGO_URI
+        sync: false
       - key: CLIENT_URL
         value: https://storefront-ept1.onrender.com
       - key: GOOGLE_CLIENT_ID
